@@ -1,20 +1,11 @@
 {
-    "id": "tuniao-wallpaper",
-    "name": "图鸟模板-壁纸",
-    "displayName": "图鸟模板-壁纸",
-    "version": "2.1.0",
-    "description": "凶姐壁纸，是基于 图鸟UI 进行开发的纯前端模板，支持微信小程序、APP和H5。",
+    "id": "peanut-album",
+    "name": "花生饭",
+    "displayName": "花生饭",
+    "version": "0.0.1",
+    "description": "",
     "keywords": [
         "图鸟",
-        "模板",
-        "酷炫",
-        "壁纸",
-        "前端模板"
-    ],
-    "dcloudext": {
-        "category": [
-            "uni-app前端模板",
-            "前端页面模板"
-        ]
-    }
+        "壁纸"
+    ]
 }

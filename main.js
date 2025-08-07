@@ -1,13 +1,16 @@
 import App from './App'
 import store from './store'
-
 import Vue from 'vue'
+
+import nxTemp from "@/nxTemp";
+
 Vue.config.productionTip = false
 App.mpType = 'app'
 
 // 引入全局TuniaoUI
 import TuniaoUI from 'tuniao-ui'
 Vue.use(TuniaoUI)
+Vue.use(nxTemp);
 
 // 引入TuniaoUI提供的vuex简写方法
 let vuexStore = require('@/store/$t.mixin.js')

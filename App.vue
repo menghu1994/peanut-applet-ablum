@@ -2,9 +2,11 @@
   import Vue from 'vue'
   import store from './store/index.js'
   import updateCustomBarInfo from './tuniao-ui/libs/function/updateCustomBarInfo.js'
+	import {init} from "@/nxTemp";
   
 	export default {
-		onLaunch: function() {
+		onLaunch(options) {
+			// init(options);
 			uni.getSystemInfo({
 			  success: function(e) {
 			    // #ifndef H5
