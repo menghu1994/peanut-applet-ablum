@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "tn-nav-bar": "/tuniao-ui/components/tn-nav-bar/tn-nav-bar",
+    "tn-stack-swiper": "/tuniao-ui/components/tn-stack-swiper/tn-stack-swiper"
+  }
+}

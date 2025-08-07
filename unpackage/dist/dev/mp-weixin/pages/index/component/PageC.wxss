@@ -1,0 +1,76 @@
+@charset "UTF-8";
+/**
+ * 下方引入的为Tuniao UI的集成样式文件，为scss预处理器，其中包含了一些"tn-"开头的自定义变量
+ * 使用的时候，请将下面的一行复制到您的uniapp项目根目录的uni.scss中即可
+ * Tuniao UI自定义的css类名和scss变量，均以"tn-"开头，不会造成冲突，请放心使用 
+ */
+.page-c.data-v-9f9bf908 {
+  max-height: 100vh;
+}
+/* 自定义导航栏内容 start */
+.custom-nav.data-v-9f9bf908 {
+  height: 100%;
+}
+.custom-nav__back.data-v-9f9bf908 {
+  margin: auto 30rpx;
+  font-size: 40rpx;
+  margin-right: 10rpx;
+  flex-basis: 5%;
+  width: 100rpx;
+  position: absolute;
+}
+/* 自定义导航栏内容 end */
+/* 底部安全边距 start*/
+.tn-tabbar-height.data-v-9f9bf908 {
+  min-height: 120rpx;
+  height: calc(140rpx + env(safe-area-inset-bottom) / 2);
+  height: calc(140rpx + constant(safe-area-inset-bottom));
+}
+/* 卡片轮播图 start */
+.swiper.data-v-9f9bf908 {
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+/* 轮播图 end */
+/* 底部固定按钮*/
+.tn-footerfixed.data-v-9f9bf908 {
+  position: fixed;
+  width: 100%;
+  bottom: calc(130rpx + env(safe-area-inset-bottom));
+  z-index: 1024;
+}
+/* 图标容器4 start */
+.tn-cool-color-icon4.data-v-9f9bf908 {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-fill-color: transparent;
+}
+.icon4__item.data-v-9f9bf908 {
+  width: 30%;
+  background-color: #FFFFFF;
+  border-radius: 10rpx;
+  padding: 30rpx;
+  margin: 20rpx 10rpx;
+  -webkit-transform: scale(1);
+          transform: scale(1);
+  transition: -webkit-transform 0.3s linear;
+  transition: transform 0.3s linear;
+  transition: transform 0.3s linear, -webkit-transform 0.3s linear;
+  -webkit-transform-origin: center center;
+          transform-origin: center center;
+}
+.icon4__item--icon.data-v-9f9bf908 {
+  width: 110rpx;
+  height: 110rpx;
+  font-size: 55rpx;
+  border-radius: 50%;
+  margin-bottom: 18rpx;
+  position: relative;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+  box-shadow: 0rpx 0rpx 30rpx 0rpx rgba(0, 0, 0, 0.07);
+}
+

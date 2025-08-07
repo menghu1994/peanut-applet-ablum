@@ -1,0 +1,61 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "subPackages": [
+    {
+      "root": "pageA",
+      "pages": [
+        "search/search",
+        "set/set",
+        "about/about",
+        "details/details",
+        "atlas/atlas",
+        "photo/photo",
+        "author/author",
+        "me/me",
+        "history/history",
+        "create/create",
+        "navigation/navigation",
+        "interact/interact",
+        "help/help"
+      ]
+    },
+    {
+      "root": "pageB",
+      "pages": [
+        "wallpaper/wallpaper",
+        "chat/chat",
+        "chat/chatGPT",
+        "edit/edit",
+        "result/result",
+        "result/result2",
+        "activity/activity",
+        "article/article",
+        "task/task",
+        "integral/integral",
+        "loading/loading"
+      ]
+    }
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "孟允轶",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "preloadRule": {
+    "pages/index/index": {
+      "packages": [
+        "pageA",
+        "pageB"
+      ],
+      "network": "all"
+    }
+  },
+  "requiredPrivateInfos": [
+    "chooseAddress"
+  ],
+  "usingComponents": {}
+}

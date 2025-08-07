@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "作者",
+  "usingComponents": {
+    "author-tn-waterfall-right": "/pageA/author/author-tn-waterfall-right",
+    "tn-nav-bar": "/tuniao-ui/components/tn-nav-bar/tn-nav-bar",
+    "tn-modal": "/tuniao-ui/components/tn-modal/tn-modal",
+    "tn-button": "/tuniao-ui/components/tn-button/tn-button",
+    "tn-waterfall": "/tuniao-ui/components/tn-waterfall/tn-waterfall",
+    "tn-lazy-load": "/tuniao-ui/components/tn-lazy-load/tn-lazy-load",
+    "tn-load-more": "/tuniao-ui/components/tn-load-more/tn-load-more"
+  }
+}

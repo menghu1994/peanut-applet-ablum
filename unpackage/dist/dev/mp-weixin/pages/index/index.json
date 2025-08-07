@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "图鸟壁纸",
+  "usingComponents": {
+    "page-a": "/pages/index/component/PageA",
+    "page-b": "/pages/index/component/PageB",
+    "page-c": "/pages/index/component/PageC",
+    "page-d": "/pages/index/component/PageD",
+    "page-e": "/pages/index/component/PageE"
+  }
+}
