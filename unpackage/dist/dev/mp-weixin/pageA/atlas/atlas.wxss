@@ -187,8 +187,8 @@
 }
 98.4375% {
     opacity: 0;
-    -webkit-transform: scale(1.21176);
-            transform: scale(1.21176);
+    -webkit-transform: scale(1.2117647059);
+            transform: scale(1.2117647059);
 }
 100% {
     opacity: 1;
@@ -218,8 +218,8 @@
 }
 98.4375% {
     opacity: 0;
-    -webkit-transform: scale(1.21176);
-            transform: scale(1.21176);
+    -webkit-transform: scale(1.2117647059);
+            transform: scale(1.2117647059);
 }
 100% {
     opacity: 1;
@@ -419,4 +419,3 @@
   height: 50rpx;
   display: inline-block;
 }
-

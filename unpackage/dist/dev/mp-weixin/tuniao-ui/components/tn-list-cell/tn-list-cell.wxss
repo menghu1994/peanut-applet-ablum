@@ -56,4 +56,3 @@
 .tn-list-cell--unlined.data-v-5ba5bbbc::after {
   border-bottom: 0 !important;
 }
-

@@ -1,9 +1,4 @@
 @charset "UTF-8";
-/**
- * 下方引入的为Tuniao UI的集成样式文件，为scss预处理器，其中包含了一些"tn-"开头的自定义变量
- * 使用的时候，请将下面的一行复制到您的uniapp项目根目录的uni.scss中即可
- * Tuniao UI自定义的css类名和scss变量，均以"tn-"开头，不会造成冲突，请放心使用 
- */
 /* 注意要写在第一行，同时给style标签加入lang="scss"属性 */
 @charset "UTF-8";
 @font-face {
@@ -1418,6 +1413,11 @@
 .tn-icon-reduce-circle-fill:before {
   content: "\e747";
 }
+/**
+ * 下方引入的为Tuniao UI的集成样式文件，为scss预处理器，其中包含了一些"tn-"开头的自定义变量
+ * 使用的时候，请将下面的一行复制到您的uniapp项目根目录的uni.scss中即可
+ * Tuniao UI自定义的css类名和scss变量，均以"tn-"开头，不会造成冲突，请放心使用 
+ */
 page {
   /* filter: grayscale(100%);
   -webkit-filter: grayscale(100%); */
@@ -2197,6 +2197,14 @@ button::after {
 /* 头像组 start */
 /* 头像组 end */
 /* 提升H5端uni.toast()的层级，避免被tn-modal等遮盖 start */
+
+
+
+
+
+
+
+
 /* 提升H5端uni.toast()的层级，避免被tn-modal等遮盖 end */
 /* iPhoneX底部安全区定义 start */
 .tn-safe-area-inset-bottom {
@@ -3638,6 +3646,7 @@ button::after {
   background: transparent;
 }
 /* 微信小程序编译后页面有组件名的元素，特别处理 start */
+
 /* 双标签 start*/
 .capsule {
   display: inline-flex;
@@ -3659,7 +3668,9 @@ button::after {
   border-bottom-left-radius: 0rpx;
 }
 /* 双标签 end*/
+
 /* 微信小程序编译后页面有组件名的元素，特别处理 end */
 /* 头条小程序编译后页面有组件名的元素，特别处理 start */
-/* 头条小程序编译后页面有组件名的元素，特别处理 end */
 
+
+/* 头条小程序编译后页面有组件名的元素，特别处理 end */

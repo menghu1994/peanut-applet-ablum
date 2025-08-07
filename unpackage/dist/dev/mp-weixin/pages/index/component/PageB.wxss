@@ -64,7 +64,7 @@
   color: #3668FC;
 }
 .tn-classify__tabbar__item--active.data-v-9fb8280a::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 12rpx;
   height: 40rpx;
@@ -119,4 +119,3 @@
 .tn-classify__content__sub-classify__content__title.data-v-9fb8280a {
   margin-right: 10rpx;
 }
-

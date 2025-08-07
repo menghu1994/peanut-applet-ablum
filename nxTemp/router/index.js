@@ -38,7 +38,8 @@ const router = createRouter({
 
 	},
 	// 通配符，非定义页面，跳转404
-	routes: [...ROUTES,
+	routes: [
+		// ...ROUTES,
 		{
 			path: '*',
 			redirect: (to) => {

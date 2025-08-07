@@ -46,7 +46,7 @@
 /* 移动背景部分 */
 .bg-contaniner.data-v-3dde51cf {
   position: fixed;
-  top: -0rpx;
+  top: 0rpx;
   left: -300rpx;
   --text-color: hsl(0 95% 60%);
   --bg-color: hsl(0 0% 100%);
@@ -268,8 +268,7 @@ to {
     -webkit-transform: scale(1.02);
             transform: scale(1.02);
 }
-20%,
-  50% {
+20%, 50% {
     -webkit-transform: scale(0.6);
             transform: scale(0.6);
     opacity: 0;
@@ -285,8 +284,7 @@ to {
     -webkit-transform: scale(1.02);
             transform: scale(1.02);
 }
-20%,
-  50% {
+20%, 50% {
     -webkit-transform: scale(0.6);
             transform: scale(0.6);
     opacity: 0;
@@ -297,4 +295,3 @@ to {
     opacity: 1;
 }
 }
-

@@ -847,7 +847,7 @@
     
   }
   
-  /deep/.input-placeholder {
+  ::v-deep.input-placeholder {
     font-size: 30rpx;
     color: #7C8191;
   }

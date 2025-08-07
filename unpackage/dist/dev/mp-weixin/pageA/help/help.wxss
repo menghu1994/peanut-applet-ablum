@@ -64,4 +64,3 @@
   transition: all 0.25s ease-out;
   z-index: 100;
 }
-

@@ -184,8 +184,7 @@
   height: 60rpx;
   width: 140rpx;
 }
-.data-v-6d753595 .input-placeholder {
+.data-v-6d753595.input-placeholder {
   font-size: 30rpx;
   color: #7C8191;
 }
-
