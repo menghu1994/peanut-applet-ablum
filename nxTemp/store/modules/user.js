@@ -1,5 +1,4 @@
 // 用户数据模块
-import {router} from '@/nxTemp/router/index.js'
 const TOKEN = uni.getStorageSync("token") || "";
 const OPENID = uni.getStorageSync("openId") || "";
 const USER_INFO = uni.getStorageSync("userInfo") || {};
@@ -33,9 +32,9 @@ export const actions = {
 			val: ''
 		})
 		uni.setStorageSync("token", '');
-		router.push({
-			path: 'pages/login/login'
-		});
+		uni.navigateTo({
+			url: 'pages/login/login'
+		})
 	}
 }
 

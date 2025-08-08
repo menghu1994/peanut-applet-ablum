@@ -190,7 +190,26 @@ module.exports = _setPrototypeOf, module.exports.__esModule = true, module.expor
 
 /***/ }),
 
-/***/ 167:
+/***/ 17:
+/*!*************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/isNativeReflectConstruct.js ***!
+  \*************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _isNativeReflectConstruct() {
+  try {
+    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+  } catch (t) {}
+  return (module.exports = _isNativeReflectConstruct = function _isNativeReflectConstruct() {
+    return !!t;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports)();
+}
+module.exports = _isNativeReflectConstruct, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 177:
 /*!******************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/libs/navigation/navigation.js ***!
   \******************************************************************/
@@ -329,25 +348,6 @@ var _default = {
   }]
 };
 exports.default = _default;
-
-/***/ }),
-
-/***/ 17:
-/*!*************************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/isNativeReflectConstruct.js ***!
-  \*************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function _isNativeReflectConstruct() {
-  try {
-    var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
-  } catch (t) {}
-  return (module.exports = _isNativeReflectConstruct = function _isNativeReflectConstruct() {
-    return !!t;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports)();
-}
-module.exports = _isNativeReflectConstruct, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
 
@@ -9524,6 +9524,383 @@ internalMixin(Vue);
 /***/ }),
 
 /***/ 26:
+/*!************************************************************************************************!*\
+  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/@babel/runtime/regenerator/index.js ***!
+  \************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// TODO(Babel 8): Remove this file.
+
+var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 27)();
+module.exports = runtime;
+
+/***/ }),
+
+/***/ 27:
+/*!*******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/regeneratorRuntime.js ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _typeof = __webpack_require__(/*! ./typeof.js */ 13)["default"];
+function _regeneratorRuntime() {
+  "use strict";
+
+  /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+  module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
+    return e;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  var t,
+    e = {},
+    r = Object.prototype,
+    n = r.hasOwnProperty,
+    o = Object.defineProperty || function (t, e, r) {
+      t[e] = r.value;
+    },
+    i = "function" == typeof Symbol ? Symbol : {},
+    a = i.iterator || "@@iterator",
+    c = i.asyncIterator || "@@asyncIterator",
+    u = i.toStringTag || "@@toStringTag";
+  function define(t, e, r) {
+    return Object.defineProperty(t, e, {
+      value: r,
+      enumerable: !0,
+      configurable: !0,
+      writable: !0
+    }), t[e];
+  }
+  try {
+    define({}, "");
+  } catch (t) {
+    define = function define(t, e, r) {
+      return t[e] = r;
+    };
+  }
+  function wrap(t, e, r, n) {
+    var i = e && e.prototype instanceof Generator ? e : Generator,
+      a = Object.create(i.prototype),
+      c = new Context(n || []);
+    return o(a, "_invoke", {
+      value: makeInvokeMethod(t, r, c)
+    }), a;
+  }
+  function tryCatch(t, e, r) {
+    try {
+      return {
+        type: "normal",
+        arg: t.call(e, r)
+      };
+    } catch (t) {
+      return {
+        type: "throw",
+        arg: t
+      };
+    }
+  }
+  e.wrap = wrap;
+  var h = "suspendedStart",
+    l = "suspendedYield",
+    f = "executing",
+    s = "completed",
+    y = {};
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+  var p = {};
+  define(p, a, function () {
+    return this;
+  });
+  var d = Object.getPrototypeOf,
+    v = d && d(d(values([])));
+  v && v !== r && n.call(v, a) && (p = v);
+  var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p);
+  function defineIteratorMethods(t) {
+    ["next", "throw", "return"].forEach(function (e) {
+      define(t, e, function (t) {
+        return this._invoke(e, t);
+      });
+    });
+  }
+  function AsyncIterator(t, e) {
+    function invoke(r, o, i, a) {
+      var c = tryCatch(t[r], t, o);
+      if ("throw" !== c.type) {
+        var u = c.arg,
+          h = u.value;
+        return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) {
+          invoke("next", t, i, a);
+        }, function (t) {
+          invoke("throw", t, i, a);
+        }) : e.resolve(h).then(function (t) {
+          u.value = t, i(u);
+        }, function (t) {
+          return invoke("throw", t, i, a);
+        });
+      }
+      a(c.arg);
+    }
+    var r;
+    o(this, "_invoke", {
+      value: function value(t, n) {
+        function callInvokeWithMethodAndArg() {
+          return new e(function (e, r) {
+            invoke(t, n, e, r);
+          });
+        }
+        return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+      }
+    });
+  }
+  function makeInvokeMethod(e, r, n) {
+    var o = h;
+    return function (i, a) {
+      if (o === f) throw Error("Generator is already running");
+      if (o === s) {
+        if ("throw" === i) throw a;
+        return {
+          value: t,
+          done: !0
+        };
+      }
+      for (n.method = i, n.arg = a;;) {
+        var c = n.delegate;
+        if (c) {
+          var u = maybeInvokeDelegate(c, n);
+          if (u) {
+            if (u === y) continue;
+            return u;
+          }
+        }
+        if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) {
+          if (o === h) throw o = s, n.arg;
+          n.dispatchException(n.arg);
+        } else "return" === n.method && n.abrupt("return", n.arg);
+        o = f;
+        var p = tryCatch(e, r, n);
+        if ("normal" === p.type) {
+          if (o = n.done ? s : l, p.arg === y) continue;
+          return {
+            value: p.arg,
+            done: n.done
+          };
+        }
+        "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg);
+      }
+    };
+  }
+  function maybeInvokeDelegate(e, r) {
+    var n = r.method,
+      o = e.iterator[n];
+    if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y;
+    var i = tryCatch(o, e.iterator, r.arg);
+    if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y;
+    var a = i.arg;
+    return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y);
+  }
+  function pushTryEntry(t) {
+    var e = {
+      tryLoc: t[0]
+    };
+    1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e);
+  }
+  function resetTryEntry(t) {
+    var e = t.completion || {};
+    e.type = "normal", delete e.arg, t.completion = e;
+  }
+  function Context(t) {
+    this.tryEntries = [{
+      tryLoc: "root"
+    }], t.forEach(pushTryEntry, this), this.reset(!0);
+  }
+  function values(e) {
+    if (e || "" === e) {
+      var r = e[a];
+      if (r) return r.call(e);
+      if ("function" == typeof e.next) return e;
+      if (!isNaN(e.length)) {
+        var o = -1,
+          i = function next() {
+            for (; ++o < e.length;) {
+              if (n.call(e, o)) return next.value = e[o], next.done = !1, next;
+            }
+            return next.value = t, next.done = !0, next;
+          };
+        return i.next = i;
+      }
+    }
+    throw new TypeError(_typeof(e) + " is not iterable");
+  }
+  return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", {
+    value: GeneratorFunctionPrototype,
+    configurable: !0
+  }), o(GeneratorFunctionPrototype, "constructor", {
+    value: GeneratorFunction,
+    configurable: !0
+  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) {
+    var e = "function" == typeof t && t.constructor;
+    return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name));
+  }, e.mark = function (t) {
+    return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t;
+  }, e.awrap = function (t) {
+    return {
+      __await: t
+    };
+  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () {
+    return this;
+  }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) {
+    void 0 === i && (i = Promise);
+    var a = new AsyncIterator(wrap(t, r, n, o), i);
+    return e.isGeneratorFunction(r) ? a : a.next().then(function (t) {
+      return t.done ? t.value : a.next();
+    });
+  }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () {
+    return this;
+  }), define(g, "toString", function () {
+    return "[object Generator]";
+  }), e.keys = function (t) {
+    var e = Object(t),
+      r = [];
+    for (var n in e) {
+      r.push(n);
+    }
+    return r.reverse(), function next() {
+      for (; r.length;) {
+        var t = r.pop();
+        if (t in e) return next.value = t, next.done = !1, next;
+      }
+      return next.done = !0, next;
+    };
+  }, e.values = values, Context.prototype = {
+    constructor: Context,
+    reset: function reset(e) {
+      if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) {
+        "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t);
+      }
+    },
+    stop: function stop() {
+      this.done = !0;
+      var t = this.tryEntries[0].completion;
+      if ("throw" === t.type) throw t.arg;
+      return this.rval;
+    },
+    dispatchException: function dispatchException(e) {
+      if (this.done) throw e;
+      var r = this;
+      function handle(n, o) {
+        return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o;
+      }
+      for (var o = this.tryEntries.length - 1; o >= 0; --o) {
+        var i = this.tryEntries[o],
+          a = i.completion;
+        if ("root" === i.tryLoc) return handle("end");
+        if (i.tryLoc <= this.prev) {
+          var c = n.call(i, "catchLoc"),
+            u = n.call(i, "finallyLoc");
+          if (c && u) {
+            if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
+            if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
+          } else if (c) {
+            if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
+          } else {
+            if (!u) throw Error("try statement without catch or finally");
+            if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
+          }
+        }
+      }
+    },
+    abrupt: function abrupt(t, e) {
+      for (var r = this.tryEntries.length - 1; r >= 0; --r) {
+        var o = this.tryEntries[r];
+        if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) {
+          var i = o;
+          break;
+        }
+      }
+      i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null);
+      var a = i ? i.completion : {};
+      return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a);
+    },
+    complete: function complete(t, e) {
+      if ("throw" === t.type) throw t.arg;
+      return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y;
+    },
+    finish: function finish(t) {
+      for (var e = this.tryEntries.length - 1; e >= 0; --e) {
+        var r = this.tryEntries[e];
+        if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y;
+      }
+    },
+    "catch": function _catch(t) {
+      for (var e = this.tryEntries.length - 1; e >= 0; --e) {
+        var r = this.tryEntries[e];
+        if (r.tryLoc === t) {
+          var n = r.completion;
+          if ("throw" === n.type) {
+            var o = n.arg;
+            resetTryEntry(r);
+          }
+          return o;
+        }
+      }
+      throw Error("illegal catch attempt");
+    },
+    delegateYield: function delegateYield(e, r, n) {
+      return this.delegate = {
+        iterator: values(e),
+        resultName: r,
+        nextLoc: n
+      }, "next" === this.method && (this.arg = t), y;
+    }
+  }, e;
+}
+module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 28:
+/*!*****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/asyncToGenerator.js ***!
+  \*****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+  try {
+    var info = gen[key](arg);
+    var value = info.value;
+  } catch (error) {
+    reject(error);
+    return;
+  }
+  if (info.done) {
+    resolve(value);
+  } else {
+    Promise.resolve(value).then(_next, _throw);
+  }
+}
+function _asyncToGenerator(fn) {
+  return function () {
+    var self = this,
+      args = arguments;
+    return new Promise(function (resolve, reject) {
+      var gen = fn.apply(self, args);
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+      }
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+      }
+      _next(undefined);
+    });
+  };
+}
+module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 29:
 /*!***********************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/pages.json ***!
   \***********************************************/
@@ -9565,10 +9942,63 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 30:
-/*!***************************************************!*\
-  !*** E:/_Luffy/Refer/photo-wechat/store/index.js ***!
-  \***************************************************/
+/***/ 322:
+/*!*****************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/mixin/components_color.js ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = {
+  data: function data() {},
+  props: {
+    // 背景颜色
+    backgroundColor: {
+      type: String,
+      default: ''
+    },
+    // 字体颜色
+    fontColor: {
+      type: String,
+      default: ''
+    },
+    // 字体大小
+    fontSize: {
+      type: Number,
+      default: 0
+    },
+    // 字体大小单位
+    fontUnit: {
+      type: String,
+      default: 'rpx'
+    }
+  },
+  computed: {
+    backgroundColorStyle: function backgroundColorStyle() {
+      return this.$t.color.getBackgroundColorStyle(this.backgroundColor);
+    },
+    backgroundColorClass: function backgroundColorClass() {
+      return this.$t.color.getBackgroundColorInternalClass(this.backgroundColor);
+    },
+    fontColorStyle: function fontColorStyle() {
+      return this.$t.color.getFontColorStyle(this.fontColor);
+    },
+    fontColorClass: function fontColorClass() {
+      return this.$t.color.getFontColorInternalClass(this.fontColor);
+    },
+    fontSizeStyle: function fontSizeStyle() {
+      return this.$t.string.getLengthUnitValue(this.fontSize, this.fontUnit);
+    }
+  },
+  methods: {}
+};
+
+/***/ }),
+
+/***/ 33:
+/*!**********************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/store/index.js ***!
+  \**********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9581,7 +10011,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 25));
-var _vuex = _interopRequireDefault(__webpack_require__(/*! vuex */ 31));
+var _vuex = _interopRequireDefault(__webpack_require__(/*! vuex */ 34));
 _vue.default.use(_vuex.default);
 var lifeData = {};
 
@@ -9605,12 +10035,12 @@ var saveLifeData = function saveLifeData(key, value) {
     uni.setStorageSync('lifeData', tmpLifeData);
   }
 };
-var store = new _vuex.default.Store({
+var files = __webpack_require__(35);
+var modules = {
   state: {
     // 如果上面从本地获取的lifeData对象下有对应的属性，就赋值给state中对应的变量
-    // 加上vuex_前缀，是防止变量名冲突，也让人一目了然
     vuex_user: lifeData.vuex_user ? lifeData.vuex_user : {
-      name: '图鸟'
+      name: 'MYY'
     },
     // 如果vuex_version无需保存到本地永久存储，无需lifeData.vuex_version方式
     // app版本
@@ -9646,14 +10076,20 @@ var store = new _vuex.default.Store({
     }
   },
   actions: {}
+};
+files.keys().forEach(function (key) {
+  Object.assign(modules.state, files(key)["state"]);
+  Object.assign(modules.mutations, files(key)["mutations"]);
+  Object.assign(modules.actions, files(key)["actions"]);
 });
+var store = new _vuex.default.Store(modules);
 var _default = store;
 exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
 
-/***/ 31:
+/***/ 34:
 /*!**************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vuex3/dist/vuex.common.js ***!
   \**************************************************************************************/
@@ -10910,60 +11346,162 @@ module.exports = index_cjs;
 
 /***/ }),
 
-/***/ 312:
-/*!*****************************************************************************!*\
-  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/mixin/components_color.js ***!
-  \*****************************************************************************/
+/***/ 35:
+/*!*********************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/store/modules sync nonrecursive \.js$ ***!
+  \*********************************************************************************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = {
-  data: function data() {},
-  props: {
-    // 背景颜色
-    backgroundColor: {
-      type: String,
-      default: ''
-    },
-    // 字体颜色
-    fontColor: {
-      type: String,
-      default: ''
-    },
-    // 字体大小
-    fontSize: {
-      type: Number,
-      default: 0
-    },
-    // 字体大小单位
-    fontUnit: {
-      type: String,
-      default: 'rpx'
-    }
-  },
-  computed: {
-    backgroundColorStyle: function backgroundColorStyle() {
-      return this.$t.color.getBackgroundColorStyle(this.backgroundColor);
-    },
-    backgroundColorClass: function backgroundColorClass() {
-      return this.$t.color.getBackgroundColorInternalClass(this.backgroundColor);
-    },
-    fontColorStyle: function fontColorStyle() {
-      return this.$t.color.getFontColorStyle(this.fontColor);
-    },
-    fontColorClass: function fontColorClass() {
-      return this.$t.color.getFontColorInternalClass(this.fontColor);
-    },
-    fontSizeStyle: function fontSizeStyle() {
-      return this.$t.string.getLengthUnitValue(this.fontSize, this.fontUnit);
-    }
-  },
-  methods: {}
+var map = {
+	"./user.js": 36
 };
+
+
+function webpackContext(req) {
+	var id = webpackContextResolve(req);
+	return __webpack_require__(id);
+}
+function webpackContextResolve(req) {
+	if(!__webpack_require__.o(map, req)) {
+		var e = new Error("Cannot find module '" + req + "'");
+		e.code = 'MODULE_NOT_FOUND';
+		throw e;
+	}
+	return map[req];
+}
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 35;
 
 /***/ }),
 
-/***/ 32:
+/***/ 36:
+/*!*****************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/store/modules/user.js ***!
+  \*****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.state = exports.mutations = exports.getters = exports.actions = void 0;
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 26));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 28));
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+// 用户数据模块
+var TOKEN = uni.getStorageSync("token") || "";
+var OPENID = uni.getStorageSync("openId") || "";
+var USER_INFO = uni.getStorageSync("userInfo") || {};
+var state = {
+  // 前端token
+  token: TOKEN,
+  // 用户openid
+  openId: OPENID,
+  // 用户信息 头像 昵称
+  userInfo: USER_INFO
+};
+exports.state = state;
+var actions = {
+  setUserData: function setUserData(_ref, data) {
+    return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+      var state, commit;
+      return _regenerator.default.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              state = _ref.state, commit = _ref.commit;
+              commit('setStateAttr', {
+                key: 'userInfo',
+                val: data
+              });
+              uni.setStorageSync('userInfo', data);
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }))();
+  },
+  // 登录过期 重新登录
+  reLogin: function reLogin(_ref2, info) {
+    var commit = _ref2.commit;
+    commit('setStateAttr', {
+      key: 'token',
+      val: ''
+    });
+    uni.setStorageSync("token", '');
+    uni.navigateTo({
+      url: 'pages/login/login'
+    });
+  }
+};
+exports.actions = actions;
+var mutations = {
+  //更新state数据
+  setStateAttr: function setStateAttr(state, param) {
+    if (param instanceof Array) {
+      var _iterator = _createForOfIteratorHelper(param),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var item = _step.value;
+          state[item.key] = item.val;
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+    } else {
+      state[param.key] = param.val;
+    }
+  }
+};
+exports.mutations = mutations;
+var getters = {
+  // 用户是否登录
+  hasLogin: function hasLogin(state) {
+    if (state.token) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
+exports.getters = getters;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
+
+/***/ 4:
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/interopRequireDefault.js ***!
+  \**********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : {
+    "default": obj
+  };
+}
+module.exports = _interopRequireDefault, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 40:
 /*!***********************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/updateCustomBarInfo.js ***!
   \***********************************************************************************/
@@ -11007,7 +11545,218 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 35:
+/***/ 41:
+/*!****************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/index.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+var _typeof = __webpack_require__(/*! @babel/runtime/helpers/typeof */ 13);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+exports.init = init;
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 26));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 28));
+var _store = _interopRequireDefault(__webpack_require__(/*! @/nxTemp/store */ 33));
+var _wechat = _interopRequireDefault(__webpack_require__(/*! @/nxTemp/wechat/wechat */ 42));
+var _tools = _interopRequireDefault(__webpack_require__(/*! @/nxTemp/utils/tools */ 43));
+var filter = _interopRequireWildcard(__webpack_require__(/*! @/nxTemp/filter */ 45));
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+var install = function install(Vue) {
+  // global filter
+  Object.keys(filter).forEach(function (item) {
+    Vue.filter(item, filter[item]);
+  });
+  // 挂载函数
+  Vue.prototype.$store = _store.default;
+  Vue.prototype.$tools = _tools.default;
+  // event Bus 用于无关系组件间的通信。
+  Vue.prototype.$bus = new Vue();
+};
+function init(_x) {
+  return _init.apply(this, arguments);
+}
+function _init() {
+  _init = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(options) {
+    return _regenerator.default.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            // 检测小程序更新(如果从朋友圈场景进入则无此API)
+            options.scene !== 1154 && _wechat.default.checkMiniProgramUpdate();
+          case 1:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+  return _init.apply(this, arguments);
+}
+var _default = {
+  install: install
+};
+exports.default = _default;
+
+/***/ }),
+
+/***/ 42:
+/*!************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/wechat/wechat.js ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = {
+  // 小程序更新
+  checkMiniProgramUpdate: function checkMiniProgramUpdate() {
+    if (uni.canIUse("getUpdateManager")) {
+      var updateManager = uni.getUpdateManager();
+      updateManager && updateManager.onCheckForUpdate(function (res) {
+        // 请求完新版本信息的回调
+        if (res.hasUpdate) {
+          updateManager.onUpdateReady(function () {
+            uni.showModal({
+              title: "更新提示",
+              content: "新版本已经准备好，是否重启应用？",
+              success: function success(res) {
+                if (res.confirm) {
+                  uni.clearStorageSync(); // 更新完成后刷新storage的数据
+                  // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+                  updateManager.applyUpdate();
+                }
+              }
+            });
+          });
+          updateManager.onUpdateFailed(function () {
+            // 新的版本下载失败
+            uni.showModal({
+              title: "已经有新版本了哟~",
+              content: "新版本已经上线啦~，请您删除当前小程序，重新搜索打开哟~",
+              howCancel: false
+            });
+          });
+        }
+      });
+    }
+  }
+};
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
+
+/***/ 43:
+/*!**********************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/utils/tools.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = {
+  /**
+   * 图片处理-预览图片
+   * @param {Array} urls - 图片列表
+   * @param {Number} current - 首个预览下标
+   */
+  previewImage: function previewImage() {
+    var urls = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var current = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    uni.previewImage({
+      urls: urls,
+      current: current,
+      indicator: 'default',
+      loop: true,
+      fail: function fail(err) {
+        console.log('previewImage出错', urls, err);
+      }
+    });
+  },
+  /**
+   * 打电话
+   * @param {String<Number>} phoneNumber - 数字字符串
+   */
+  callPhone: function callPhone() {
+    var phoneNumber = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var num = phoneNumber.toString();
+    uni.makePhoneCall({
+      phoneNumber: num,
+      fail: function fail(err) {
+        console.log('makePhoneCall出错', err);
+      }
+    });
+  },
+  /**
+   * @description 弹窗提示 showModal
+   */
+  showModal: function showModal(content, callback) {
+    uni.showModal({
+      title: '提示',
+      content: content,
+      showCancel: false,
+      success: function success(res) {
+        if (res.confirm) {
+          if (typeof callback === 'function') {
+            callback();
+          }
+        } else if (res.cancel) {}
+      }
+    });
+  }
+};
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
+
+/***/ 45:
+/*!***********************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/filter/index.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.autoAddPoints = autoAddPoints;
+// 自动添加省略号
+function autoAddPoints(address) {
+  if (address && address.length > 15) {
+    return '...'.padStart(16, address);
+  } else {
+    return address;
+  }
+}
+
+/***/ }),
+
+/***/ 48:
 /*!**********************************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js ***!
   \**********************************************************************************************************/
@@ -11139,7 +11888,7 @@ function normalizeComponent (
 
 /***/ }),
 
-/***/ 36:
+/***/ 49:
 /*!*******************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/index.js ***!
   \*******************************************************/
@@ -11154,20 +11903,20 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _mixin = _interopRequireDefault(__webpack_require__(/*! ./libs/mixin/mixin.js */ 37));
-var _luchRequest = _interopRequireDefault(__webpack_require__(/*! ./libs/luch-request */ 38));
-var _updateCustomBarInfo = _interopRequireDefault(__webpack_require__(/*! ./libs/function/updateCustomBarInfo.js */ 32));
-var _color = _interopRequireDefault(__webpack_require__(/*! ./libs/function/color.js */ 56));
-var _message = _interopRequireDefault(__webpack_require__(/*! ./libs/function/message.js */ 57));
-var _uuid = _interopRequireDefault(__webpack_require__(/*! ./libs/function/uuid.js */ 58));
-var _array = _interopRequireDefault(__webpack_require__(/*! ./libs/function/array.js */ 59));
-var _test = _interopRequireDefault(__webpack_require__(/*! ./libs/function/test.js */ 60));
-var _$parent = _interopRequireDefault(__webpack_require__(/*! ./libs/function/$parent.js */ 61));
-var _string = _interopRequireDefault(__webpack_require__(/*! ./libs/function/string.js */ 62));
-var _number = _interopRequireDefault(__webpack_require__(/*! ./libs/function/number.js */ 63));
-var _deepClone = _interopRequireDefault(__webpack_require__(/*! ./libs/function/deepClone.js */ 64));
-var _zIndex = _interopRequireDefault(__webpack_require__(/*! ./libs/config/zIndex.js */ 65));
-var _color2 = _interopRequireDefault(__webpack_require__(/*! ./libs/config/color.js */ 66));
+var _mixin = _interopRequireDefault(__webpack_require__(/*! ./libs/mixin/mixin.js */ 50));
+var _luchRequest = _interopRequireDefault(__webpack_require__(/*! ./libs/luch-request */ 51));
+var _updateCustomBarInfo = _interopRequireDefault(__webpack_require__(/*! ./libs/function/updateCustomBarInfo.js */ 40));
+var _color = _interopRequireDefault(__webpack_require__(/*! ./libs/function/color.js */ 69));
+var _message = _interopRequireDefault(__webpack_require__(/*! ./libs/function/message.js */ 70));
+var _uuid = _interopRequireDefault(__webpack_require__(/*! ./libs/function/uuid.js */ 71));
+var _array = _interopRequireDefault(__webpack_require__(/*! ./libs/function/array.js */ 72));
+var _test = _interopRequireDefault(__webpack_require__(/*! ./libs/function/test.js */ 73));
+var _$parent = _interopRequireDefault(__webpack_require__(/*! ./libs/function/$parent.js */ 74));
+var _string = _interopRequireDefault(__webpack_require__(/*! ./libs/function/string.js */ 75));
+var _number = _interopRequireDefault(__webpack_require__(/*! ./libs/function/number.js */ 76));
+var _deepClone = _interopRequireDefault(__webpack_require__(/*! ./libs/function/deepClone.js */ 77));
+var _zIndex = _interopRequireDefault(__webpack_require__(/*! ./libs/config/zIndex.js */ 78));
+var _color2 = _interopRequireDefault(__webpack_require__(/*! ./libs/config/color.js */ 79));
 // 引入全局mixin
 
 // 全局挂载引入http相关请求拦截插件
@@ -11218,7 +11967,25 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 37:
+/***/ 5:
+/*!**************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/slicedToArray.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayWithHoles = __webpack_require__(/*! ./arrayWithHoles.js */ 6);
+var iterableToArrayLimit = __webpack_require__(/*! ./iterableToArrayLimit.js */ 7);
+var unsupportedIterableToArray = __webpack_require__(/*! ./unsupportedIterableToArray.js */ 8);
+var nonIterableRest = __webpack_require__(/*! ./nonIterableRest.js */ 10);
+function _slicedToArray(arr, i) {
+  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
+}
+module.exports = _slicedToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 50:
 /*!******************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/mixin/mixin.js ***!
   \******************************************************************/
@@ -11298,7 +12065,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 38:
+/***/ 51:
 /*!*************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/index.js ***!
   \*************************************************************************/
@@ -11313,13 +12080,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _Request = _interopRequireDefault(__webpack_require__(/*! ./core/Request */ 39));
+var _Request = _interopRequireDefault(__webpack_require__(/*! ./core/Request */ 52));
 var _default = _Request.default;
 exports.default = _default;
 
 /***/ }),
 
-/***/ 39:
+/***/ 52:
 /*!********************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/Request.js ***!
   \********************************************************************************/
@@ -11337,12 +12104,12 @@ exports.default = void 0;
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
 var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23));
 var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ 24));
-var _dispatchRequest = _interopRequireDefault(__webpack_require__(/*! ./dispatchRequest */ 40));
-var _InterceptorManager = _interopRequireDefault(__webpack_require__(/*! ./InterceptorManager */ 48));
-var _mergeConfig = _interopRequireDefault(__webpack_require__(/*! ./mergeConfig */ 49));
-var _defaults = _interopRequireDefault(__webpack_require__(/*! ./defaults */ 50));
-var _utils = __webpack_require__(/*! ../utils */ 43);
-var _clone = _interopRequireDefault(__webpack_require__(/*! ../utils/clone */ 51));
+var _dispatchRequest = _interopRequireDefault(__webpack_require__(/*! ./dispatchRequest */ 53));
+var _InterceptorManager = _interopRequireDefault(__webpack_require__(/*! ./InterceptorManager */ 61));
+var _mergeConfig = _interopRequireDefault(__webpack_require__(/*! ./mergeConfig */ 62));
+var _defaults = _interopRequireDefault(__webpack_require__(/*! ./defaults */ 63));
+var _utils = __webpack_require__(/*! ../utils */ 56);
+var _clone = _interopRequireDefault(__webpack_require__(/*! ../utils/clone */ 64));
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var Request = /*#__PURE__*/function () {
@@ -11526,23 +12293,7 @@ exports.default = Request;
 
 /***/ }),
 
-/***/ 4:
-/*!**********************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/interopRequireDefault.js ***!
-  \**********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : {
-    "default": obj
-  };
-}
-module.exports = _interopRequireDefault, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 40:
+/***/ 53:
 /*!****************************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/dispatchRequest.js ***!
   \****************************************************************************************/
@@ -11557,7 +12308,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _index = _interopRequireDefault(__webpack_require__(/*! ../adapters/index */ 41));
+var _index = _interopRequireDefault(__webpack_require__(/*! ../adapters/index */ 54));
 var _default = function _default(config) {
   return (0, _index.default)(config);
 };
@@ -11565,7 +12316,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 41:
+/***/ 54:
 /*!**********************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/adapters/index.js ***!
   \**********************************************************************************/
@@ -11581,10 +12332,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
-var _buildURL = _interopRequireDefault(__webpack_require__(/*! ../helpers/buildURL */ 42));
-var _buildFullPath = _interopRequireDefault(__webpack_require__(/*! ../core/buildFullPath */ 44));
-var _settle = _interopRequireDefault(__webpack_require__(/*! ../core/settle */ 47));
-var _utils = __webpack_require__(/*! ../utils */ 43);
+var _buildURL = _interopRequireDefault(__webpack_require__(/*! ../helpers/buildURL */ 55));
+var _buildFullPath = _interopRequireDefault(__webpack_require__(/*! ../core/buildFullPath */ 57));
+var _settle = _interopRequireDefault(__webpack_require__(/*! ../core/settle */ 60));
+var _utils = __webpack_require__(/*! ../utils */ 56);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 /**
@@ -11647,7 +12398,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 42:
+/***/ 55:
 /*!************************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/helpers/buildURL.js ***!
   \************************************************************************************/
@@ -11662,7 +12413,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = buildURL;
-var utils = _interopRequireWildcard(__webpack_require__(/*! ./../utils */ 43));
+var utils = _interopRequireWildcard(__webpack_require__(/*! ./../utils */ 56));
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 function encode(val) {
@@ -11718,7 +12469,7 @@ function buildURL(url, params) {
 
 /***/ }),
 
-/***/ 43:
+/***/ 56:
 /*!*************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/utils.js ***!
   \*************************************************************************/
@@ -11872,7 +12623,7 @@ function isUndefined(val) {
 
 /***/ }),
 
-/***/ 44:
+/***/ 57:
 /*!**************************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/buildFullPath.js ***!
   \**************************************************************************************/
@@ -11887,8 +12638,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = buildFullPath;
-var _isAbsoluteURL = _interopRequireDefault(__webpack_require__(/*! ../helpers/isAbsoluteURL */ 45));
-var _combineURLs = _interopRequireDefault(__webpack_require__(/*! ../helpers/combineURLs */ 46));
+var _isAbsoluteURL = _interopRequireDefault(__webpack_require__(/*! ../helpers/isAbsoluteURL */ 58));
+var _combineURLs = _interopRequireDefault(__webpack_require__(/*! ../helpers/combineURLs */ 59));
 /**
  * Creates a new URL by combining the baseURL with the requestedURL,
  * only when the requestedURL is not already an absolute URL.
@@ -11907,7 +12658,7 @@ function buildFullPath(baseURL, requestedURL) {
 
 /***/ }),
 
-/***/ 45:
+/***/ 58:
 /*!*****************************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/helpers/isAbsoluteURL.js ***!
   \*****************************************************************************************/
@@ -11936,7 +12687,7 @@ function isAbsoluteURL(url) {
 
 /***/ }),
 
-/***/ 46:
+/***/ 59:
 /*!***************************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/helpers/combineURLs.js ***!
   \***************************************************************************************/
@@ -11963,7 +12714,21 @@ function combineURLs(baseURL, relativeURL) {
 
 /***/ }),
 
-/***/ 47:
+/***/ 6:
+/*!***************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/arrayWithHoles.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+module.exports = _arrayWithHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 60:
 /*!*******************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/settle.js ***!
   \*******************************************************************************/
@@ -11996,7 +12761,7 @@ function settle(resolve, reject, response) {
 
 /***/ }),
 
-/***/ 48:
+/***/ 61:
 /*!*******************************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/InterceptorManager.js ***!
   \*******************************************************************************************/
@@ -12061,7 +12826,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 49:
+/***/ 62:
 /*!************************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/mergeConfig.js ***!
   \************************************************************************************/
@@ -12077,7 +12842,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
-var _utils = __webpack_require__(/*! ../utils */ 43);
+var _utils = __webpack_require__(/*! ../utils */ 56);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 /**
@@ -12138,25 +12903,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 5:
-/*!**************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/slicedToArray.js ***!
-  \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var arrayWithHoles = __webpack_require__(/*! ./arrayWithHoles.js */ 6);
-var iterableToArrayLimit = __webpack_require__(/*! ./iterableToArrayLimit.js */ 7);
-var unsupportedIterableToArray = __webpack_require__(/*! ./unsupportedIterableToArray.js */ 8);
-var nonIterableRest = __webpack_require__(/*! ./nonIterableRest.js */ 10);
-function _slicedToArray(arr, i) {
-  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
-}
-module.exports = _slicedToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 50:
+/***/ 63:
 /*!*********************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/defaults.js ***!
   \*********************************************************************************/
@@ -12189,7 +12936,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 51:
+/***/ 64:
 /*!*******************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/utils/clone.js ***!
   \*******************************************************************************/
@@ -12438,11 +13185,11 @@ var clone = function () {
 }();
 var _default = clone;
 exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../../software/HBuilderX/plugins/uniapp-cli/node_modules/buffer/index.js */ 52).Buffer))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../../software/HBuilderX/plugins/uniapp-cli/node_modules/buffer/index.js */ 65).Buffer))
 
 /***/ }),
 
-/***/ 52:
+/***/ 65:
 /*!**************************************!*\
   !*** ./node_modules/buffer/index.js ***!
   \**************************************/
@@ -12460,9 +13207,9 @@ exports.default = _default;
 
 
 
-var base64 = __webpack_require__(/*! base64-js */ 53)
-var ieee754 = __webpack_require__(/*! ieee754 */ 54)
-var isArray = __webpack_require__(/*! isarray */ 55)
+var base64 = __webpack_require__(/*! base64-js */ 66)
+var ieee754 = __webpack_require__(/*! ieee754 */ 67)
+var isArray = __webpack_require__(/*! isarray */ 68)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -14244,7 +14991,7 @@ function isnan (val) {
 
 /***/ }),
 
-/***/ 53:
+/***/ 66:
 /*!*****************************************!*\
   !*** ./node_modules/base64-js/index.js ***!
   \*****************************************/
@@ -14406,7 +15153,7 @@ function fromByteArray (uint8) {
 
 /***/ }),
 
-/***/ 54:
+/***/ 67:
 /*!***************************************!*\
   !*** ./node_modules/ieee754/index.js ***!
   \***************************************/
@@ -14502,7 +15249,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 /***/ }),
 
-/***/ 55:
+/***/ 68:
 /*!***************************************!*\
   !*** ./node_modules/isarray/index.js ***!
   \***************************************/
@@ -14518,7 +15265,7 @@ module.exports = Array.isArray || function (arr) {
 
 /***/ }),
 
-/***/ 56:
+/***/ 69:
 /*!*********************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/color.js ***!
   \*********************************************************************/
@@ -14788,7 +15535,47 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 57:
+/***/ 7:
+/*!*********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/iterableToArrayLimit.js ***!
+  \*********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _iterableToArrayLimit(r, l) {
+  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+  if (null != t) {
+    var e,
+      n,
+      i,
+      u,
+      a = [],
+      f = !0,
+      o = !1;
+    try {
+      if (i = (t = t.call(r)).next, 0 === l) {
+        if (Object(t) !== t) return;
+        f = !1;
+      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0) {
+        ;
+      }
+    } catch (r) {
+      o = !0, n = r;
+    } finally {
+      try {
+        if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
+      } finally {
+        if (o) throw n;
+      }
+    }
+    return a;
+  }
+}
+module.exports = _iterableToArrayLimit, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 70:
 /*!***********************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/message.js ***!
   \***********************************************************************/
@@ -14882,7 +15669,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 58:
+/***/ 71:
 /*!********************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/uuid.js ***!
   \********************************************************************/
@@ -14943,7 +15730,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 59:
+/***/ 72:
 /*!*********************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/array.js ***!
   \*********************************************************************/
@@ -14985,21 +15772,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 6:
-/*!***************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/arrayWithHoles.js ***!
-  \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-module.exports = _arrayWithHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 60:
+/***/ 73:
 /*!********************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/test.js ***!
   \********************************************************************/
@@ -15248,7 +16021,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 61:
+/***/ 74:
 /*!***********************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/$parent.js ***!
   \***********************************************************************/
@@ -15283,7 +16056,7 @@ function $parent() {
 
 /***/ }),
 
-/***/ 62:
+/***/ 75:
 /*!**********************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/string.js ***!
   \**********************************************************************/
@@ -15372,7 +16145,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 63:
+/***/ 76:
 /*!**********************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/number.js ***!
   \**********************************************************************/
@@ -15518,7 +16291,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 64:
+/***/ 77:
 /*!*************************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/deepClone.js ***!
   \*************************************************************************/
@@ -15566,7 +16339,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 65:
+/***/ 78:
 /*!********************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/config/zIndex.js ***!
   \********************************************************************/
@@ -15601,7 +16374,7 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 66:
+/***/ 79:
 /*!*******************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/config/color.js ***!
   \*******************************************************************/
@@ -15634,10 +16407,30 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 67:
-/*!******************************************************!*\
-  !*** E:/_Luffy/Refer/photo-wechat/store/$t.mixin.js ***!
-  \******************************************************/
+/***/ 8:
+/*!***************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js ***!
+  \***************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayLikeToArray = __webpack_require__(/*! ./arrayLikeToArray.js */ 9);
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
+}
+module.exports = _unsupportedIterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 80:
+/*!*************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/store/$t.mixin.js ***!
+  \*************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15646,14 +16439,14 @@ exports.default = _default;
 
 var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
-var _vuex = __webpack_require__(/*! vuex */ 31);
-var _store = _interopRequireDefault(__webpack_require__(/*! @/store */ 30));
+var _vuex = __webpack_require__(/*! vuex */ 34);
+var _index = _interopRequireDefault(__webpack_require__(/*! ./index.js */ 33));
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 // 尝试将用户在根目录中的store/index.js的vuex的state变量加载到全局变量中
 var $tStoreKey = [];
 try {
-  $tStoreKey = _store.default.state ? Object.keys(_store.default.state) : [];
+  $tStoreKey = _index.default.state ? Object.keys(_index.default.state) : [];
 } catch (e) {}
 module.exports = {
   beforeCreate: function beforeCreate() {
@@ -15674,7 +16467,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 68:
+/***/ 81:
 /*!********************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/mixin/mpShare.js ***!
   \********************************************************************/
@@ -15713,75 +16506,33 @@ module.exports = {
 
 /***/ }),
 
-/***/ 7:
-/*!*********************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/iterableToArrayLimit.js ***!
-  \*********************************************************************/
+/***/ 9:
+/*!*****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/arrayLikeToArray.js ***!
+  \*****************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-function _iterableToArrayLimit(r, l) {
-  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
-  if (null != t) {
-    var e,
-      n,
-      i,
-      u,
-      a = [],
-      f = !0,
-      o = !1;
-    try {
-      if (i = (t = t.call(r)).next, 0 === l) {
-        if (Object(t) !== t) return;
-        f = !1;
-      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0) {
-        ;
-      }
-    } catch (r) {
-      o = !0, n = r;
-    } finally {
-      try {
-        if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
-      } finally {
-        if (o) throw n;
-      }
-    }
-    return a;
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
   }
+  return arr2;
 }
-module.exports = _iterableToArrayLimit, module.exports.__esModule = true, module.exports["default"] = module.exports;
+module.exports = _arrayLikeToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
 
-/***/ 8:
-/*!***************************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js ***!
-  \***************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var arrayLikeToArray = __webpack_require__(/*! ./arrayLikeToArray.js */ 9);
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
-}
-module.exports = _unsupportedIterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 83:
+/***/ 96:
 /*!**********************************************************************!*\
   !*** E:/_Luffy/Refer/photo-wechat/libs/mixin/template_page_mixin.js ***!
   \**********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(uni) {var _regeneratorRuntime = __webpack_require__(/*! @babel/runtime/regenerator */ 84);
-var _asyncToGenerator = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 86);
+/* WEBPACK VAR INJECTION */(function(uni) {var _regeneratorRuntime = __webpack_require__(/*! @babel/runtime/regenerator */ 26);
+var _asyncToGenerator = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 28);
 /**
  * 演示页面mixin
  */
@@ -15862,401 +16613,6 @@ module.exports = {
   }
 };
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
-
-/***/ }),
-
-/***/ 84:
-/*!************************************************************************************************!*\
-  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/@babel/runtime/regenerator/index.js ***!
-  \************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-// TODO(Babel 8): Remove this file.
-
-var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 85)();
-module.exports = runtime;
-
-/***/ }),
-
-/***/ 85:
-/*!*******************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/regeneratorRuntime.js ***!
-  \*******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _typeof = __webpack_require__(/*! ./typeof.js */ 13)["default"];
-function _regeneratorRuntime() {
-  "use strict";
-
-  /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
-  module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
-    return e;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  var t,
-    e = {},
-    r = Object.prototype,
-    n = r.hasOwnProperty,
-    o = Object.defineProperty || function (t, e, r) {
-      t[e] = r.value;
-    },
-    i = "function" == typeof Symbol ? Symbol : {},
-    a = i.iterator || "@@iterator",
-    c = i.asyncIterator || "@@asyncIterator",
-    u = i.toStringTag || "@@toStringTag";
-  function define(t, e, r) {
-    return Object.defineProperty(t, e, {
-      value: r,
-      enumerable: !0,
-      configurable: !0,
-      writable: !0
-    }), t[e];
-  }
-  try {
-    define({}, "");
-  } catch (t) {
-    define = function define(t, e, r) {
-      return t[e] = r;
-    };
-  }
-  function wrap(t, e, r, n) {
-    var i = e && e.prototype instanceof Generator ? e : Generator,
-      a = Object.create(i.prototype),
-      c = new Context(n || []);
-    return o(a, "_invoke", {
-      value: makeInvokeMethod(t, r, c)
-    }), a;
-  }
-  function tryCatch(t, e, r) {
-    try {
-      return {
-        type: "normal",
-        arg: t.call(e, r)
-      };
-    } catch (t) {
-      return {
-        type: "throw",
-        arg: t
-      };
-    }
-  }
-  e.wrap = wrap;
-  var h = "suspendedStart",
-    l = "suspendedYield",
-    f = "executing",
-    s = "completed",
-    y = {};
-  function Generator() {}
-  function GeneratorFunction() {}
-  function GeneratorFunctionPrototype() {}
-  var p = {};
-  define(p, a, function () {
-    return this;
-  });
-  var d = Object.getPrototypeOf,
-    v = d && d(d(values([])));
-  v && v !== r && n.call(v, a) && (p = v);
-  var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p);
-  function defineIteratorMethods(t) {
-    ["next", "throw", "return"].forEach(function (e) {
-      define(t, e, function (t) {
-        return this._invoke(e, t);
-      });
-    });
-  }
-  function AsyncIterator(t, e) {
-    function invoke(r, o, i, a) {
-      var c = tryCatch(t[r], t, o);
-      if ("throw" !== c.type) {
-        var u = c.arg,
-          h = u.value;
-        return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) {
-          invoke("next", t, i, a);
-        }, function (t) {
-          invoke("throw", t, i, a);
-        }) : e.resolve(h).then(function (t) {
-          u.value = t, i(u);
-        }, function (t) {
-          return invoke("throw", t, i, a);
-        });
-      }
-      a(c.arg);
-    }
-    var r;
-    o(this, "_invoke", {
-      value: function value(t, n) {
-        function callInvokeWithMethodAndArg() {
-          return new e(function (e, r) {
-            invoke(t, n, e, r);
-          });
-        }
-        return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
-      }
-    });
-  }
-  function makeInvokeMethod(e, r, n) {
-    var o = h;
-    return function (i, a) {
-      if (o === f) throw Error("Generator is already running");
-      if (o === s) {
-        if ("throw" === i) throw a;
-        return {
-          value: t,
-          done: !0
-        };
-      }
-      for (n.method = i, n.arg = a;;) {
-        var c = n.delegate;
-        if (c) {
-          var u = maybeInvokeDelegate(c, n);
-          if (u) {
-            if (u === y) continue;
-            return u;
-          }
-        }
-        if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) {
-          if (o === h) throw o = s, n.arg;
-          n.dispatchException(n.arg);
-        } else "return" === n.method && n.abrupt("return", n.arg);
-        o = f;
-        var p = tryCatch(e, r, n);
-        if ("normal" === p.type) {
-          if (o = n.done ? s : l, p.arg === y) continue;
-          return {
-            value: p.arg,
-            done: n.done
-          };
-        }
-        "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg);
-      }
-    };
-  }
-  function maybeInvokeDelegate(e, r) {
-    var n = r.method,
-      o = e.iterator[n];
-    if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y;
-    var i = tryCatch(o, e.iterator, r.arg);
-    if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y;
-    var a = i.arg;
-    return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y);
-  }
-  function pushTryEntry(t) {
-    var e = {
-      tryLoc: t[0]
-    };
-    1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e);
-  }
-  function resetTryEntry(t) {
-    var e = t.completion || {};
-    e.type = "normal", delete e.arg, t.completion = e;
-  }
-  function Context(t) {
-    this.tryEntries = [{
-      tryLoc: "root"
-    }], t.forEach(pushTryEntry, this), this.reset(!0);
-  }
-  function values(e) {
-    if (e || "" === e) {
-      var r = e[a];
-      if (r) return r.call(e);
-      if ("function" == typeof e.next) return e;
-      if (!isNaN(e.length)) {
-        var o = -1,
-          i = function next() {
-            for (; ++o < e.length;) {
-              if (n.call(e, o)) return next.value = e[o], next.done = !1, next;
-            }
-            return next.value = t, next.done = !0, next;
-          };
-        return i.next = i;
-      }
-    }
-    throw new TypeError(_typeof(e) + " is not iterable");
-  }
-  return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", {
-    value: GeneratorFunctionPrototype,
-    configurable: !0
-  }), o(GeneratorFunctionPrototype, "constructor", {
-    value: GeneratorFunction,
-    configurable: !0
-  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) {
-    var e = "function" == typeof t && t.constructor;
-    return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name));
-  }, e.mark = function (t) {
-    return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t;
-  }, e.awrap = function (t) {
-    return {
-      __await: t
-    };
-  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () {
-    return this;
-  }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) {
-    void 0 === i && (i = Promise);
-    var a = new AsyncIterator(wrap(t, r, n, o), i);
-    return e.isGeneratorFunction(r) ? a : a.next().then(function (t) {
-      return t.done ? t.value : a.next();
-    });
-  }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () {
-    return this;
-  }), define(g, "toString", function () {
-    return "[object Generator]";
-  }), e.keys = function (t) {
-    var e = Object(t),
-      r = [];
-    for (var n in e) {
-      r.push(n);
-    }
-    return r.reverse(), function next() {
-      for (; r.length;) {
-        var t = r.pop();
-        if (t in e) return next.value = t, next.done = !1, next;
-      }
-      return next.done = !0, next;
-    };
-  }, e.values = values, Context.prototype = {
-    constructor: Context,
-    reset: function reset(e) {
-      if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) {
-        "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t);
-      }
-    },
-    stop: function stop() {
-      this.done = !0;
-      var t = this.tryEntries[0].completion;
-      if ("throw" === t.type) throw t.arg;
-      return this.rval;
-    },
-    dispatchException: function dispatchException(e) {
-      if (this.done) throw e;
-      var r = this;
-      function handle(n, o) {
-        return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o;
-      }
-      for (var o = this.tryEntries.length - 1; o >= 0; --o) {
-        var i = this.tryEntries[o],
-          a = i.completion;
-        if ("root" === i.tryLoc) return handle("end");
-        if (i.tryLoc <= this.prev) {
-          var c = n.call(i, "catchLoc"),
-            u = n.call(i, "finallyLoc");
-          if (c && u) {
-            if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
-            if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
-          } else if (c) {
-            if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
-          } else {
-            if (!u) throw Error("try statement without catch or finally");
-            if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
-          }
-        }
-      }
-    },
-    abrupt: function abrupt(t, e) {
-      for (var r = this.tryEntries.length - 1; r >= 0; --r) {
-        var o = this.tryEntries[r];
-        if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) {
-          var i = o;
-          break;
-        }
-      }
-      i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null);
-      var a = i ? i.completion : {};
-      return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a);
-    },
-    complete: function complete(t, e) {
-      if ("throw" === t.type) throw t.arg;
-      return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y;
-    },
-    finish: function finish(t) {
-      for (var e = this.tryEntries.length - 1; e >= 0; --e) {
-        var r = this.tryEntries[e];
-        if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y;
-      }
-    },
-    "catch": function _catch(t) {
-      for (var e = this.tryEntries.length - 1; e >= 0; --e) {
-        var r = this.tryEntries[e];
-        if (r.tryLoc === t) {
-          var n = r.completion;
-          if ("throw" === n.type) {
-            var o = n.arg;
-            resetTryEntry(r);
-          }
-          return o;
-        }
-      }
-      throw Error("illegal catch attempt");
-    },
-    delegateYield: function delegateYield(e, r, n) {
-      return this.delegate = {
-        iterator: values(e),
-        resultName: r,
-        nextLoc: n
-      }, "next" === this.method && (this.arg = t), y;
-    }
-  }, e;
-}
-module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 86:
-/*!*****************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/asyncToGenerator.js ***!
-  \*****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-  try {
-    var info = gen[key](arg);
-    var value = info.value;
-  } catch (error) {
-    reject(error);
-    return;
-  }
-  if (info.done) {
-    resolve(value);
-  } else {
-    Promise.resolve(value).then(_next, _throw);
-  }
-}
-function _asyncToGenerator(fn) {
-  return function () {
-    var self = this,
-      args = arguments;
-    return new Promise(function (resolve, reject) {
-      var gen = fn.apply(self, args);
-      function _next(value) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-      }
-      function _throw(err) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-      }
-      _next(undefined);
-    });
-  };
-}
-module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 9:
-/*!*****************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/arrayLikeToArray.js ***!
-  \*****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
-module.exports = _arrayLikeToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ })
 
