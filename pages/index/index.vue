@@ -2,87 +2,45 @@
 	<view class="index">
 		
     <!-- 二级页面 -->
-    <view
-      v-if="tabberPageLoadFlag[0]"
-      :style="{
-        display: currentTabbarIndex === 0 ? '' : 'none'
-      }"
-    >
-      <scroll-view
-        class="custom-tabbar-page"
-        scroll-y
-        enable-back-to-top
-        :lower-threshold="100"
-        @scrolltolower="tabbarPageScrollLower"
-      >
+    <view v-if="tabberPageLoadFlag[0]" :style="{ display: currentTabbarIndex === 0 ? '' : 'none' }">
+      <scroll-view  class="custom-tabbar-page"
+        scroll-y enable-back-to-top :lower-threshold="100"
+        @scrolltolower="tabbarPageScrollLower" >
         <page-a ref="pageA"></page-a>
       </scroll-view>
     </view>
-    <view
-      v-if="tabberPageLoadFlag[1]"
-      :style="{
-        display: currentTabbarIndex === 1 ? '' : 'none'
-      }"
-    >
-      <scroll-view
-        class="custom-tabbar-page"
-        scroll-y
-        enable-back-to-top
-        @scrolltolower="tabbarPageScrollLower"
-      >
+    <view v-if="tabberPageLoadFlag[1]" :style="{  display: currentTabbarIndex === 1 ? '' : 'none' }">
+      <scroll-view class="custom-tabbar-page"
+        scroll-y  enable-back-to-top
+        @scrolltolower="tabbarPageScrollLower" >
         <page-b ref="pageB"></page-b>
       </scroll-view>
     </view>
-    <view
-      v-if="tabberPageLoadFlag[2]"
-      :style="{
-        display: currentTabbarIndex === 2 ? '' : 'none'
-      }"
-    >
-      <scroll-view
-        class="custom-tabbar-page"
-        scroll-y
-        enable-back-to-top
-        @scrolltolower="tabbarPageScrollLower"
-      >
+    <view v-if="tabberPageLoadFlag[2]" :style="{  display: currentTabbarIndex === 2 ? '' : 'none'}">
+      <scroll-view class="custom-tabbar-page"
+        scroll-y enable-back-to-top
+        @scrolltolower="tabbarPageScrollLower" >
         <page-c ref="pageC"></page-c>
       </scroll-view>
     </view>
-    <view
-      v-if="tabberPageLoadFlag[3]"
-      :style="{
-        display: currentTabbarIndex === 3 ? '' : 'none'
-      }"
-    >
-      <scroll-view
-        class="custom-tabbar-page"
-        scroll-y
-        enable-back-to-top
-        @scrolltolower="tabbarPageScrollLower"
-      >
+    <view v-if="tabberPageLoadFlag[3]" :style="{  display: currentTabbarIndex === 3 ? '' : 'none' }">
+      <scroll-view class="custom-tabbar-page"
+        scroll-y enable-back-to-top
+        @scrolltolower="tabbarPageScrollLower">
         <page-d ref="pageD"></page-d>
       </scroll-view>
     </view>
-    <view
-      v-if="tabberPageLoadFlag[4]"
-      :style="{
-        display: currentTabbarIndex === 4 ? '' : 'none'
-      }"
-    >
-      <scroll-view
-        class="custom-tabbar-page"
-        scroll-y
-        enable-back-to-top
-        @scrolltolower="tabbarPageScrollLower"
-      >
+    <view  v-if="tabberPageLoadFlag[4]" :style="{ display: currentTabbarIndex === 4 ? '' : 'none' }">
+      <scroll-view class="custom-tabbar-page"
+        scroll-y enable-back-to-top
+        @scrolltolower="tabbarPageScrollLower">
         <page-e ref="pageE"></page-e>
       </scroll-view>
     </view>
     
     <!-- 底部导航栏 -->
     <view class="tabbar">
-      
-      
+    
       <view class="action" @tap.stop="changeTabbar(0)">
         <view class="bar-icon">
           <!-- <view class="tn-icon-home-smile tn-color-gray--dark">
@@ -121,7 +79,8 @@
         
           <view class="nav-index-button__meteor">
             <view class="nav-index-button__meteor__wrapper">
-              <view v-for="(item,index) in 6" :key="index" class="nav-index-button__meteor__item" :style="{transform: `rotateX(${-60 + (30 * index)}deg) rotateZ(${-60 + (30 * index)}deg)`}">
+              <view v-for="(item,index) in 6" :key="index" class="nav-index-button__meteor__item" 
+							:style="{transform: `rotateX(${-60 + (30 * index)}deg) rotateZ(${-60 + (30 * index)}deg)`}">
                 <view class="nav-index-button__meteor__item--pic"></view>
               </view>
             </view>
@@ -132,16 +91,12 @@
       
       <view class="action" @tap.stop="changeTabbar(3)">
         <view class="bar-icon">
-          <!-- <view class="tn-icon-image-text tn-color-gray--dark">
-          </view> -->
           <image class="" :src="`/static/tabbar/tn-tabbar2${currentTabbarIndex === 3 ? '-curnew' : ''}.png`"></image>
         </view>
         <view class="" :class="[currentTabbarIndex === 3 ? 'tn-color-blue' : 'tn-color-gray']">消息</view>
       </view>
       <view class="action" @tap.stop="changeTabbar(4)">
         <view class="bar-icon">
-          <!-- <view class="tn-icon-my tn-color-gray--dark">
-          </view> -->
           <image class="" :src="`/static/tabbar/tn-tabbar3${currentTabbarIndex === 4 ? '-curnew' : ''}.png`"></image>
         </view>
         <view class="" :class="[currentTabbarIndex === 4 ? 'tn-color-blue' : 'tn-color-gray']">我的</view>
@@ -185,8 +140,6 @@
       
     },
 		methods: {
-      
-      
       // 导航页面滚动到底部
       tabbarPageScrollLower(e) {
         if (this.currentTabbarIndex === 0) {

@@ -10,12 +10,12 @@
       </view>
     </tn-nav-bar>
     
-    <!-- 卡片轮播，图片均为凶姐本人照片，请勿将图片用于奇奇怪怪的地方，谢谢大佬们-->
+    <!-- 卡片轮播 -->
     <view class="swiper tn-margin-left tn-margin-right" style="height:89vh" :style="{paddingTop: vuex_custom_bar_height + 10 +'px'}" @click="tn('/pageA/atlas/atlas')">
       <tn-stack-swiper :list="list" direction="vertical" height="105%" :switchRate="20" :scaleRate="0.05" :translateRate="7.2"></tn-stack-swiper>
     </view>
     
-    <!-- 两个按钮，有需要直接显示出来即可-->
+    <!-- 两个按钮，有需要直接显示出来即可 -->
     <view class="tn-footerfixed">
       <view class="tn-flex">
         <view class="tn-flex-1 tn-padding-sm tn-radius justify-content-item" @click="tn('')">

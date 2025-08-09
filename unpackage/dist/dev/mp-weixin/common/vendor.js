@@ -209,10 +209,10 @@ module.exports = _isNativeReflectConstruct, module.exports.__esModule = true, mo
 
 /***/ }),
 
-/***/ 178:
-/*!**********************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/libs/navigation/navigation.js ***!
-  \**********************************************************************************************/
+/***/ 177:
+/*!******************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/libs/navigation/navigation.js ***!
+  \******************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -762,7 +762,7 @@ function promisify(name, api) {
       params[_key2 - 1] = arguments[_key2];
     }
     if (isFn(options.success) || isFn(options.fail) || isFn(options.complete)) {
-      return wrapperReturnValue(name, invokeApi.apply(void 0, [name, api, Object.assign({}, options)].concat(params)));
+      return wrapperReturnValue(name, invokeApi.apply(void 0, [name, api, options].concat(params)));
     }
     return wrapperReturnValue(name, handlePromise(new Promise(function (resolve, reject) {
       invokeApi.apply(void 0, [name, api, Object.assign({}, options, {
@@ -778,14 +778,13 @@ var isIOS = false;
 var deviceWidth = 0;
 var deviceDPR = 0;
 function checkDeviceWidth() {
-  var windowWidth, pixelRatio, platform;
-  {
-    var windowInfo = typeof wx.getWindowInfo === 'function' && wx.getWindowInfo() ? wx.getWindowInfo() : wx.getSystemInfoSync();
-    var deviceInfo = typeof wx.getDeviceInfo === 'function' && wx.getDeviceInfo() ? wx.getDeviceInfo() : wx.getSystemInfoSync();
-    windowWidth = windowInfo.windowWidth;
-    pixelRatio = windowInfo.pixelRatio;
-    platform = deviceInfo.platform;
-  }
+  var _Object$assign = Object.assign({}, wx.getWindowInfo(), {
+      platform: wx.getDeviceInfo().platform
+    }),
+    windowWidth = _Object$assign.windowWidth,
+    pixelRatio = _Object$assign.pixelRatio,
+    platform = _Object$assign.platform; // uni=>wx runtime 编译目标是 uni 对象，内部不允许直接使用 uni
+
   deviceWidth = windowWidth;
   deviceDPR = pixelRatio;
   isIOS = platform === 'ios';
@@ -821,7 +820,7 @@ var messages = {};
 function getLocaleLanguage() {
   var localeLanguage = '';
   {
-    var appBaseInfo = typeof wx.getAppBaseInfo === 'function' && wx.getAppBaseInfo() ? wx.getAppBaseInfo() : wx.getSystemInfoSync();
+    var appBaseInfo = wx.getAppBaseInfo();
     var language = appBaseInfo && appBaseInfo.language ? appBaseInfo.language : LOCALE_EN;
     localeLanguage = normalizeLocale(language) || LOCALE_EN;
   }
@@ -1080,43 +1079,6 @@ function addSafeAreaInsets(result) {
     };
   }
 }
-function getOSInfo(system, platform) {
-  var osName = '';
-  var osVersion = '';
-  if (platform && "mp-weixin" === 'mp-baidu') {
-    osName = platform;
-    osVersion = system;
-  } else {
-    osName = system.split(' ')[0] || platform;
-    osVersion = system.split(' ')[1] || '';
-  }
-  osName = osName.toLocaleLowerCase();
-  switch (osName) {
-    case 'harmony': // alipay
-    case 'ohos': // weixin
-    case 'openharmony':
-      // feishu
-      osName = 'harmonyos';
-      break;
-    case 'iphone os':
-      // alipay
-      osName = 'ios';
-      break;
-    case 'mac': // weixin qq
-    case 'darwin':
-      // feishu
-      osName = 'macos';
-      break;
-    case 'windows_nt':
-      // feishu
-      osName = 'windows';
-      break;
-  }
-  return {
-    osName: osName,
-    osVersion: osVersion
-  };
-}
 function populateParameters(result) {
   var _result$brand = result.brand,
     brand = _result$brand === void 0 ? '' : _result$brand,
@@ -1138,9 +1100,12 @@ function populateParameters(result) {
   var extraParam = {};
 
   // osName osVersion
-  var _getOSInfo = getOSInfo(system, platform),
-    osName = _getOSInfo.osName,
-    osVersion = _getOSInfo.osVersion;
+  var osName = '';
+  var osVersion = '';
+  {
+    osName = system.split(' ')[0] || '';
+    osVersion = system.split(' ')[1] || '';
+  }
   var hostVersion = version;
 
   // deviceType
@@ -1172,9 +1137,9 @@ function populateParameters(result) {
     appVersion: "1.0.0",
     appVersionCode: "100",
     appLanguage: getAppLanguage(hostLanguage),
-    uniCompileVersion: "4.75",
-    uniCompilerVersion: "4.75",
-    uniRuntimeVersion: "4.75",
+    uniCompileVersion: "4.57",
+    uniCompilerVersion: "4.57",
+    uniRuntimeVersion: "4.57",
     uniPlatform: undefined || "mp-weixin",
     deviceBrand: deviceBrand,
     deviceModel: model,
@@ -1280,9 +1245,9 @@ var getAppBaseInfo = {
       hostTheme: theme,
       isUniAppX: false,
       uniPlatform: undefined || "mp-weixin",
-      uniCompileVersion: "4.75",
-      uniCompilerVersion: "4.75",
-      uniRuntimeVersion: "4.75"
+      uniCompileVersion: "4.57",
+      uniCompilerVersion: "4.57",
+      uniRuntimeVersion: "4.57"
     }));
   }
 };
@@ -1290,23 +1255,14 @@ var getDeviceInfo = {
   returnValue: function returnValue(result) {
     var _result2 = result,
       brand = _result2.brand,
-      model = _result2.model,
-      _result2$system = _result2.system,
-      system = _result2$system === void 0 ? '' : _result2$system,
-      _result2$platform = _result2.platform,
-      platform = _result2$platform === void 0 ? '' : _result2$platform;
+      model = _result2.model;
     var deviceType = getGetDeviceType(result, model);
     var deviceBrand = getDeviceBrand(brand);
     useDeviceId(result);
-    var _getOSInfo2 = getOSInfo(system, platform),
-      osName = _getOSInfo2.osName,
-      osVersion = _getOSInfo2.osVersion;
     result = sortObject(Object.assign(result, {
       deviceType: deviceType,
       deviceBrand: deviceBrand,
-      deviceModel: model,
-      osName: osName,
-      osVersion: osVersion
+      deviceModel: model
     }));
   }
 };
@@ -9568,9 +9524,386 @@ internalMixin(Vue);
 /***/ }),
 
 /***/ 26:
-/*!***************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/pages.json ***!
-  \***************************************************************************/
+/*!************************************************************************************************!*\
+  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/@babel/runtime/regenerator/index.js ***!
+  \************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// TODO(Babel 8): Remove this file.
+
+var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 27)();
+module.exports = runtime;
+
+/***/ }),
+
+/***/ 27:
+/*!*******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/regeneratorRuntime.js ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _typeof = __webpack_require__(/*! ./typeof.js */ 13)["default"];
+function _regeneratorRuntime() {
+  "use strict";
+
+  /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+  module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
+    return e;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  var t,
+    e = {},
+    r = Object.prototype,
+    n = r.hasOwnProperty,
+    o = Object.defineProperty || function (t, e, r) {
+      t[e] = r.value;
+    },
+    i = "function" == typeof Symbol ? Symbol : {},
+    a = i.iterator || "@@iterator",
+    c = i.asyncIterator || "@@asyncIterator",
+    u = i.toStringTag || "@@toStringTag";
+  function define(t, e, r) {
+    return Object.defineProperty(t, e, {
+      value: r,
+      enumerable: !0,
+      configurable: !0,
+      writable: !0
+    }), t[e];
+  }
+  try {
+    define({}, "");
+  } catch (t) {
+    define = function define(t, e, r) {
+      return t[e] = r;
+    };
+  }
+  function wrap(t, e, r, n) {
+    var i = e && e.prototype instanceof Generator ? e : Generator,
+      a = Object.create(i.prototype),
+      c = new Context(n || []);
+    return o(a, "_invoke", {
+      value: makeInvokeMethod(t, r, c)
+    }), a;
+  }
+  function tryCatch(t, e, r) {
+    try {
+      return {
+        type: "normal",
+        arg: t.call(e, r)
+      };
+    } catch (t) {
+      return {
+        type: "throw",
+        arg: t
+      };
+    }
+  }
+  e.wrap = wrap;
+  var h = "suspendedStart",
+    l = "suspendedYield",
+    f = "executing",
+    s = "completed",
+    y = {};
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+  var p = {};
+  define(p, a, function () {
+    return this;
+  });
+  var d = Object.getPrototypeOf,
+    v = d && d(d(values([])));
+  v && v !== r && n.call(v, a) && (p = v);
+  var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p);
+  function defineIteratorMethods(t) {
+    ["next", "throw", "return"].forEach(function (e) {
+      define(t, e, function (t) {
+        return this._invoke(e, t);
+      });
+    });
+  }
+  function AsyncIterator(t, e) {
+    function invoke(r, o, i, a) {
+      var c = tryCatch(t[r], t, o);
+      if ("throw" !== c.type) {
+        var u = c.arg,
+          h = u.value;
+        return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) {
+          invoke("next", t, i, a);
+        }, function (t) {
+          invoke("throw", t, i, a);
+        }) : e.resolve(h).then(function (t) {
+          u.value = t, i(u);
+        }, function (t) {
+          return invoke("throw", t, i, a);
+        });
+      }
+      a(c.arg);
+    }
+    var r;
+    o(this, "_invoke", {
+      value: function value(t, n) {
+        function callInvokeWithMethodAndArg() {
+          return new e(function (e, r) {
+            invoke(t, n, e, r);
+          });
+        }
+        return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+      }
+    });
+  }
+  function makeInvokeMethod(e, r, n) {
+    var o = h;
+    return function (i, a) {
+      if (o === f) throw Error("Generator is already running");
+      if (o === s) {
+        if ("throw" === i) throw a;
+        return {
+          value: t,
+          done: !0
+        };
+      }
+      for (n.method = i, n.arg = a;;) {
+        var c = n.delegate;
+        if (c) {
+          var u = maybeInvokeDelegate(c, n);
+          if (u) {
+            if (u === y) continue;
+            return u;
+          }
+        }
+        if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) {
+          if (o === h) throw o = s, n.arg;
+          n.dispatchException(n.arg);
+        } else "return" === n.method && n.abrupt("return", n.arg);
+        o = f;
+        var p = tryCatch(e, r, n);
+        if ("normal" === p.type) {
+          if (o = n.done ? s : l, p.arg === y) continue;
+          return {
+            value: p.arg,
+            done: n.done
+          };
+        }
+        "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg);
+      }
+    };
+  }
+  function maybeInvokeDelegate(e, r) {
+    var n = r.method,
+      o = e.iterator[n];
+    if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y;
+    var i = tryCatch(o, e.iterator, r.arg);
+    if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y;
+    var a = i.arg;
+    return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y);
+  }
+  function pushTryEntry(t) {
+    var e = {
+      tryLoc: t[0]
+    };
+    1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e);
+  }
+  function resetTryEntry(t) {
+    var e = t.completion || {};
+    e.type = "normal", delete e.arg, t.completion = e;
+  }
+  function Context(t) {
+    this.tryEntries = [{
+      tryLoc: "root"
+    }], t.forEach(pushTryEntry, this), this.reset(!0);
+  }
+  function values(e) {
+    if (e || "" === e) {
+      var r = e[a];
+      if (r) return r.call(e);
+      if ("function" == typeof e.next) return e;
+      if (!isNaN(e.length)) {
+        var o = -1,
+          i = function next() {
+            for (; ++o < e.length;) {
+              if (n.call(e, o)) return next.value = e[o], next.done = !1, next;
+            }
+            return next.value = t, next.done = !0, next;
+          };
+        return i.next = i;
+      }
+    }
+    throw new TypeError(_typeof(e) + " is not iterable");
+  }
+  return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", {
+    value: GeneratorFunctionPrototype,
+    configurable: !0
+  }), o(GeneratorFunctionPrototype, "constructor", {
+    value: GeneratorFunction,
+    configurable: !0
+  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) {
+    var e = "function" == typeof t && t.constructor;
+    return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name));
+  }, e.mark = function (t) {
+    return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t;
+  }, e.awrap = function (t) {
+    return {
+      __await: t
+    };
+  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () {
+    return this;
+  }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) {
+    void 0 === i && (i = Promise);
+    var a = new AsyncIterator(wrap(t, r, n, o), i);
+    return e.isGeneratorFunction(r) ? a : a.next().then(function (t) {
+      return t.done ? t.value : a.next();
+    });
+  }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () {
+    return this;
+  }), define(g, "toString", function () {
+    return "[object Generator]";
+  }), e.keys = function (t) {
+    var e = Object(t),
+      r = [];
+    for (var n in e) {
+      r.push(n);
+    }
+    return r.reverse(), function next() {
+      for (; r.length;) {
+        var t = r.pop();
+        if (t in e) return next.value = t, next.done = !1, next;
+      }
+      return next.done = !0, next;
+    };
+  }, e.values = values, Context.prototype = {
+    constructor: Context,
+    reset: function reset(e) {
+      if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) {
+        "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t);
+      }
+    },
+    stop: function stop() {
+      this.done = !0;
+      var t = this.tryEntries[0].completion;
+      if ("throw" === t.type) throw t.arg;
+      return this.rval;
+    },
+    dispatchException: function dispatchException(e) {
+      if (this.done) throw e;
+      var r = this;
+      function handle(n, o) {
+        return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o;
+      }
+      for (var o = this.tryEntries.length - 1; o >= 0; --o) {
+        var i = this.tryEntries[o],
+          a = i.completion;
+        if ("root" === i.tryLoc) return handle("end");
+        if (i.tryLoc <= this.prev) {
+          var c = n.call(i, "catchLoc"),
+            u = n.call(i, "finallyLoc");
+          if (c && u) {
+            if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
+            if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
+          } else if (c) {
+            if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
+          } else {
+            if (!u) throw Error("try statement without catch or finally");
+            if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
+          }
+        }
+      }
+    },
+    abrupt: function abrupt(t, e) {
+      for (var r = this.tryEntries.length - 1; r >= 0; --r) {
+        var o = this.tryEntries[r];
+        if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) {
+          var i = o;
+          break;
+        }
+      }
+      i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null);
+      var a = i ? i.completion : {};
+      return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a);
+    },
+    complete: function complete(t, e) {
+      if ("throw" === t.type) throw t.arg;
+      return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y;
+    },
+    finish: function finish(t) {
+      for (var e = this.tryEntries.length - 1; e >= 0; --e) {
+        var r = this.tryEntries[e];
+        if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y;
+      }
+    },
+    "catch": function _catch(t) {
+      for (var e = this.tryEntries.length - 1; e >= 0; --e) {
+        var r = this.tryEntries[e];
+        if (r.tryLoc === t) {
+          var n = r.completion;
+          if ("throw" === n.type) {
+            var o = n.arg;
+            resetTryEntry(r);
+          }
+          return o;
+        }
+      }
+      throw Error("illegal catch attempt");
+    },
+    delegateYield: function delegateYield(e, r, n) {
+      return this.delegate = {
+        iterator: values(e),
+        resultName: r,
+        nextLoc: n
+      }, "next" === this.method && (this.arg = t), y;
+    }
+  }, e;
+}
+module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 28:
+/*!*****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/asyncToGenerator.js ***!
+  \*****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+  try {
+    var info = gen[key](arg);
+    var value = info.value;
+  } catch (error) {
+    reject(error);
+    return;
+  }
+  if (info.done) {
+    resolve(value);
+  } else {
+    Promise.resolve(value).then(_next, _throw);
+  }
+}
+function _asyncToGenerator(fn) {
+  return function () {
+    var self = this,
+      args = arguments;
+    return new Promise(function (resolve, reject) {
+      var gen = fn.apply(self, args);
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+      }
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+      }
+      _next(undefined);
+    });
+  };
+}
+module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 29:
+/*!***********************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/pages.json ***!
+  \***********************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -9609,10 +9942,63 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 30:
-/*!*******************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/store/index.js ***!
-  \*******************************************************************************/
+/***/ 322:
+/*!*****************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/mixin/components_color.js ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = {
+  data: function data() {},
+  props: {
+    // 背景颜色
+    backgroundColor: {
+      type: String,
+      default: ''
+    },
+    // 字体颜色
+    fontColor: {
+      type: String,
+      default: ''
+    },
+    // 字体大小
+    fontSize: {
+      type: Number,
+      default: 0
+    },
+    // 字体大小单位
+    fontUnit: {
+      type: String,
+      default: 'rpx'
+    }
+  },
+  computed: {
+    backgroundColorStyle: function backgroundColorStyle() {
+      return this.$t.color.getBackgroundColorStyle(this.backgroundColor);
+    },
+    backgroundColorClass: function backgroundColorClass() {
+      return this.$t.color.getBackgroundColorInternalClass(this.backgroundColor);
+    },
+    fontColorStyle: function fontColorStyle() {
+      return this.$t.color.getFontColorStyle(this.fontColor);
+    },
+    fontColorClass: function fontColorClass() {
+      return this.$t.color.getFontColorInternalClass(this.fontColor);
+    },
+    fontSizeStyle: function fontSizeStyle() {
+      return this.$t.string.getLengthUnitValue(this.fontSize, this.fontUnit);
+    }
+  },
+  methods: {}
+};
+
+/***/ }),
+
+/***/ 33:
+/*!**********************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/store/index.js ***!
+  \**********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9625,7 +10011,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 25));
-var _vuex = _interopRequireDefault(__webpack_require__(/*! vuex */ 31));
+var _vuex = _interopRequireDefault(__webpack_require__(/*! vuex */ 34));
 _vue.default.use(_vuex.default);
 var lifeData = {};
 
@@ -9649,7 +10035,8 @@ var saveLifeData = function saveLifeData(key, value) {
     uni.setStorageSync('lifeData', tmpLifeData);
   }
 };
-var store = new _vuex.default.Store({
+var files = __webpack_require__(35);
+var modules = {
   state: {
     // 如果上面从本地获取的lifeData对象下有对应的属性，就赋值给state中对应的变量
     vuex_user: lifeData.vuex_user ? lifeData.vuex_user : {
@@ -9689,14 +10076,20 @@ var store = new _vuex.default.Store({
     }
   },
   actions: {}
+};
+files.keys().forEach(function (key) {
+  Object.assign(modules.state, files(key)["state"]);
+  Object.assign(modules.mutations, files(key)["mutations"]);
+  Object.assign(modules.actions, files(key)["actions"]);
 });
+var store = new _vuex.default.Store(modules);
 var _default = store;
 exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
 
-/***/ 31:
+/***/ 34:
 /*!**************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vuex3/dist/vuex.common.js ***!
   \**************************************************************************************/
@@ -10953,592 +11346,15 @@ module.exports = index_cjs;
 
 /***/ }),
 
-/***/ 32:
-/*!***************************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/function/updateCustomBarInfo.js ***!
-  \***************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni, wx) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-/**
- * 更新自定义顶部导航栏的高度
- */
-function updateCustomBarInfo() {
-  return new Promise(function (resolve, reject) {
-    uni.getSystemInfo({
-      success: function success(e) {
-        var statusBarHeight = 0;
-        var customBarHeight = 0;
-        statusBarHeight = e.statusBarHeight;
-        var custom = wx.getMenuButtonBoundingClientRect();
-        customBarHeight = custom.bottom + (custom.top - e.statusBarHeight <= 4 ? custom.top - e.statusBarHeight + 4 : custom.top - e.statusBarHeight);
-        resolve({
-          statusBarHeight: statusBarHeight,
-          customBarHeight: customBarHeight
-        });
-      },
-      fail: function fail(err) {
-        console.log("获取设备信息失败", err);
-        reject();
-      }
-    });
-  });
-}
-var _default = updateCustomBarInfo;
-exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"]))
-
-/***/ }),
-
-/***/ 323:
-/*!*********************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/mixin/components_color.js ***!
-  \*********************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = {
-  data: function data() {},
-  props: {
-    // 背景颜色
-    backgroundColor: {
-      type: String,
-      default: ''
-    },
-    // 字体颜色
-    fontColor: {
-      type: String,
-      default: ''
-    },
-    // 字体大小
-    fontSize: {
-      type: Number,
-      default: 0
-    },
-    // 字体大小单位
-    fontUnit: {
-      type: String,
-      default: 'rpx'
-    }
-  },
-  computed: {
-    backgroundColorStyle: function backgroundColorStyle() {
-      return this.$t.color.getBackgroundColorStyle(this.backgroundColor);
-    },
-    backgroundColorClass: function backgroundColorClass() {
-      return this.$t.color.getBackgroundColorInternalClass(this.backgroundColor);
-    },
-    fontColorStyle: function fontColorStyle() {
-      return this.$t.color.getFontColorStyle(this.fontColor);
-    },
-    fontColorClass: function fontColorClass() {
-      return this.$t.color.getFontColorInternalClass(this.fontColor);
-    },
-    fontSizeStyle: function fontSizeStyle() {
-      return this.$t.string.getLengthUnitValue(this.fontSize, this.fontUnit);
-    }
-  },
-  methods: {}
-};
-
-/***/ }),
-
-/***/ 33:
-/*!********************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/nxTemp/index.js ***!
-  \********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
-var _typeof = __webpack_require__(/*! @babel/runtime/helpers/typeof */ 13);
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-exports.init = init;
-var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 34));
-var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 36));
-var _store = _interopRequireDefault(__webpack_require__(/*! @/nxTemp/store */ 37));
-var _wechat = _interopRequireDefault(__webpack_require__(/*! @/nxTemp/wechat/wechat */ 43));
-var _tools = _interopRequireDefault(__webpack_require__(/*! @/nxTemp/utils/tools */ 44));
-var _share = _interopRequireDefault(__webpack_require__(/*! @/nxTemp/utils/share.js */ 45));
-var filter = _interopRequireWildcard(__webpack_require__(/*! @/nxTemp/filter */ 46));
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-// import cloudFun from '@/nxTemp/cloudFun'// 云函数方法
-
-var install = function install(Vue) {
-  // global filter
-  Object.keys(filter).forEach(function (item) {
-    Vue.filter(item, filter[item]);
-  });
-  // 挂载函数
-  Vue.prototype.$store = _store.default;
-  Vue.prototype.$tools = _tools.default;
-  // Vue.prototype.$cloudFun = cloudFun;
-  // event Bus 用于无关系组件间的通信。
-  Vue.prototype.$bus = new Vue();
-  Vue.mixin(_share.default);
-};
-function init(_x) {
-  return _init.apply(this, arguments);
-}
-function _init() {
-  _init = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(options) {
-    return _regenerator.default.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            // 检测小程序更新(如果从朋友圈场景进入则无此API)
-            options.scene !== 1154 && _wechat.default.checkMiniProgramUpdate();
-          case 1:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
-  }));
-  return _init.apply(this, arguments);
-}
-var _default = {
-  install: install
-};
-exports.default = _default;
-
-/***/ }),
-
-/***/ 34:
-/*!************************************************************************************************!*\
-  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/@babel/runtime/regenerator/index.js ***!
-  \************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-// TODO(Babel 8): Remove this file.
-
-var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 35)();
-module.exports = runtime;
-
-/***/ }),
-
 /***/ 35:
-/*!*******************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/regeneratorRuntime.js ***!
-  \*******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _typeof = __webpack_require__(/*! ./typeof.js */ 13)["default"];
-function _regeneratorRuntime() {
-  "use strict";
-
-  /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
-  module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
-    return e;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  var t,
-    e = {},
-    r = Object.prototype,
-    n = r.hasOwnProperty,
-    o = Object.defineProperty || function (t, e, r) {
-      t[e] = r.value;
-    },
-    i = "function" == typeof Symbol ? Symbol : {},
-    a = i.iterator || "@@iterator",
-    c = i.asyncIterator || "@@asyncIterator",
-    u = i.toStringTag || "@@toStringTag";
-  function define(t, e, r) {
-    return Object.defineProperty(t, e, {
-      value: r,
-      enumerable: !0,
-      configurable: !0,
-      writable: !0
-    }), t[e];
-  }
-  try {
-    define({}, "");
-  } catch (t) {
-    define = function define(t, e, r) {
-      return t[e] = r;
-    };
-  }
-  function wrap(t, e, r, n) {
-    var i = e && e.prototype instanceof Generator ? e : Generator,
-      a = Object.create(i.prototype),
-      c = new Context(n || []);
-    return o(a, "_invoke", {
-      value: makeInvokeMethod(t, r, c)
-    }), a;
-  }
-  function tryCatch(t, e, r) {
-    try {
-      return {
-        type: "normal",
-        arg: t.call(e, r)
-      };
-    } catch (t) {
-      return {
-        type: "throw",
-        arg: t
-      };
-    }
-  }
-  e.wrap = wrap;
-  var h = "suspendedStart",
-    l = "suspendedYield",
-    f = "executing",
-    s = "completed",
-    y = {};
-  function Generator() {}
-  function GeneratorFunction() {}
-  function GeneratorFunctionPrototype() {}
-  var p = {};
-  define(p, a, function () {
-    return this;
-  });
-  var d = Object.getPrototypeOf,
-    v = d && d(d(values([])));
-  v && v !== r && n.call(v, a) && (p = v);
-  var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p);
-  function defineIteratorMethods(t) {
-    ["next", "throw", "return"].forEach(function (e) {
-      define(t, e, function (t) {
-        return this._invoke(e, t);
-      });
-    });
-  }
-  function AsyncIterator(t, e) {
-    function invoke(r, o, i, a) {
-      var c = tryCatch(t[r], t, o);
-      if ("throw" !== c.type) {
-        var u = c.arg,
-          h = u.value;
-        return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) {
-          invoke("next", t, i, a);
-        }, function (t) {
-          invoke("throw", t, i, a);
-        }) : e.resolve(h).then(function (t) {
-          u.value = t, i(u);
-        }, function (t) {
-          return invoke("throw", t, i, a);
-        });
-      }
-      a(c.arg);
-    }
-    var r;
-    o(this, "_invoke", {
-      value: function value(t, n) {
-        function callInvokeWithMethodAndArg() {
-          return new e(function (e, r) {
-            invoke(t, n, e, r);
-          });
-        }
-        return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
-      }
-    });
-  }
-  function makeInvokeMethod(e, r, n) {
-    var o = h;
-    return function (i, a) {
-      if (o === f) throw Error("Generator is already running");
-      if (o === s) {
-        if ("throw" === i) throw a;
-        return {
-          value: t,
-          done: !0
-        };
-      }
-      for (n.method = i, n.arg = a;;) {
-        var c = n.delegate;
-        if (c) {
-          var u = maybeInvokeDelegate(c, n);
-          if (u) {
-            if (u === y) continue;
-            return u;
-          }
-        }
-        if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) {
-          if (o === h) throw o = s, n.arg;
-          n.dispatchException(n.arg);
-        } else "return" === n.method && n.abrupt("return", n.arg);
-        o = f;
-        var p = tryCatch(e, r, n);
-        if ("normal" === p.type) {
-          if (o = n.done ? s : l, p.arg === y) continue;
-          return {
-            value: p.arg,
-            done: n.done
-          };
-        }
-        "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg);
-      }
-    };
-  }
-  function maybeInvokeDelegate(e, r) {
-    var n = r.method,
-      o = e.iterator[n];
-    if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y;
-    var i = tryCatch(o, e.iterator, r.arg);
-    if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y;
-    var a = i.arg;
-    return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y);
-  }
-  function pushTryEntry(t) {
-    var e = {
-      tryLoc: t[0]
-    };
-    1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e);
-  }
-  function resetTryEntry(t) {
-    var e = t.completion || {};
-    e.type = "normal", delete e.arg, t.completion = e;
-  }
-  function Context(t) {
-    this.tryEntries = [{
-      tryLoc: "root"
-    }], t.forEach(pushTryEntry, this), this.reset(!0);
-  }
-  function values(e) {
-    if (e || "" === e) {
-      var r = e[a];
-      if (r) return r.call(e);
-      if ("function" == typeof e.next) return e;
-      if (!isNaN(e.length)) {
-        var o = -1,
-          i = function next() {
-            for (; ++o < e.length;) {
-              if (n.call(e, o)) return next.value = e[o], next.done = !1, next;
-            }
-            return next.value = t, next.done = !0, next;
-          };
-        return i.next = i;
-      }
-    }
-    throw new TypeError(_typeof(e) + " is not iterable");
-  }
-  return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", {
-    value: GeneratorFunctionPrototype,
-    configurable: !0
-  }), o(GeneratorFunctionPrototype, "constructor", {
-    value: GeneratorFunction,
-    configurable: !0
-  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) {
-    var e = "function" == typeof t && t.constructor;
-    return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name));
-  }, e.mark = function (t) {
-    return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t;
-  }, e.awrap = function (t) {
-    return {
-      __await: t
-    };
-  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () {
-    return this;
-  }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) {
-    void 0 === i && (i = Promise);
-    var a = new AsyncIterator(wrap(t, r, n, o), i);
-    return e.isGeneratorFunction(r) ? a : a.next().then(function (t) {
-      return t.done ? t.value : a.next();
-    });
-  }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () {
-    return this;
-  }), define(g, "toString", function () {
-    return "[object Generator]";
-  }), e.keys = function (t) {
-    var e = Object(t),
-      r = [];
-    for (var n in e) {
-      r.push(n);
-    }
-    return r.reverse(), function next() {
-      for (; r.length;) {
-        var t = r.pop();
-        if (t in e) return next.value = t, next.done = !1, next;
-      }
-      return next.done = !0, next;
-    };
-  }, e.values = values, Context.prototype = {
-    constructor: Context,
-    reset: function reset(e) {
-      if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) {
-        "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t);
-      }
-    },
-    stop: function stop() {
-      this.done = !0;
-      var t = this.tryEntries[0].completion;
-      if ("throw" === t.type) throw t.arg;
-      return this.rval;
-    },
-    dispatchException: function dispatchException(e) {
-      if (this.done) throw e;
-      var r = this;
-      function handle(n, o) {
-        return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o;
-      }
-      for (var o = this.tryEntries.length - 1; o >= 0; --o) {
-        var i = this.tryEntries[o],
-          a = i.completion;
-        if ("root" === i.tryLoc) return handle("end");
-        if (i.tryLoc <= this.prev) {
-          var c = n.call(i, "catchLoc"),
-            u = n.call(i, "finallyLoc");
-          if (c && u) {
-            if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
-            if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
-          } else if (c) {
-            if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
-          } else {
-            if (!u) throw Error("try statement without catch or finally");
-            if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
-          }
-        }
-      }
-    },
-    abrupt: function abrupt(t, e) {
-      for (var r = this.tryEntries.length - 1; r >= 0; --r) {
-        var o = this.tryEntries[r];
-        if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) {
-          var i = o;
-          break;
-        }
-      }
-      i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null);
-      var a = i ? i.completion : {};
-      return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a);
-    },
-    complete: function complete(t, e) {
-      if ("throw" === t.type) throw t.arg;
-      return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y;
-    },
-    finish: function finish(t) {
-      for (var e = this.tryEntries.length - 1; e >= 0; --e) {
-        var r = this.tryEntries[e];
-        if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y;
-      }
-    },
-    "catch": function _catch(t) {
-      for (var e = this.tryEntries.length - 1; e >= 0; --e) {
-        var r = this.tryEntries[e];
-        if (r.tryLoc === t) {
-          var n = r.completion;
-          if ("throw" === n.type) {
-            var o = n.arg;
-            resetTryEntry(r);
-          }
-          return o;
-        }
-      }
-      throw Error("illegal catch attempt");
-    },
-    delegateYield: function delegateYield(e, r, n) {
-      return this.delegate = {
-        iterator: values(e),
-        resultName: r,
-        nextLoc: n
-      }, "next" === this.method && (this.arg = t), y;
-    }
-  }, e;
-}
-module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 36:
-/*!*****************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/asyncToGenerator.js ***!
-  \*****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-  try {
-    var info = gen[key](arg);
-    var value = info.value;
-  } catch (error) {
-    reject(error);
-    return;
-  }
-  if (info.done) {
-    resolve(value);
-  } else {
-    Promise.resolve(value).then(_next, _throw);
-  }
-}
-function _asyncToGenerator(fn) {
-  return function () {
-    var self = this,
-      args = arguments;
-    return new Promise(function (resolve, reject) {
-      var gen = fn.apply(self, args);
-      function _next(value) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-      }
-      function _throw(err) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-      }
-      _next(undefined);
-    });
-  };
-}
-module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 37:
-/*!**************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/nxTemp/store/index.js ***!
-  \**************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 25));
-var _vuex = _interopRequireDefault(__webpack_require__(/*! vuex */ 31));
-_vue.default.use(_vuex.default);
-var files = __webpack_require__(38);
-var modules = {
-  state: {},
-  mutations: {},
-  actions: {}
-};
-files.keys().forEach(function (key) {
-  Object.assign(modules.state, files(key)["state"]);
-  Object.assign(modules.mutations, files(key)["mutations"]);
-  Object.assign(modules.actions, files(key)["actions"]);
-});
-var store = new _vuex.default.Store(modules);
-var _default = store;
-exports.default = _default;
-
-/***/ }),
-
-/***/ 38:
-/*!*************************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/nxTemp/store/modules sync nonrecursive \.js$ ***!
-  \*************************************************************************************************************/
+/*!*********************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/store/modules sync nonrecursive \.js$ ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./user.js": 39
+	"./user.js": 36
 };
 
 
@@ -11559,14 +11375,14 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 38;
+webpackContext.id = 35;
 
 /***/ }),
 
-/***/ 39:
-/*!*********************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/nxTemp/store/modules/user.js ***!
-  \*********************************************************************************************/
+/***/ 36:
+/*!*****************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/store/modules/user.js ***!
+  \*****************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11578,12 +11394,12 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.state = exports.mutations = exports.getters = exports.actions = void 0;
-var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 34));
-var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 36));
-var _index = __webpack_require__(/*! @/nxTemp/router/index.js */ 40);
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 26));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 28));
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+// 用户数据模块
 var TOKEN = uni.getStorageSync("token") || "";
 var OPENID = uni.getStorageSync("openId") || "";
 var USER_INFO = uni.getStorageSync("userInfo") || {};
@@ -11626,8 +11442,8 @@ var actions = {
       val: ''
     });
     uni.setStorageSync("token", '');
-    _index.router.push({
-      path: 'pages/login/login'
+    uni.navigateTo({
+      url: 'pages/login/login'
     });
   }
 };
@@ -11686,9 +11502,53 @@ module.exports = _interopRequireDefault, module.exports.__esModule = true, modul
 /***/ }),
 
 /***/ 40:
-/*!***************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/nxTemp/router/index.js ***!
-  \***************************************************************************************/
+/*!***********************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/updateCustomBarInfo.js ***!
+  \***********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni, wx) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+/**
+ * 更新自定义顶部导航栏的高度
+ */
+function updateCustomBarInfo() {
+  return new Promise(function (resolve, reject) {
+    uni.getSystemInfo({
+      success: function success(e) {
+        var statusBarHeight = 0;
+        var customBarHeight = 0;
+        statusBarHeight = e.statusBarHeight;
+        var custom = wx.getMenuButtonBoundingClientRect();
+        customBarHeight = custom.bottom + (custom.top - e.statusBarHeight <= 4 ? custom.top - e.statusBarHeight + 4 : custom.top - e.statusBarHeight);
+        resolve({
+          statusBarHeight: statusBarHeight,
+          customBarHeight: customBarHeight
+        });
+      },
+      fail: function fail(err) {
+        console.log("获取设备信息失败", err);
+        reject();
+      }
+    });
+  });
+}
+var _default = updateCustomBarInfo;
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"]))
+
+/***/ }),
+
+/***/ 41:
+/*!****************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/index.js ***!
+  \****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11696,1923 +11556,62 @@ module.exports = _interopRequireDefault, module.exports.__esModule = true, modul
 
 
 var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+var _typeof = __webpack_require__(/*! @babel/runtime/helpers/typeof */ 13);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-Object.defineProperty(exports, "RouterMount", {
-  enumerable: true,
-  get: function get() {
-    return _uniSimpleRouter.RouterMount;
-  }
-});
-exports.router = void 0;
-var _uniSimpleRouter = __webpack_require__(/*! ./uni-simple-router.js */ 41);
-var _store = _interopRequireDefault(__webpack_require__(/*! @/nxTemp/store */ 37));
-// 路由
-
-var router = (0, _uniSimpleRouter.createRouter)({
-  platform: "mp-weixin",
-  applet: {
-    animationDuration: 0 //默认 300ms 
-  },
-
-  routerErrorEach: function routerErrorEach(_ref) {
-    var type = _ref.type,
-      msg = _ref.msg;
-    switch (type) {
-      case 3:
-        // APP退出应用
-
-        break;
-      case 2:
-      case 0:
-        router.$lockStatus = false;
-        break;
-      default:
-        break;
-    }
-  },
-  // 通配符，非定义页面，跳转404
-  routes: [
-  // ...ROUTES,
-  {
-    path: '*',
-    redirect: function redirect(to) {
-      return {
-        name: '404'
-      };
-    }
-  }]
-});
-
-//全局路由前置守卫
-exports.router = router;
-router.beforeEach(function (to, from, next) {
-  // 权限控制登录
-  next();
-  // // 有两个个判断条件,一个是token,还有一个路由元信息
-  // let userInfo = Boolean(uni.getStorageSync('userInfo'));
-  // // 权限控制
-  // if (to.meta && to.meta.auth && !userInfo) {//没有登录信息执行登录操作
-  // } else {
-  // 	next()
-  // }
-});
-
-/***/ }),
-
-/***/ 41:
-/*!***************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/nxTemp/router/uni-simple-router.js ***!
-  \***************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(uni, module) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof = __webpack_require__(/*! @babel/runtime/helpers/typeof */ 13);
-!function (e, t) {
-  "object" == ( false ? undefined : _typeof(exports)) && "object" == ( false ? undefined : _typeof(module)) ? module.exports = t() :  true ? !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (t),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : undefined;
-}(self, function () {
-  return e = {
-    779: function _(e, t, r) {
-      var o = r(173);
-      e.exports = function e(t, r, n) {
-        return o(r) || (n = r || n, r = []), n = n || {}, t instanceof RegExp ? function (e, t) {
-          var r = e.source.match(/\((?!\?)/g);
-          if (r) for (var o = 0; o < r.length; o++) {
-            t.push({
-              name: o,
-              prefix: null,
-              delimiter: null,
-              optional: !1,
-              repeat: !1,
-              partial: !1,
-              asterisk: !1,
-              pattern: null
-            });
-          }
-          return c(e, t);
-        }(t, r) : o(t) ? function (t, r, o) {
-          for (var n = [], a = 0; a < t.length; a++) {
-            n.push(e(t[a], r, o).source);
-          }
-          return c(new RegExp("(?:" + n.join("|") + ")", s(o)), r);
-        }(t, r, n) : function (e, t, r) {
-          return f(a(e, r), t, r);
-        }(t, r, n);
-      }, e.exports.parse = a, e.exports.compile = function (e, t) {
-        return u(a(e, t), t);
-      }, e.exports.tokensToFunction = u, e.exports.tokensToRegExp = f;
-      var n = new RegExp(["(\\\\.)", "([\\/.])?(?:(?:\\:(\\w+)(?:\\(((?:\\\\.|[^\\\\()])+)\\))?|\\(((?:\\\\.|[^\\\\()])+)\\))([+*?])?|(\\*))"].join("|"), "g");
-      function a(e, t) {
-        for (var r, o = [], a = 0, i = 0, u = "", c = t && t.delimiter || "/"; null != (r = n.exec(e));) {
-          var s = r[0],
-            f = r[1],
-            h = r.index;
-          if (u += e.slice(i, h), i = h + s.length, f) u += f[1];else {
-            var v = e[i],
-              y = r[2],
-              g = r[3],
-              d = r[4],
-              m = r[5],
-              b = r[6],
-              O = r[7];
-            u && (o.push(u), u = "");
-            var P = null != y && null != v && v !== y,
-              k = "+" === b || "*" === b,
-              j = "?" === b || "*" === b,
-              w = r[2] || c,
-              R = d || m;
-            o.push({
-              name: g || a++,
-              prefix: y || "",
-              delimiter: w,
-              optional: j,
-              repeat: k,
-              partial: P,
-              asterisk: !!O,
-              pattern: R ? p(R) : O ? ".*" : "[^" + l(w) + "]+?"
-            });
-          }
-        }
-        return i < e.length && (u += e.substr(i)), u && o.push(u), o;
-      }
-      function i(e) {
-        return encodeURI(e).replace(/[\/?#]/g, function (e) {
-          return "%" + e.charCodeAt(0).toString(16).toUpperCase();
-        });
-      }
-      function u(e, t) {
-        for (var r = new Array(e.length), n = 0; n < e.length; n++) {
-          "object" == _typeof(e[n]) && (r[n] = new RegExp("^(?:" + e[n].pattern + ")$", s(t)));
-        }
-        return function (t, n) {
-          for (var a = "", u = t || {}, l = (n || {}).pretty ? i : encodeURIComponent, p = 0; p < e.length; p++) {
-            var c = e[p];
-            if ("string" != typeof c) {
-              var s,
-                f = u[c.name];
-              if (null == f) {
-                if (c.optional) {
-                  c.partial && (a += c.prefix);
-                  continue;
-                }
-                throw new TypeError('Expected "' + c.name + '" to be defined');
-              }
-              if (o(f)) {
-                if (!c.repeat) throw new TypeError('Expected "' + c.name + '" to not repeat, but received `' + JSON.stringify(f) + "`");
-                if (0 === f.length) {
-                  if (c.optional) continue;
-                  throw new TypeError('Expected "' + c.name + '" to not be empty');
-                }
-                for (var h = 0; h < f.length; h++) {
-                  if (s = l(f[h]), !r[p].test(s)) throw new TypeError('Expected all "' + c.name + '" to match "' + c.pattern + '", but received `' + JSON.stringify(s) + "`");
-                  a += (0 === h ? c.prefix : c.delimiter) + s;
-                }
-              } else {
-                if (s = c.asterisk ? encodeURI(f).replace(/[?#]/g, function (e) {
-                  return "%" + e.charCodeAt(0).toString(16).toUpperCase();
-                }) : l(f), !r[p].test(s)) throw new TypeError('Expected "' + c.name + '" to match "' + c.pattern + '", but received "' + s + '"');
-                a += c.prefix + s;
-              }
-            } else a += c;
-          }
-          return a;
-        };
-      }
-      function l(e) {
-        return e.replace(/([.+*?=^!:${}()[\]|\/\\])/g, "\\$1");
-      }
-      function p(e) {
-        return e.replace(/([=!:$\/()])/g, "\\$1");
-      }
-      function c(e, t) {
-        return e.keys = t, e;
-      }
-      function s(e) {
-        return e && e.sensitive ? "" : "i";
-      }
-      function f(e, t, r) {
-        o(t) || (r = t || r, t = []);
-        for (var n = (r = r || {}).strict, a = !1 !== r.end, i = "", u = 0; u < e.length; u++) {
-          var p = e[u];
-          if ("string" == typeof p) i += l(p);else {
-            var f = l(p.prefix),
-              h = "(?:" + p.pattern + ")";
-            t.push(p), p.repeat && (h += "(?:" + f + h + ")*"), i += h = p.optional ? p.partial ? f + "(" + h + ")?" : "(?:" + f + "(" + h + "))?" : f + "(" + h + ")";
-          }
-        }
-        var v = l(r.delimiter || "/"),
-          y = i.slice(-v.length) === v;
-        return n || (i = (y ? i.slice(0, -v.length) : i) + "(?:" + v + "(?=$))?"), i += a ? "$" : n && y ? "" : "(?=" + v + "|$)", c(new RegExp("^" + i, s(r)), t);
-      }
-    },
-    173: function _(e) {
-      e.exports = Array.isArray || function (e) {
-        return "[object Array]" == Object.prototype.toString.call(e);
-      };
-    },
-    844: function _(e, t, r) {
-      "use strict";
-
-      var o = this && this.__assign || function () {
-        return (o = Object.assign || function (e) {
-          for (var t, r = 1, o = arguments.length; r < o; r++) {
-            for (var n in t = arguments[r]) {
-              Object.prototype.hasOwnProperty.call(t, n) && (e[n] = t[n]);
-            }
-          }
-          return e;
-        }).apply(this, arguments);
-      };
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.buildVueRouter = t.buildVueRoutes = void 0;
-      var n = r(366),
-        a = r(883),
-        i = r(789),
-        u = r(169);
-      t.buildVueRoutes = function (e, t) {
-        for (var r = e.routesMap, o = r.pathMap, l = r.finallyPathList, p = Object.keys(t), c = 0; c < p.length; c++) {
-          var s = p[c],
-            f = o[s],
-            h = t[s];
-          if (f) {
-            var v = i.getRoutePath(f, e).finallyPath;
-            if (v instanceof Array) throw new Error("非 vueRouterDev 模式下，alias、aliasPath、path 无法提供数组类型！ " + JSON.stringify(f));
-            null != f.name && (h.name = f.name);
-            var y = h.path,
-              g = h.alias;
-            delete h.alias, h.path = v, "/" === y && null != g && (h.alias = g, h.path = y), f.beforeEnter && (h.beforeEnter = function (t, r, o) {
-              u.onTriggerEachHook(t, r, e, n.hookToggle.enterHooks, o);
-            });
-          } else a.warn(s + " 路由地址在路由表中未找到，确定是否传递漏啦", e, !0);
-        }
-        return l.includes("*") && (t["*"] = o["*"]), t;
-      }, t.buildVueRouter = function (e, t, r) {
-        var n;
-        n = "[object Array]" === i.getDataType(r) ? r : Object.values(r);
-        var a = e.options.h5,
-          u = a.scrollBehavior,
-          l = a.fallback,
-          p = t.options.scrollBehavior;
-        t.options.scrollBehavior = function (e, t, r) {
-          return p && p(e, t, r), u(e, t, r);
-        }, t.fallback = l;
-        var c = new t.constructor(o(o({}, e.options.h5), {
-          base: t.options.base,
-          mode: t.options.mode,
-          routes: n
-        }));
-        t.matcher = c.matcher;
-      };
-    },
-    147: function _(e, t) {
-      "use strict";
-
-      var _r,
-        o = this && this.__extends || (_r = function r(e, t) {
-          return (_r = Object.setPrototypeOf || {
-            __proto__: []
-          } instanceof Array && function (e, t) {
-            e.__proto__ = t;
-          } || function (e, t) {
-            for (var r in t) {
-              Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
-            }
-          })(e, t);
-        }, function (e, t) {
-          function o() {
-            this.constructor = e;
-          }
-          _r(e, t), e.prototype = null === t ? Object.create(t) : (o.prototype = t.prototype, new o());
-        });
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.proxyH5Mount = t.proxyEachHook = t.MyArray = void 0;
-      var n = function (e) {
-        function t(r, o, n, a) {
-          var i = e.call(this) || this;
-          return i.router = r, i.vueEachArray = o, i.myEachHook = n, i.hookName = a, Object.setPrototypeOf(i, t.prototype), i;
-        }
-        return o(t, e), t.prototype.push = function (e) {
-          var t = this;
-          this.vueEachArray.push(e);
-          var r = this.length;
-          this[this.length] = function (e, o, n) {
-            r > 0 ? t.vueEachArray[r](e, o, function () {
-              n && n();
-            }) : t.myEachHook(e, o, function (a) {
-              !1 === a ? n(!1) : t.vueEachArray[r](e, o, function (e) {
-                n(a);
-              });
-            }, t.router, !0);
-          };
-        }, t;
-      }(Array);
-      t.MyArray = n, t.proxyEachHook = function (e, t) {
-        for (var r = ["beforeHooks", "afterHooks"], o = 0; o < r.length; o++) {
-          var a = r[o],
-            i = e.lifeCycle[a][0];
-          if (i) {
-            var u = t[a];
-            t[a] = new n(e, u, i, a);
-          }
-        }
-      }, t.proxyH5Mount = function (e) {
-        var t;
-        if (0 === e.mount.length) {
-          if (null === (t = e.options.h5) || void 0 === t ? void 0 : t.vueRouterDev) return;
-          navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) && setTimeout(function () {
-            if (document.getElementsByTagName("uni-page").length > 0) return !1;
-            window.location.reload();
-          }, 0);
-        } else e.mount[0].app.$mount(), e.mount = [];
-      };
-    },
-    814: function _(e, t) {
-      "use strict";
-
-      var r = this && this.__assign || function () {
-        return (r = Object.assign || function (e) {
-          for (var t, r = 1, o = arguments.length; r < o; r++) {
-            for (var n in t = arguments[r]) {
-              Object.prototype.hasOwnProperty.call(t, n) && (e[n] = t[n]);
-            }
-          }
-          return e;
-        }).apply(this, arguments);
-      };
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.tabIndexSelect = t.runtimeQuit = t.registerLoddingPage = void 0;
-      var o = null,
-        n = null;
-      t.registerLoddingPage = function (e) {
-        if (e.options.registerLoadingPage) {
-          var t = e.options.APP,
-            o = t.loadingPageHook,
-            n = t.loadingPageStyle;
-          o(new plus.nativeObj.View("router-loadding", r({
-            top: "0px",
-            left: "0px",
-            height: "100%",
-            width: "100%"
-          }, n())));
-        }
-      }, t.runtimeQuit = function (e) {
-        void 0 === e && (e = "再按一次退出应用");
-        var t = +new Date();
-        o ? t - o < 1e3 && plus.runtime.quit() : (o = t, uni.showToast({
-          title: e,
-          icon: "none",
-          position: "bottom",
-          duration: 1e3
-        }), setTimeout(function () {
-          o = null;
-        }, 1e3));
-      }, t.tabIndexSelect = function (e, t) {
-        if (!__uniConfig.tabBar || !Array.isArray(__uniConfig.tabBar.list)) return !1;
-        for (var r = __uniConfig.tabBar.list, o = [], a = 0, i = 0; i < r.length; i++) {
-          var u = r[i];
-          if ("/" + u.pagePath !== e.path && "/" + u.pagePath !== t.path || (u.pagePath === t.path && (a = i), o.push(u)), 2 === o.length) break;
-        }
-        return 2 === o.length && (null == n && (n = uni.requireNativePlugin("uni-tabview")), n.switchSelect({
-          index: a
-        }), !0);
-      };
-    },
-    334: function _(e, t) {
-      "use strict";
-
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.getEnterPath = void 0, t.getEnterPath = function (e, t) {
-        switch (t.options.platform) {
-          case "mp-alipay":
-          case "mp-weixin":
-          case "mp-toutiao":
-          case "mp-qq":
-            return e.$options.mpInstance.route;
-          case "mp-baidu":
-            return e.$options.mpInstance.is || e.$options.mpInstance.pageinstance.route;
-        }
-        return e.$options.mpInstance.route;
-      };
-    },
-    282: function _(e, t, r) {
-      "use strict";
-
-      var o = this && this.__assign || function () {
-          return (o = Object.assign || function (e) {
-            for (var t, r = 1, o = arguments.length; r < o; r++) {
-              for (var n in t = arguments[r]) {
-                Object.prototype.hasOwnProperty.call(t, n) && (e[n] = t[n]);
-              }
-            }
-            return e;
-          }).apply(this, arguments);
-        },
-        n = this && this.__rest || function (e, t) {
-          var r = {};
-          for (var o in e) {
-            Object.prototype.hasOwnProperty.call(e, o) && t.indexOf(o) < 0 && (r[o] = e[o]);
-          }
-          if (null != e && "function" == typeof Object.getOwnPropertySymbols) {
-            var n = 0;
-            for (o = Object.getOwnPropertySymbols(e); n < o.length; n++) {
-              t.indexOf(o[n]) < 0 && Object.prototype.propertyIsEnumerable.call(e, o[n]) && (r[o[n]] = e[o[n]]);
-            }
-          }
-          return r;
-        };
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.notCallProxyHook = t.proxyVueSortHookName = t.indexProxyHook = t.appProxyHook = t.lifeCycle = t.baseConfig = t.mpPlatformReg = void 0;
-      var a = r(883);
-      t.mpPlatformReg = "(^mp-weixin$)|(^mp-baidu$)|(^mp-alipay$)|(^mp-toutiao$)|(^mp-qq$)|(^mp-360$)", t.baseConfig = {
-        h5: {
-          paramsToQuery: !1,
-          vueRouterDev: !1,
-          vueNext: !1,
-          mode: "hash",
-          base: "/",
-          linkActiveClass: "router-link-active",
-          linkExactActiveClass: "router-link-exact-active",
-          scrollBehavior: function scrollBehavior(e, t, r) {
-            return {
-              x: 0,
-              y: 0
-            };
-          },
-          fallback: !0
-        },
-        APP: {
-          registerLoadingPage: !0,
-          loadingPageStyle: function loadingPageStyle() {
-            return JSON.parse('{"backgroundColor":"#FFF"}');
-          },
-          loadingPageHook: function loadingPageHook(e) {
-            e.show();
-          },
-          launchedHook: function launchedHook() {
-            plus.navigator.closeSplashscreen();
-          },
-          animation: {}
-        },
-        applet: {
-          animationDuration: 300
-        },
-        platform: "h5",
-        keepUniOriginNav: !1,
-        debugger: !1,
-        routerBeforeEach: function routerBeforeEach(e, t, r) {
-          r();
-        },
-        routerAfterEach: function routerAfterEach(e, t) {},
-        routerErrorEach: function routerErrorEach(e, t) {
-          t.$lockStatus = !1, a.err(e, t, !0);
-        },
-        detectBeforeLock: function detectBeforeLock(e, t, r) {},
-        routes: [{
-          path: "/choose-location"
-        }, {
-          path: "/open-location"
-        }, {
-          path: "/preview-image"
-        }]
-      }, t.lifeCycle = {
-        beforeHooks: [],
-        afterHooks: [],
-        routerBeforeHooks: [],
-        routerAfterHooks: [],
-        routerErrorHooks: []
-      }, t.appProxyHook = {
-        app: {
-          created: [],
-          beforeMount: [],
-          mounted: [],
-          onLaunch: [],
-          onShow: [],
-          onHide: [],
-          beforeDestroy: [],
-          destroyed: []
-        }
-      }, t.indexProxyHook = {
-        app: t.appProxyHook.app,
-        page: function (e) {
-          e.onLaunch;
-          var t = n(e, ["onLaunch"]);
-          return o(o({}, t), {
-            onLoad: [],
-            onReady: [],
-            onUnload: [],
-            onResize: []
-          });
-        }(JSON.parse(JSON.stringify(t.appProxyHook.app))),
-        component: []
-      }, t.proxyVueSortHookName = {
-        app: ["created", "beforeMount", "mounted", "onLaunch", "onShow", "onHide", "beforeDestroy", "destroyed"],
-        page: ["created", "beforeMount", "mounted", "onLoad", "onReady", "onShow", "onResize", "onHide", "beforeDestroy", "destroyed", "onUnload"],
-        component: ["created", "beforeMount", "mounted", "beforeDestroy", "destroyed"]
-      }, t.notCallProxyHook = ["onHide", "beforeDestroy", "destroyed", "destroyed", "onUnload", "onResize"];
-    },
-    801: function _(e, t, r) {
-      "use strict";
-
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.createRouteMap = void 0;
-      var o = r(883),
-        n = r(789);
-      t.createRouteMap = function (e, t) {
-        var r = {
-          finallyPathList: [],
-          finallyPathMap: Object.create(null),
-          aliasPathMap: Object.create(null),
-          pathMap: Object.create(null),
-          vueRouteMap: Object.create(null),
-          nameMap: Object.create(null)
-        };
-        return t.forEach(function (t) {
-          var a = n.getRoutePath(t, e),
-            i = a.finallyPath,
-            u = a.aliasPath,
-            l = a.path;
-          if (null == l) throw new Error("请提供一个完整的路由对象，包括以绝对路径开始的 ‘path’ 字符串 " + JSON.stringify(t));
-          if (i instanceof Array && !e.options.h5.vueRouterDev && "h5" === e.options.platform) throw new Error("非 vueRouterDev 模式下，route.alias 目前无法提供数组类型！ " + JSON.stringify(t));
-          var p = i,
-            c = u;
-          "h5" !== e.options.platform && 0 !== p.indexOf("/") && "*" !== l && o.warn("当前路由对象下，route：" + JSON.stringify(t) + " 是否缺少了前缀 ‘/’", e, !0), r.finallyPathMap[p] || (r.finallyPathMap[p] = t, r.aliasPathMap[c] = t, r.pathMap[l] = t, r.finallyPathList.push(p), null != t.name && (r.nameMap[t.name] = t));
-        }), r;
-      };
-    },
-    662: function _(e, t, r) {
-      "use strict";
-
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.registerEachHooks = t.registerRouterHooks = t.registerHook = void 0;
-      var o = r(366),
-        n = r(169);
-      function a(e, t) {
-        e[0] = t;
-      }
-      t.registerHook = a, t.registerRouterHooks = function (e, t) {
-        return a(e.routerBeforeHooks, function (e, r, o) {
-          t.routerBeforeEach(e, r, o);
-        }), a(e.routerAfterHooks, function (e, r) {
-          t.routerAfterEach(e, r);
-        }), a(e.routerErrorHooks, function (e, r) {
-          t.routerErrorEach(e, r);
-        }), e;
-      }, t.registerEachHooks = function (e, t, r) {
-        a(e.lifeCycle[t], function (e, a, i, u, l) {
-          l ? n.onTriggerEachHook(e, a, u, o.hookToggle[t], i) : r(e, a, i);
-        });
-      };
-    },
-    460: function _(e, t, r) {
-      "use strict";
-
-      var o = this && this.__assign || function () {
-        return (o = Object.assign || function (e) {
-          for (var t, r = 1, o = arguments.length; r < o; r++) {
-            for (var n in t = arguments[r]) {
-              Object.prototype.hasOwnProperty.call(t, n) && (e[n] = t[n]);
-            }
-          }
-          return e;
-        }).apply(this, arguments);
-      };
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.initMixins = t.getMixins = void 0;
-      var n = r(801),
-        a = r(844),
-        i = r(147),
-        u = r(814),
-        l = r(845),
-        p = r(890),
-        c = r(789),
-        s = r(334),
-        f = r(282),
-        h = !1,
-        v = !1,
-        y = {
-          app: !1,
-          page: ""
-        };
-      function g(e, t) {
-        var r = t.options.platform;
-        return new RegExp(f.mpPlatformReg, "g").test(r) && (r = "app-lets"), {
-          h5: {
-            beforeCreate: function beforeCreate() {
-              var e;
-              if (this.$options.router) {
-                t.$route = this.$options.router;
-                var r = [];
-                (null === (e = t.options.h5) || void 0 === e ? void 0 : e.vueRouterDev) ? r = t.options.routes : (r = n.createRouteMap(t, this.$options.router.options.routes).finallyPathMap, t.routesMap.vueRouteMap = r, a.buildVueRoutes(t, r)), a.buildVueRouter(t, this.$options.router, r), i.proxyEachHook(t, this.$options.router);
-              }
-            }
-          },
-          "app-plus": {
-            beforeCreate: function beforeCreate() {
-              h || (h = !0, l.proxyPageHook(this, t, "appProxyHook", "app"), u.registerLoddingPage(t));
-            }
-          },
-          "app-lets": {
-            beforeCreate: function beforeCreate() {
-              var e = this.$options.mpType;
-              "component" !== e || v ? "component" !== e && (y[e] || ("page" === e ? (y[e] = s.getEnterPath(this, t), t.enterPath = y[e]) : y[e] = !0, l.proxyPageHook(this, t, "appletsProxyHook", e))) : c.assertParentChild(y.page, this) && l.proxyPageHook(this, t, "appletsProxyHook", e);
-            },
-            onLoad: function onLoad() {
-              c.voidFun("UNI-SIMPLE-ROUTER"), !v && c.assertParentChild(y.page, this) && (v = !0, p.forceGuardEach(t));
-            }
-          }
-        }[r];
-      }
-      t.getMixins = g, t.initMixins = function (e, t) {
-        var r = n.createRouteMap(t, t.options.routes);
-        t.routesMap = r, e.mixin(o({}, g(0, t)));
-      };
-    },
-    789: function _(e, t, r) {
-      "use strict";
-
-      var o = this && this.__assign || function () {
-          return (o = Object.assign || function (e) {
-            for (var t, r = 1, o = arguments.length; r < o; r++) {
-              for (var n in t = arguments[r]) {
-                Object.prototype.hasOwnProperty.call(t, n) && (e[n] = t[n]);
-              }
-            }
-            return e;
-          }).apply(this, arguments);
-        },
-        n = this && this.__rest || function (e, t) {
-          var r = {};
-          for (var o in e) {
-            Object.prototype.hasOwnProperty.call(e, o) && t.indexOf(o) < 0 && (r[o] = e[o]);
-          }
-          if (null != e && "function" == typeof Object.getOwnPropertySymbols) {
-            var n = 0;
-            for (o = Object.getOwnPropertySymbols(e); n < o.length; n++) {
-              t.indexOf(o[n]) < 0 && Object.prototype.propertyIsEnumerable.call(e, o[n]) && (r[o[n]] = e[o[n]]);
-            }
-          }
-          return r;
-        },
-        a = this && this.__spreadArrays || function () {
-          for (var e = 0, t = 0, r = arguments.length; t < r; t++) {
-            e += arguments[t].length;
-          }
-          var o = Array(e),
-            n = 0;
-          for (t = 0; t < r; t++) {
-            for (var a = arguments[t], i = 0, u = a.length; i < u; i++, n++) {
-              o[n] = a[i];
-            }
-          }
-          return o;
-        };
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.deepDecodeQuery = t.resolveAbsolutePath = t.assertParentChild = t.resetPageHook = t.callHook = t.replaceHook = t.lockDetectWarn = t.deepClone = t.baseClone = t.assertDeepObject = t.paramsToQuery = t.forMatNextToFrom = t.urlToJson = t.getUniCachePage = t.copyData = t.getDataType = t.routesForMapRoute = t.notRouteTo404 = t.getWildcardRule = t.assertNewOptions = t.getRoutePath = t.notDeepClearNull = t.mergeConfig = t.timeOut = t.def = t.voidFun = void 0;
-      var i = r(282),
-        u = r(169),
-        l = r(883),
-        p = r(890),
-        c = r(779);
-      function s(e, t) {
-        for (var r = Object.create(null), n = Object.keys(e).concat(["resolveQuery", "parseQuery"]), i = 0; i < n.length; i += 1) {
-          var u = n[i];
-          null != t[u] ? t[u].constructor === Object ? r[u] = o(o({}, e[u]), t[u]) : r[u] = "routes" === u ? a(e[u], t[u]) : t[u] : r[u] = e[u];
-        }
-        return r;
-      }
-      function f(e, t) {
-        var r = e.aliasPath || e.alias || e.path;
-        return "h5" !== t.options.platform && (r = e.path), {
-          finallyPath: r,
-          aliasPath: e.aliasPath || e.path,
-          path: e.path,
-          alias: e.alias
-        };
-      }
-      function h(e, t) {
-        var r = e.routesMap.finallyPathMap["*"];
-        if (r) return r;
-        throw t && u.ERRORHOOK[0](t, e), new Error("当前路由表匹配规则已全部匹配完成，未找到满足的匹配规则。你可以使用 '*' 通配符捕捉最后的异常");
-      }
-      function v(e) {
-        return Object.prototype.toString.call(e);
-      }
-      function y(e, t) {
-        if (null == e) t = e;else for (var r = 0, o = Object.keys(e); r < o.length; r++) {
-          var n = o[r],
-            a = n;
-          e[n] !== e && ("object" == _typeof(e[n]) ? (t[a] = "[object Array]" === v(e[n]) ? [] : {}, t[a] = y(e[n], t[a])) : t[a] = e[n]);
-        }
-        return t;
-      }
-      function g(e) {
-        var t = "[object Array]" === v(e) ? [] : {};
-        return y(e, t), t;
-      }
-      function d(e, t, r) {
-        for (var o = [], n = i.proxyVueSortHookName[e], a = 0; a < n.length; a++) {
-          var u = t[n[a]][0];
-          u && u.hook && o.push(u.hook(r));
-        }
-        return o;
-      }
-      t.voidFun = function () {
-        for (var e = [], t = 0; t < arguments.length; t++) {
-          e[t] = arguments[t];
-        }
-      }, t.def = function (e, t, r) {
-        Object.defineProperty(e, t, {
-          get: function get() {
-            return r();
-          }
-        });
-      }, t.timeOut = function (e) {
-        return new Promise(function (t) {
-          setTimeout(function () {
-            t();
-          }, e);
-        });
-      }, t.mergeConfig = s, t.notDeepClearNull = function (e) {
-        for (var t in e) {
-          null == e[t] && delete e[t];
-        }
-        return e;
-      }, t.getRoutePath = f, t.assertNewOptions = function (e) {
-        var t,
-          r = e.platform,
-          o = e.routes;
-        if (null == r) throw new Error("你在实例化路由时必须传递 'platform'");
-        if (null == o || 0 === o.length) throw new Error("你在实例化路由时必须传递 routes 为空，这是无意义的。");
-        return "h5" === e.platform && (null === (t = e.h5) || void 0 === t ? void 0 : t.vueRouterDev) && (i.baseConfig.routes = []), s(i.baseConfig, e);
-      }, t.getWildcardRule = h, t.notRouteTo404 = function (e, t, r, o) {
-        if ("*" !== t.path) return t;
-        var n = t.redirect;
-        if (void 0 === n) throw new Error(" *  通配符必须配合 redirect 使用。redirect: string | Location | Function");
-        var a = n;
-        return "function" == typeof a && (a = a(r)), p.navjump(a, e, o, void 0, void 0, void 0, !1);
-      }, t.routesForMapRoute = function e(t, r, o, n) {
-        var a;
-        if (void 0 === n && (n = !1), null === (a = t.options.h5) || void 0 === a ? void 0 : a.vueRouterDev) return {
-          path: r
-        };
-        for (var i = r.split("?")[0], u = "", l = t.routesMap, p = 0; p < o.length; p++) {
-          for (var s = l[o[p]], f = 0, y = Object.entries(s); f < y.length; f++) {
-            var g = y[f],
-              d = g[0],
-              m = g[1];
-            if ("*" !== d) {
-              var b = m,
-                O = d;
-              if ("[object Array]" === v(s) && (O = b), null != c(O).exec(i)) return "[object String]" === v(b) ? l.finallyPathMap[b] : b;
-            } else "" === u && (u = "*");
-          }
-        }
-        if (n) return {};
-        if (l.aliasPathMap) {
-          var P = e(t, r, ["aliasPathMap"], !0);
-          if (Object.keys(P).length > 0) return P;
-        }
-        if ("" !== u) return h(t);
-        throw new Error(r + " 路径无法在路由表中找到！检查跳转路径及路由表");
-      }, t.getDataType = v, t.copyData = function (e) {
-        return JSON.parse(JSON.stringify(e));
-      }, t.getUniCachePage = function (e) {
-        var t = getCurrentPages();
-        if (null == e) return t;
-        if (0 === t.length) return t;
-        var r = t.reverse()[e];
-        return null == r ? [] : r;
-      }, t.urlToJson = function (e) {
-        var t = {},
-          r = e.split("?"),
-          o = r[0],
-          n = r[1];
-        if (null != n) for (var a = 0, i = n.split("&"); a < i.length; a++) {
-          var u = i[a].split("=");
-          t[u[0]] = u[1];
-        }
-        return {
-          path: o,
-          query: t
-        };
-      }, t.forMatNextToFrom = function (e, t, r) {
-        var o = [t, r],
-          n = o[0],
-          a = o[1];
-        if ("h5" === e.options.platform) {
-          var i = e.options.h5,
-            u = i.vueNext,
-            l = i.vueRouterDev;
-          u || l || (n = p.createRoute(e, void 0, n), a = p.createRoute(e, void 0, a));
-        } else n = p.createRoute(e, void 0, g(n)), a = p.createRoute(e, void 0, g(a));
-        return {
-          matTo: n,
-          matFrom: a
-        };
-      }, t.paramsToQuery = function (e, t) {
-        var r;
-        if ("h5" === e.options.platform && !(null === (r = e.options.h5) || void 0 === r ? void 0 : r.paramsToQuery)) return t;
-        if ("[object Object]" === v(t)) {
-          var a = t,
-            i = a.name,
-            l = a.params,
-            p = n(a, ["name", "params"]),
-            c = l;
-          if ("h5" !== e.options.platform && null == c && (c = {}), null != i && null != c) {
-            var s = e.routesMap.nameMap[i];
-            null == s && (s = h(e, {
-              type: 2,
-              msg: "命名路由为：" + i + " 的路由，无法在路由表中找到！",
-              toRule: t
-            }));
-            var y = f(s, e).finallyPath;
-            if (!y.includes(":")) return o(o({}, p), {
-              path: y,
-              query: c
-            });
-            u.ERRORHOOK[0]({
-              type: 2,
-              msg: "动态路由：" + y + " 无法使用 paramsToQuery！",
-              toRule: t
-            }, e);
-          }
-        }
-        return t;
-      }, t.assertDeepObject = function (e) {
-        var t = null;
-        try {
-          t = JSON.stringify(e).match(/\{|\[|\}|\]/g);
-        } catch (e) {
-          l.warnLock("传递的参数解析对象失败。" + e);
-        }
-        return null != t && t.length > 3;
-      }, t.baseClone = y, t.deepClone = g, t.lockDetectWarn = function (e, t, r, o, n) {
-        if ("afterHooks" === n) o();else {
-          var a = e.options.detectBeforeLock;
-          a && a(e, t, r), e.$lockStatus ? e.options.routerErrorEach({
-            type: 2,
-            msg: "当前页面正在处于跳转状态，请稍后再进行跳转...."
-          }, e) : o();
-        }
-      }, t.replaceHook = function (e, t, r, o) {
-        var n = t.$options,
-          a = e[r][o],
-          u = {};
-        if ("[object Array]" === v(a) && (u = {
-          beforeCreate: [],
-          created: [],
-          beforeMount: [],
-          mounted: [],
-          beforeDestroy: [],
-          destroyed: []
-        }), null != a) {
-          for (var l = i.proxyVueSortHookName[o], p = function p(r) {
-              var p = l[r],
-                c = n[p];
-              if ("[object Array]" === v(c)) {
-                if (1 === c.length && c.toString().includes("UNI-SIMPLE-ROUTER")) return "continue";
-                var s = {
-                    options: [],
-                    hook: Function
-                  },
-                  f = c.splice(c.length - 1, 1, function () {
-                    for (var e = [], t = 0; t < arguments.length; t++) {
-                      e[t] = arguments[t];
-                    }
-                    return s.options = e;
-                  })[0];
-                s.hook = function (r) {
-                  return e.enterPath.replace(/^\//, "") !== r.replace(/^\//, "") && "app" !== o ? function () {} : (i.notCallProxyHook.includes(p) || f.apply(t, s.options), function () {
-                    c.splice(c.length - 1, 1, f);
-                  });
-                }, Object.keys(u).length > 0 ? u[p] = [s] : a[p] = [s];
-              }
-            }, c = 0; c < l.length; c++) {
-            p(c);
-          }
-          Object.keys(u).length > 0 && a.push(u);
-        }
-      }, t.callHook = d, t.resetPageHook = function (e, t) {
-        var r = t.trim().match(/^(\/?[^\?\s]+)(\?[\s\S]*$)?$/);
-        if (null == r) throw new Error("还原hook失败。请检查 【" + t + "】 路径是否正确。");
-        t = r[1];
-        var o = "appletsProxyHook";
-        "app-plus" === e.options.platform && (o = "appProxyHook");
-        for (var n = [], a = 0, i = Object.entries(e[o]); a < i.length; a++) {
-          var u = i[a],
-            l = u[0],
-            p = u[1],
-            c = l;
-          if ("[object Array]" === v(p)) for (var s = 0; s < p.length; s++) {
-            n = n.concat(d(c, p[s], t));
-          } else n = n.concat(d(c, p, t));
-        }
-        setTimeout(function () {
-          for (var e = 0; e < n.length; e++) {
-            n[e]();
-          }
-        }, 500);
-      }, t.assertParentChild = function (e, t) {
-        for (; null != t.$parent;) {
-          var r = t.$parent.$mp;
-          if (r.page && r.page.is === e) return !0;
-          t = t.$parent;
-        }
-        try {
-          if (t.$mp.page.is === e || t.$mp.page.route === e) return !0;
-        } catch (e) {
-          return !1;
-        }
-        return !1;
-      }, t.resolveAbsolutePath = function (e, t) {
-        var r = /^\/?([^\?\s]+)(\?.+)?$/,
-          o = e.trim();
-        if (!r.test(o)) throw new Error("【" + e + "】 路径错误，请提供完整的路径(10001)。");
-        var n = o.match(r);
-        if (null == n) throw new Error("【" + e + "】 路径错误，请提供完整的路径(10002)。");
-        var a = n[2] || "";
-        if (/^\.\/[^\.]+/.test(o)) return (t.currentRoute.path + e).replace(/[^\/]+\.\//, "");
-        var i = n[1].replace(/\//g, "\\/").replace(/\.\./g, "[^\\/]+").replace(/\./g, "\\."),
-          u = new RegExp("^\\/" + i + "$"),
-          l = t.options.routes.filter(function (e) {
-            return u.test(e.path);
-          });
-        if (1 !== l.length) throw new Error("【" + e + "】 路径错误，尝试转成绝对路径失败，请手动转成绝对路径(10003)。");
-        return l[0].path + a;
-      }, t.deepDecodeQuery = function e(t) {
-        for (var r = "[object Array]" === v(t) ? [] : {}, o = Object.keys(t), n = 0; n < o.length; n++) {
-          var a = o[n],
-            i = t[a];
-          if ("string" == typeof i) try {
-            var u = JSON.parse(decodeURIComponent(i));
-            "object" != _typeof(u) && (u = i), r[a] = u;
-          } catch (e) {
-            try {
-              r[a] = decodeURIComponent(i);
-            } catch (e) {
-              r[a] = i;
-            }
-          } else if ("object" == _typeof(i)) {
-            var l = e(i);
-            r[a] = l;
-          } else r[a] = i;
-        }
-        return r;
-      };
-    },
-    883: function _(e, t) {
-      "use strict";
-
-      function r(e, t, r, o) {
-        if (void 0 === o && (o = !1), !o) {
-          var n = "[object Object]" === t.toString();
-          if (!1 === t) return !1;
-          if (n && !1 === t[e]) return !1;
-        }
-        return console[e](r), !0;
-      }
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.warnLock = t.log = t.warn = t.err = t.isLog = void 0, t.isLog = r, t.err = function (e, t, o) {
-        r("error", t.options.debugger, e, o);
-      }, t.warn = function (e, t, o) {
-        r("warn", t.options.debugger, e, o);
-      }, t.log = function (e, t, o) {
-        r("log", t.options.debugger, e, o);
-      }, t.warnLock = function (e) {
-        console.warn(e);
-      };
-    },
-    607: function _(e, t, r) {
-      "use strict";
-
-      var o = this && this.__createBinding || (Object.create ? function (e, t, r, o) {
-          void 0 === o && (o = r), Object.defineProperty(e, o, {
-            enumerable: !0,
-            get: function get() {
-              return t[r];
-            }
-          });
-        } : function (e, t, r, o) {
-          void 0 === o && (o = r), e[o] = t[r];
-        }),
-        n = this && this.__exportStar || function (e, t) {
-          for (var r in e) {
-            "default" === r || Object.prototype.hasOwnProperty.call(t, r) || o(t, e, r);
-          }
-        };
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.createRouter = t.RouterMount = t.runtimeQuit = void 0, n(r(366), t), n(r(309), t);
-      var a = r(814);
-      Object.defineProperty(t, "runtimeQuit", {
-        enumerable: !0,
-        get: function get() {
-          return a.runtimeQuit;
-        }
-      });
-      var i = r(963);
-      Object.defineProperty(t, "RouterMount", {
-        enumerable: !0,
-        get: function get() {
-          return i.RouterMount;
-        }
-      }), Object.defineProperty(t, "createRouter", {
-        enumerable: !0,
-        get: function get() {
-          return i.createRouter;
-        }
-      });
-    },
-    366: function _(e, t) {
-      "use strict";
-
-      var r, o, n;
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.rewriteMethodToggle = t.navtypeToggle = t.hookToggle = void 0, (n = t.hookToggle || (t.hookToggle = {})).beforeHooks = "beforeEach", n.afterHooks = "afterEach", n.enterHooks = "beforeEnter", (o = t.navtypeToggle || (t.navtypeToggle = {})).push = "navigateTo", o.replace = "redirectTo", o.replaceAll = "reLaunch", o.pushTab = "switchTab", o.back = "navigateBack", (r = t.rewriteMethodToggle || (t.rewriteMethodToggle = {})).navigateTo = "push", r.navigate = "push", r.redirectTo = "replace", r.reLaunch = "replaceAll", r.switchTab = "pushTab", r.navigateBack = "back";
-    },
-    309: function _(e, t) {
-      "use strict";
-
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      });
-    },
-    169: function _(e, t, r) {
-      "use strict";
-
-      var o = this && this.__rest || function (e, t) {
-        var r = {};
-        for (var o in e) {
-          Object.prototype.hasOwnProperty.call(e, o) && t.indexOf(o) < 0 && (r[o] = e[o]);
-        }
-        if (null != e && "function" == typeof Object.getOwnPropertySymbols) {
-          var n = 0;
-          for (o = Object.getOwnPropertySymbols(e); n < o.length; n++) {
-            t.indexOf(o[n]) < 0 && Object.prototype.propertyIsEnumerable.call(e, o[n]) && (r[o[n]] = e[o[n]]);
-          }
-        }
-        return r;
-      };
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.loopCallHook = t.transitionTo = t.onTriggerEachHook = t.callHook = t.callBeforeRouteLeave = t.HOOKLIST = t.ERRORHOOK = void 0;
-      var n = r(789),
-        a = r(890),
-        i = r(147),
-        u = r(814);
-      function l(e, t, r, o) {
-        var a,
-          i = n.getUniCachePage(0);
-        if (Object.keys(i).length > 0) {
-          var u = void 0;
-          switch ("h5" === e.options.platform ? u = i.$options.beforeRouteLeave : null != i.$vm && (u = i.$vm.$options.beforeRouteLeave), n.getDataType(u)) {
-            case "[object Array]":
-              a = (a = u[0]).bind(i);
-              break;
-            case "[object Function]":
-              a = u.bind(i.$vm);
-          }
-        }
-        return p(a, t, r, e, o);
-      }
-      function p(e, t, r, o, n, a) {
-        void 0 === a && (a = !0), null != e && e instanceof Function ? !0 === a ? e(t, r, n, o, !1) : (e(t, r, function () {}, o, !1), n()) : n();
-      }
-      function c(e, t, r, o, a, i) {
-        var u = n.forMatNextToFrom(e, t, r),
-          l = u.matTo,
-          p = u.matFrom;
-        "h5" === e.options.platform ? s(a, 0, i, e, l, p, o) : s(a.slice(0, 4), 0, function () {
-          i(function () {
-            s(a.slice(4), 0, n.voidFun, e, l, p, o);
-          });
-        }, e, l, p, o);
-      }
-      function s(e, r, i, l, p, c, f) {
-        var h = n.routesForMapRoute(l, p.path, ["finallyPathMap", "pathMap"]);
-        if (e.length - 1 < r) return i();
-        var v = e[r],
-          y = t.ERRORHOOK[0];
-        v(l, p, c, h, function (t) {
-          if ("app-plus" === l.options.platform && (!1 !== t && "string" != typeof t && "object" != _typeof(t) || u.tabIndexSelect(p, c)), !1 === t) "h5" === l.options.platform && i(!1), y({
-            type: 0,
-            msg: "管道函数传递 false 导航被终止!",
-            matTo: p,
-            matFrom: c,
-            nextTo: t
-          }, l);else if ("string" == typeof t || "object" == _typeof(t)) {
-            var n = f,
-              h = t;
-            if ("object" == _typeof(t)) {
-              var v = t.NAVTYPE;
-              h = o(t, ["NAVTYPE"]), null != v && (n = v);
-            }
-            a.navjump(h, l, n, {
-              from: c,
-              next: i
-            });
-          } else null == t ? (r++, s(e, r, i, l, p, c, f)) : y({
-            type: 1,
-            msg: "管道函数传递未知类型，无法被识别。导航被终止！",
-            matTo: p,
-            matFrom: c,
-            nextTo: t
-          }, l);
-        });
-      }
-      t.ERRORHOOK = [function (e, t) {
-        return t.lifeCycle.routerErrorHooks[0](e, t);
-      }], t.HOOKLIST = [function (e, t, r, o, n) {
-        return p(e.lifeCycle.routerBeforeHooks[0], t, r, e, n);
-      }, function (e, t, r, o, n) {
-        return l(e, t, r, n);
-      }, function (e, t, r, o, n) {
-        return p(e.lifeCycle.beforeHooks[0], t, r, e, n);
-      }, function (e, t, r, o, n) {
-        return p(o.beforeEnter, t, r, e, n);
-      }, function (e, t, r, o, n) {
-        return p(e.lifeCycle.afterHooks[0], t, r, e, n, !1);
-      }, function (e, t, r, o, n) {
-        return e.$lockStatus = !1, "h5" === e.options.platform && i.proxyH5Mount(e), p(e.lifeCycle.routerAfterHooks[0], t, r, e, n, !1);
-      }], t.callBeforeRouteLeave = l, t.callHook = p, t.onTriggerEachHook = function (e, r, o, n, a) {
-        var i = [];
-        switch (n) {
-          case "beforeEach":
-            i = t.HOOKLIST.slice(0, 3);
-            break;
-          case "afterEach":
-            i = t.HOOKLIST.slice(4);
-            break;
-          case "beforeEnter":
-            i = t.HOOKLIST.slice(3, 4);
-        }
-        c(o, e, r, "push", i, a);
-      }, t.transitionTo = c, t.loopCallHook = s;
-    },
-    890: function _(e, t, r) {
-      "use strict";
-
-      var o = this && this.__assign || function () {
-        return (o = Object.assign || function (e) {
-          for (var t, r = 1, o = arguments.length; r < o; r++) {
-            for (var n in t = arguments[r]) {
-              Object.prototype.hasOwnProperty.call(t, n) && (e[n] = t[n]);
-            }
-          }
-          return e;
-        }).apply(this, arguments);
-      };
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.createRoute = t.forceGuardEach = t.backOptionsBuild = t.navjump = t.lockNavjump = void 0;
-      var n = r(366),
-        a = r(99),
-        i = r(789),
-        u = r(169),
-        l = r(845),
-        p = r(169);
-      function c(e, t, r, o, n) {
-        i.lockDetectWarn(t, e, r, function () {
-          "h5" !== t.options.platform && (t.$lockStatus = !0), s(e, t, r, void 0, o, n);
-        });
-      }
-      function s(e, t, r, c, s, h, v) {
-        if (void 0 === v && (v = !0), "back" === r) {
-          var y;
-          if (y = "string" == typeof e ? +e : e.delta || 1, "h5" === t.options.platform) {
-            t.$route.go(-y);
-            var g = (h || {
-                success: i.voidFun
-              }).success || i.voidFun,
-              d = (h || {
-                complete: i.voidFun
-              }).complete || i.voidFun;
-            return g({
-              errMsg: "navigateBack:ok"
-            }), void d({
-              errMsg: "navigateBack:ok"
-            });
-          }
-          e = f(t, y, h);
-        }
-        var m = a.queryPageToMap(e, t).rule;
-        m.type = n.navtypeToggle[r];
-        var b = i.paramsToQuery(t, m),
-          O = a.resolveQuery(b, t);
-        if ("h5" === t.options.platform) {
-          if ("push" !== r && (r = "replace"), null != c) c.next(o({
-            replace: "push" !== r
-          }, O));else if ("push" === r && Reflect.has(O, "events")) {
-            if (Reflect.has(O, "name")) throw new Error("在h5端上使用 'push'、'navigateTo' 跳转时，如果包含 events 不允许使用 name 跳转，因为 name 实现了动态路由。请更换为 path 或者 url 跳转！");
-            uni.navigateTo(O, !0, i.voidFun, s);
-          } else t.$route[r](O, O.success || i.voidFun, O.fail || i.voidFun);
-        } else {
-          var P = {
-            path: ""
-          };
-          if (null == c) {
-            var k = i.routesForMapRoute(t, O.path, ["finallyPathMap", "pathMap"]);
-            k = i.notRouteTo404(t, k, O, r), O = o(o(o(o({}, k), {
-              params: {}
-            }), O), {
-              path: k.path
-            }), P = l.createToFrom(O, t);
-          } else P = c.from;
-          if (l.createFullPath(O, P), !1 === v) return O;
-          u.transitionTo(t, O, P, r, p.HOOKLIST, function (e) {
-            uni[n.navtypeToggle[r]](O, !0, e, s);
-          });
+exports.default = void 0;
+exports.init = init;
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 26));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 28));
+var _store = _interopRequireDefault(__webpack_require__(/*! @/nxTemp/store */ 33));
+var _wechat = _interopRequireDefault(__webpack_require__(/*! @/nxTemp/wechat/wechat */ 42));
+var _tools = _interopRequireDefault(__webpack_require__(/*! @/nxTemp/utils/tools */ 43));
+var filter = _interopRequireWildcard(__webpack_require__(/*! @/nxTemp/filter */ 45));
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+var install = function install(Vue) {
+  // global filter
+  Object.keys(filter).forEach(function (item) {
+    Vue.filter(item, filter[item]);
+  });
+  // 挂载函数
+  Vue.prototype.$store = _store.default;
+  Vue.prototype.$tools = _tools.default;
+  // event Bus 用于无关系组件间的通信。
+  Vue.prototype.$bus = new Vue();
+};
+function init(_x) {
+  return _init.apply(this, arguments);
+}
+function _init() {
+  _init = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(options) {
+    return _regenerator.default.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            // 检测小程序更新(如果从朋友圈场景进入则无此API)
+            options.scene !== 1154 && _wechat.default.checkMiniProgramUpdate();
+          case 1:
+          case "end":
+            return _context.stop();
         }
       }
-      function f(e, t, r) {
-        var n = h(e, t),
-          a = o(o({}, r || {}), {
-            path: n.path,
-            query: n.query,
-            delta: t
-          });
-        if ("[object Object]" === i.getDataType(r)) {
-          var u = r,
-            l = u.animationDuration,
-            p = u.animationType;
-          null != l && (a.animationDuration = l), null != p && (a.animationType = p);
-          var c = r.from;
-          null != c && (a.BACKTYPE = c);
-        }
-        return a;
-      }
-      function h(e, t, r) {
-        void 0 === t && (t = 0);
-        var u = {
-          name: "",
-          meta: {},
-          path: "",
-          fullPath: "",
-          NAVTYPE: "",
-          query: {},
-          params: {},
-          BACKTYPE: (r || {
-            BACKTYPE: ""
-          }).BACKTYPE || ""
-        };
-        if (19970806 === t) return u;
-        if ("h5" === e.options.platform) {
-          var l = {
-            path: ""
-          };
-          l = null != r ? r : e.$route.currentRoute;
-          var p = i.copyData(l.params);
-          delete p.__id__;
-          var c = a.parseQuery(o(o({}, p), i.copyData(l.query)), e);
-          l = o(o({}, l), {
-            query: c
-          }), u.path = l.path, u.fullPath = l.fullPath || "", u.query = i.deepDecodeQuery(l.query || {}), u.NAVTYPE = n.rewriteMethodToggle[l.type || "reLaunch"];
-        } else {
-          var s = {};
-          if (null != r) s = o(o({}, r), {
-            openType: r.type
-          });else {
-            var f = i.getUniCachePage(t);
-            if (0 === Object.keys(f).length) throw e.options.routerErrorEach({
-              type: 3,
-              msg: "不存在的页面栈，请确保有足够的页面可用，当前 level:" + t
-            }, e), new Error("不存在的页面栈，请确保有足够的页面可用，当前 level:" + t);
-            var h = f.options || {};
-            s = o(o({}, f.$page || {}), {
-              query: i.deepDecodeQuery(h),
-              fullPath: decodeURIComponent((f.$page || {}).fullPath || "/" + f.route)
-            }), "app-plus" !== e.options.platform && (s.path = "/" + f.route);
-          }
-          var v = s.openType;
-          u.query = s.query, u.path = s.path, u.fullPath = s.fullPath, u.NAVTYPE = n.rewriteMethodToggle[v || "reLaunch"];
-        }
-        var y = i.routesForMapRoute(e, u.path, ["finallyPathMap", "pathMap"]),
-          g = o(o({}, u), y);
-        return g.query = a.parseQuery(g.query, e), g;
-      }
-      t.lockNavjump = c, t.navjump = s, t.backOptionsBuild = f, t.forceGuardEach = function (e, t, r) {
-        if (void 0 === t && (t = "replaceAll"), void 0 === r && (r = !1), "h5" === e.options.platform) throw new Error("在h5端上使用：forceGuardEach 是无意义的，目前 forceGuardEach 仅支持在非h5端上使用");
-        var o = i.getUniCachePage(0);
-        0 === Object.keys(o).length && e.options.routerErrorEach({
-          type: 3,
-          msg: "不存在的页面栈，请确保有足够的页面可用，当前 level:0"
-        }, e);
-        var n = o,
-          a = n.route,
-          u = n.options;
-        c({
-          path: "/" + a,
-          query: i.deepDecodeQuery(u || {})
-        }, e, t, r);
-      }, t.createRoute = h;
-    },
-    845: function _(e, t, r) {
-      "use strict";
-
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.proxyPageHook = t.createFullPath = t.createToFrom = void 0;
-      var o = r(789),
-        n = r(890),
-        a = r(99);
-      t.createToFrom = function (e, t) {
-        var r = o.getUniCachePage(0);
-        return "[object Array]" === o.getDataType(r) ? o.deepClone(e) : n.createRoute(t);
-      }, t.createFullPath = function (e, t) {
-        if (null == e.fullPath) {
-          var r = a.stringifyQuery(e.query);
-          e.fullPath = e.path + r;
-        }
-        null == t.fullPath && (r = a.stringifyQuery(t.query), t.fullPath = t.path + r);
-      }, t.proxyPageHook = function (e, t, r, n) {
-        o.replaceHook(t, e, r, n);
-      };
-    },
-    99: function _(e, t, r) {
-      "use strict";
-
-      var o = this && this.__assign || function () {
-        return (o = Object.assign || function (e) {
-          for (var t, r = 1, o = arguments.length; r < o; r++) {
-            for (var n in t = arguments[r]) {
-              Object.prototype.hasOwnProperty.call(t, n) && (e[n] = t[n]);
-            }
-          }
-          return e;
-        }).apply(this, arguments);
-      };
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.stringifyQuery = t.parseQuery = t.resolveQuery = t.queryPageToMap = void 0;
-      var n = r(789),
-        a = r(169),
-        i = r(883),
-        u = /[!'()*]/g,
-        l = function l(e) {
-          return "%" + e.charCodeAt(0).toString(16);
-        },
-        p = /%2C/g,
-        c = function c(e) {
-          return encodeURIComponent(e).replace(u, l).replace(p, ",");
-        };
-      t.queryPageToMap = function (e, t) {
-        var r = {},
-          i = "",
-          u = e.success,
-          l = e.fail;
-        if ("[object Object]" === n.getDataType(e)) {
-          var p = e;
-          if (null != p.path) {
-            var c = n.urlToJson(p.path),
-              s = c.path,
-              f = c.query;
-            i = n.routesForMapRoute(t, s, ["finallyPathList", "pathMap"]), r = o(o({}, f), e.query || {}), p.path = s, p.query = r, delete e.params;
-          } else null != p.name ? null == (i = t.routesMap.nameMap[p.name]) ? i = n.getWildcardRule(t, {
-            type: 2,
-            msg: "命名路由为：" + p.name + " 的路由，无法在路由表中找到！",
-            toRule: e
-          }) : (r = e.params || {}, delete e.query) : i = n.getWildcardRule(t, {
-            type: 2,
-            msg: e + " 解析失败，请检测当前路由表下是否有包含。",
-            toRule: e
-          });
-        } else e = n.urlToJson(e), i = n.routesForMapRoute(t, e.path, ["finallyPathList", "pathMap"]), r = e.query;
-        if ("h5" === t.options.platform) {
-          n.getRoutePath(i, t).finallyPath.includes(":") && null == e.name && a.ERRORHOOK[0]({
-            type: 2,
-            msg: "当有设置 alias或者aliasPath 为动态路由时，不允许使用 path 跳转。请使用 name 跳转！",
-            route: i
-          }, t);
-          var h = e.complete,
-            v = e.success,
-            y = e.fail;
-          if ("[object Function]" === n.getDataType(h)) {
-            var g = function g(e, t) {
-              "[object Function]" === n.getDataType(t) && t.apply(this, e), h.apply(this, e);
-            };
-            u = function u() {
-              for (var e = [], t = 0; t < arguments.length; t++) {
-                e[t] = arguments[t];
-              }
-              g.call(this, e, v);
-            }, l = function l() {
-              for (var e = [], t = 0; t < arguments.length; t++) {
-                e[t] = arguments[t];
-              }
-              g.call(this, e, y);
-            };
-          }
-        }
-        var d = e;
-        return "[object Function]" === n.getDataType(d.success) && (d.success = u), "[object Function]" === n.getDataType(d.fail) && (d.fail = l), {
-          rule: d,
-          route: i,
-          query: r
-        };
-      }, t.resolveQuery = function (e, t) {
-        var r = "query";
-        null != e.params && (r = "params"), null != e.query && (r = "query");
-        var o = n.copyData(e[r] || {}),
-          a = t.options.resolveQuery;
-        if (a) {
-          var u = a(o);
-          "[object Object]" !== n.getDataType(u) ? i.warn("请按格式返回参数： resolveQuery?:(jsonQuery:{[propName: string]: any;})=>{[propName: string]: any;}", t) : e[r] = u;
-        } else {
-          if (!n.assertDeepObject(o)) return e;
-          var l = JSON.stringify(o);
-          e[r] = {
-            query: l
-          };
-        }
-        return e;
-      }, t.parseQuery = function (e, t) {
-        var r = t.options.parseQuery;
-        if (r) e = r(n.copyData(e)), "[object Object]" !== n.getDataType(e) && i.warn("请按格式返回参数： parseQuery?:(jsonQuery:{[propName: string]: any;})=>{[propName: string]: any;}", t);else if (Reflect.get(e, "query")) {
-          var o = Reflect.get(e, "query");
-          if ("string" == typeof o) try {
-            o = JSON.parse(o);
-          } catch (e) {
-            i.warn("尝试解析深度对象失败，按原样输出。" + e, t);
-          }
-          if ("object" == _typeof(o)) return n.deepDecodeQuery(o);
-        }
-        return e;
-      }, t.stringifyQuery = function (e) {
-        var t = e ? Object.keys(e).map(function (t) {
-          var r = e[t];
-          if (void 0 === r) return "";
-          if (null === r) return c(t);
-          if (Array.isArray(r)) {
-            var o = [];
-            return r.forEach(function (e) {
-              void 0 !== e && (null === e ? o.push(c(t)) : o.push(c(t) + "=" + c(e)));
-            }), o.join("&");
-          }
-          return c(t) + "=" + c(r);
-        }).filter(function (e) {
-          return e.length > 0;
-        }).join("&") : null;
-        return t ? "?" + t : "";
-      };
-    },
-    314: function _(e, t, r) {
-      "use strict";
-
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.rewriteMethod = void 0;
-      var o = r(366),
-        n = r(789),
-        a = r(883),
-        i = r(809),
-        u = ["navigateTo", "redirectTo", "reLaunch", "switchTab", "navigateBack"];
-      t.rewriteMethod = function (e) {
-        !1 === e.options.keepUniOriginNav && u.forEach(function (t) {
-          var r = uni[t];
-          uni[t] = function (u, l, p, c) {
-            void 0 === l && (l = !1), l ? i.uniOriginJump(e, r, t, u, p, c) : ("app-plus" === e.options.platform && 0 === Object.keys(e.appMain).length && (e.appMain = {
-              NAVTYPE: t,
-              path: u.url
-            }), function (e, t, r) {
-              if ("app-plus" === r.options.platform) {
-                var i = null;
-                e && (i = e.openType), null != i && "appLaunch" === i && (t = "reLaunch");
-              }
-              if ("reLaunch" === t && '{"url":"/"}' === JSON.stringify(e) && (a.warn("uni-app 原生方法：reLaunch({url:'/'}) 默认被重写啦！你可以使用 this.$Router.replaceAll() 或者 uni.reLaunch({url:'/?xxx=xxx'})", r, !0), t = "navigateBack", e = {
-                from: "backbutton"
-              }), "navigateBack" === t) {
-                var u = 1;
-                null == e && (e = {
-                  delta: 1
-                }), "[object Number]" === n.getDataType(e.delta) && (u = e.delta), r.back(u, e);
-              } else {
-                var l = o.rewriteMethodToggle[t],
-                  p = e.url;
-                if (!p.startsWith("/")) {
-                  var c = n.resolveAbsolutePath(p, r);
-                  p = c, e.url = c;
-                }
-                if ("switchTab" === t) {
-                  var s = n.routesForMapRoute(r, p, ["pathMap", "finallyPathList"]),
-                    f = n.getRoutePath(s, r).finallyPath;
-                  if ("[object Array]" === n.getDataType(f) && a.warn("uni-app 原生方法跳转路径为：" + p + "。此路为是tab页面时，不允许设置 alias 为数组的情况，并且不能为动态路由！当然你可以通过通配符*解决！", r, !0), "*" === f && a.warn("uni-app 原生方法跳转路径为：" + p + "。在路由表中找不到相关路由表！当然你可以通过通配符*解决！", r, !0), "h5" === r.options.platform) {
-                    var h = e.success;
-                    e.success = function () {
-                      for (var t = [], r = 0; r < arguments.length; r++) {
-                        t[r] = arguments[r];
-                      }
-                      null == h || h.apply(null, t), n.timeOut(150).then(function () {
-                        var t = e.detail || {};
-                        if (Object.keys(t).length > 0 && Reflect.has(t, "index")) {
-                          var r = n.getUniCachePage(0);
-                          if (0 === Object.keys(r).length) return !1;
-                          var o = r,
-                            a = o.$options.onTabItemTap;
-                          if (a) for (var i = 0; i < a.length; i++) {
-                            a[i].call(o, t);
-                          }
-                        }
-                      });
-                    };
-                  }
-                  p = f;
-                }
-                var v = e,
-                  y = v.events,
-                  g = v.success,
-                  d = v.fail,
-                  m = v.complete,
-                  b = v.animationType,
-                  O = {
-                    path: p,
-                    events: y,
-                    success: g,
-                    fail: d,
-                    complete: m,
-                    animationDuration: v.animationDuration,
-                    animationType: b
-                  };
-                r[l](n.notDeepClearNull(O));
-              }
-            }(u, t, e));
-          };
-        });
-      };
-    },
-    963: function _(e, t, r) {
-      "use strict";
-
-      var o = this && this.__assign || function () {
-        return (o = Object.assign || function (e) {
-          for (var t, r = 1, o = arguments.length; r < o; r++) {
-            for (var n in t = arguments[r]) {
-              Object.prototype.hasOwnProperty.call(t, n) && (e[n] = t[n]);
-            }
-          }
-          return e;
-        }).apply(this, arguments);
-      };
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.createRouter = t.RouterMount = void 0;
-      var n = r(282),
-        a = r(789),
-        i = r(662),
-        u = r(460),
-        l = r(890),
-        p = r(314),
-        c = function c() {},
-        s = new Promise(function (e) {
-          return c = e;
-        });
-      t.createRouter = function (e) {
-        var t = a.assertNewOptions(e),
-          r = {
-            options: t,
-            mount: [],
-            Vue: null,
-            appProxyHook: n.appProxyHook,
-            appletsProxyHook: n.indexProxyHook,
-            appMain: {},
-            enterPath: "",
-            $route: null,
-            $lockStatus: !1,
-            routesMap: {},
-            lifeCycle: i.registerRouterHooks(n.lifeCycle, t),
-            push: function push(e) {
-              l.lockNavjump(e, r, "push");
-            },
-            replace: function replace(e) {
-              l.lockNavjump(e, r, "replace");
-            },
-            replaceAll: function replaceAll(e) {
-              l.lockNavjump(e, r, "replaceAll");
-            },
-            pushTab: function pushTab(e) {
-              l.lockNavjump(e, r, "pushTab");
-            },
-            back: function back(e, t) {
-              void 0 === e && (e = 1), "[object Object]" !== a.getDataType(t) ? t = {
-                from: "navigateBack"
-              } : Reflect.has(t, "from") || (t = o(o({}, t), {
-                from: "navigateBack"
-              })), l.lockNavjump(e + "", r, "back", void 0, t);
-            },
-            forceGuardEach: function forceGuardEach(e, t) {
-              l.forceGuardEach(r, e, t);
-            },
-            beforeEach: function beforeEach(e) {
-              i.registerEachHooks(r, "beforeHooks", e);
-            },
-            afterEach: function afterEach(e) {
-              i.registerEachHooks(r, "afterHooks", e);
-            },
-            install: function install(e) {
-              r.Vue = e, p.rewriteMethod(this), u.initMixins(e, this), Object.defineProperty(e.prototype, "$Router", {
-                get: function get() {
-                  var e = r;
-                  return Object.defineProperty(this, "$Router", {
-                    value: e,
-                    writable: !1,
-                    configurable: !1,
-                    enumerable: !1
-                  }), Object.seal(e);
-                }
-              }), Object.defineProperty(e.prototype, "$Route", {
-                get: function get() {
-                  return l.createRoute(r);
-                }
-              }), Object.defineProperty(e.prototype, "$AppReady", {
-                get: function get() {
-                  return "h5" === r.options.platform ? Promise.resolve() : s;
-                },
-                set: function set(e) {
-                  !0 === e && c();
-                }
-              });
-            }
-          };
-        return a.def(r, "currentRoute", function () {
-          return l.createRoute(r);
-        }), r.beforeEach(function (e, t, r) {
-          return r();
-        }), r.afterEach(function () {}), r;
-      }, t.RouterMount = function (e, t, r) {
-        if (void 0 === r && (r = "#app"), "[object Array]" !== a.getDataType(t.mount)) throw new Error("挂载路由失败，router.app 应该为数组类型。当前类型：" + _typeof(t.mount));
-        if (t.mount.push({
-          app: e,
-          el: r
-        }), "h5" === t.options.platform) {
-          var o = t.$route;
-          o.replace({
-            path: o.currentRoute.fullPath
-          });
-        }
-      };
-    },
-    809: function _(e, t, r) {
-      "use strict";
-
-      var o = this && this.__assign || function () {
-          return (o = Object.assign || function (e) {
-            for (var t, r = 1, o = arguments.length; r < o; r++) {
-              for (var n in t = arguments[r]) {
-                Object.prototype.hasOwnProperty.call(t, n) && (e[n] = t[n]);
-              }
-            }
-            return e;
-          }).apply(this, arguments);
-        },
-        n = this && this.__awaiter || function (e, t, r, o) {
-          return new (r || (r = Promise))(function (n, a) {
-            function i(e) {
-              try {
-                l(o.next(e));
-              } catch (e) {
-                a(e);
-              }
-            }
-            function u(e) {
-              try {
-                l(o.throw(e));
-              } catch (e) {
-                a(e);
-              }
-            }
-            function l(e) {
-              var t;
-              e.done ? n(e.value) : (t = e.value, t instanceof r ? t : new r(function (e) {
-                e(t);
-              })).then(i, u);
-            }
-            l((o = o.apply(e, t || [])).next());
-          });
-        },
-        a = this && this.__generator || function (e, t) {
-          var r,
-            o,
-            n,
-            a,
-            i = {
-              label: 0,
-              sent: function sent() {
-                if (1 & n[0]) throw n[1];
-                return n[1];
-              },
-              trys: [],
-              ops: []
-            };
-          return a = {
-            next: u(0),
-            throw: u(1),
-            return: u(2)
-          }, "function" == typeof Symbol && (a[Symbol.iterator] = function () {
-            return this;
-          }), a;
-          function u(a) {
-            return function (u) {
-              return function (a) {
-                if (r) throw new TypeError("Generator is already executing.");
-                for (; i;) {
-                  try {
-                    if (r = 1, o && (n = 2 & a[0] ? o.return : a[0] ? o.throw || ((n = o.return) && n.call(o), 0) : o.next) && !(n = n.call(o, a[1])).done) return n;
-                    switch (o = 0, n && (a = [2 & a[0], n.value]), a[0]) {
-                      case 0:
-                      case 1:
-                        n = a;
-                        break;
-                      case 4:
-                        return i.label++, {
-                          value: a[1],
-                          done: !1
-                        };
-                      case 5:
-                        i.label++, o = a[1], a = [0];
-                        continue;
-                      case 7:
-                        a = i.ops.pop(), i.trys.pop();
-                        continue;
-                      default:
-                        if (!((n = (n = i.trys).length > 0 && n[n.length - 1]) || 6 !== a[0] && 2 !== a[0])) {
-                          i = 0;
-                          continue;
-                        }
-                        if (3 === a[0] && (!n || a[1] > n[0] && a[1] < n[3])) {
-                          i.label = a[1];
-                          break;
-                        }
-                        if (6 === a[0] && i.label < n[1]) {
-                          i.label = n[1], n = a;
-                          break;
-                        }
-                        if (n && i.label < n[2]) {
-                          i.label = n[2], i.ops.push(a);
-                          break;
-                        }
-                        n[2] && i.ops.pop(), i.trys.pop();
-                        continue;
-                    }
-                    a = t.call(e, i);
-                  } catch (e) {
-                    a = [6, e], o = 0;
-                  } finally {
-                    r = n = 0;
-                  }
-                }
-                if (5 & a[0]) throw a[1];
-                return {
-                  value: a[0] ? a[1] : void 0,
-                  done: !0
-                };
-              }([a, u]);
-            };
-          }
-        },
-        i = this && this.__rest || function (e, t) {
-          var r = {};
-          for (var o in e) {
-            Object.prototype.hasOwnProperty.call(e, o) && t.indexOf(o) < 0 && (r[o] = e[o]);
-          }
-          if (null != e && "function" == typeof Object.getOwnPropertySymbols) {
-            var n = 0;
-            for (o = Object.getOwnPropertySymbols(e); n < o.length; n++) {
-              t.indexOf(o[n]) < 0 && Object.prototype.propertyIsEnumerable.call(e, o[n]) && (r[o[n]] = e[o[n]]);
-            }
-          }
-          return r;
-        };
-      Object.defineProperty(t, "__esModule", {
-        value: !0
-      }), t.formatOriginURLQuery = t.uniOriginJump = void 0;
-      var u = r(99),
-        l = r(789),
-        p = r(282),
-        c = 0,
-        s = "reLaunch";
-      function f(e, t, r) {
-        var n,
-          a = t.url,
-          i = t.path,
-          p = t.query,
-          c = t.animationType,
-          s = t.animationDuration,
-          f = t.events,
-          h = t.success,
-          v = t.fail,
-          y = t.complete,
-          g = t.delta,
-          d = t.animation,
-          m = u.stringifyQuery(p || {}),
-          b = "" === m ? i || a : (i || a) + m,
-          O = {};
-        return "app-plus" === e.options.platform && "navigateBack" !== r && (O = (null === (n = e.options.APP) || void 0 === n ? void 0 : n.animation) || {}, O = o(o({}, O), d || {})), l.notDeepClearNull({
-          delta: g,
-          url: b,
-          animationType: c || O.animationType,
-          animationDuration: s || O.animationDuration,
-          events: f,
-          success: h,
-          fail: v,
-          complete: y
-        });
-      }
-      t.uniOriginJump = function (e, t, r, u, h, v) {
-        var y = f(e, u, r),
-          g = y.complete,
-          d = i(y, ["complete"]),
-          m = e.options.platform.trim();
-        0 === c && "h5" !== m && l.resetPageHook(e, d.url), null != v && !1 === v ? (0 === c && (c++, "h5" !== m && (e.Vue.prototype.$AppReady = !0)), g && g.apply(null, {
-          msg: "forceGuardEach强制触发并且不执行跳转"
-        }), h && h.apply(null, {
-          msg: "forceGuardEach强制触发并且不执行跳转"
-        })) : t(o(o({}, d), {
-          from: u.BACKTYPE,
-          complete: function complete() {
-            for (var t, o, i, u, f = [], v = 0; v < arguments.length; v++) {
-              f[v] = arguments[v];
-            }
-            return n(this, void 0, void 0, function () {
-              var n, v, y;
-              return a(this, function (a) {
-                switch (a.label) {
-                  case 0:
-                    return 0 === c && (c++, "h5" !== m && (e.Vue.prototype.$AppReady = !0), "app-plus" === m && ((n = plus.nativeObj.View.getViewById("router-loadding")) && n.close(), (v = null === (t = e.options.APP) || void 0 === t ? void 0 : t.launchedHook) && v())), y = 0, new RegExp(p.mpPlatformReg, "g").test(m) ? y = null === (o = e.options.applet) || void 0 === o ? void 0 : o.animationDuration : "app-plus" === m && "navigateBack" === r && "navigateTo" === s && (y = null === (u = null === (i = e.options.APP) || void 0 === i ? void 0 : i.animation) || void 0 === u ? void 0 : u.animationDuration), "navigateTo" !== r && "navigateBack" !== r || 0 === y ? [3, 2] : [4, l.timeOut(y)];
-                  case 1:
-                    a.sent(), a.label = 2;
-                  case 2:
-                    return s = r, g && g.apply(null, f), h && h.apply(null, f), [2];
-                }
-              });
-            });
-          }
-        }));
-      }, t.formatOriginURLQuery = f;
-    }
-  }, t = {}, function r(o) {
-    if (t[o]) return t[o].exports;
-    var n = t[o] = {
-      exports: {}
-    };
-    return e[o].call(n.exports, n, n.exports, r), n.exports;
-  }(607);
-  var e, t;
-});
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./../../../../../../../../Applications/HBuilderX.app/Contents/HBuilderX/plugins/uniapp-cli/node_modules/webpack/buildin/module.js */ 42)(module)))
+    }, _callee);
+  }));
+  return _init.apply(this, arguments);
+}
+var _default = {
+  install: install
+};
+exports.default = _default;
 
 /***/ }),
 
 /***/ 42:
-/*!***********************************!*\
-  !*** (webpack)/buildin/module.js ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = function(module) {
-	if (!module.webpackPolyfill) {
-		module.deprecate = function() {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-
-/***/ }),
-
-/***/ 43:
-/*!****************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/nxTemp/wechat/wechat.js ***!
-  \****************************************************************************************/
+/*!************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/wechat/wechat.js ***!
+  \************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13628,7 +11627,7 @@ var _default = {
   checkMiniProgramUpdate: function checkMiniProgramUpdate() {
     if (uni.canIUse("getUpdateManager")) {
       var updateManager = uni.getUpdateManager();
-      updateManager.onCheckForUpdate(function (res) {
+      updateManager && updateManager.onCheckForUpdate(function (res) {
         // 请求完新版本信息的回调
         if (res.hasUpdate) {
           updateManager.onUpdateReady(function () {
@@ -13637,6 +11636,7 @@ var _default = {
               content: "新版本已经准备好，是否重启应用？",
               success: function success(res) {
                 if (res.confirm) {
+                  uni.clearStorageSync(); // 更新完成后刷新storage的数据
                   // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
                   updateManager.applyUpdate();
                 }
@@ -13647,7 +11647,8 @@ var _default = {
             // 新的版本下载失败
             uni.showModal({
               title: "已经有新版本了哟~",
-              content: "新版本已经上线啦~，请您删除当前小程序，重新搜索打开哟~"
+              content: "新版本已经上线啦~，请您删除当前小程序，重新搜索打开哟~",
+              howCancel: false
             });
           });
         }
@@ -13660,10 +11661,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 44:
-/*!**************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/nxTemp/utils/tools.js ***!
-  \**************************************************************************************/
+/***/ 43:
+/*!**********************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/utils/tools.js ***!
+  \**********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13731,149 +11732,9 @@ exports.default = _default;
 /***/ }),
 
 /***/ 45:
-/*!**************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/nxTemp/utils/share.js ***!
-  \**************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _default = {
-  data: function data() {
-    return {
-      //设置默认的分享参数
-      shareInfo: {
-        title: '',
-        //分享标题
-        path: '',
-        //转发链接  小程序转发只有页面链接和参数,其他全部带域名
-        imageUrl: '' //分享图片
-      }
-    };
-  },
-  onLoad: function onLoad(options) {
-    // options.scene ='FeFy9fhC2TaMMovG5QOdZLeRahzWrayH';
-    var that = this;
-    // console.log('nxshare onload options', options);
-    //为每个页面设置分享信息
-    that.setShareInfo();
-    var query = this.$Route.query;
-    // //直接进入页面
-    // if (options.page) {
-    // 	let page = decodeURIComponent(options.page);
-    // 	uni.navigateTo({
-    // 		url: page
-    // 	})
-    // }
-  },
-
-  methods: {
-    setShareInfo: function setShareInfo() {
-      var scene = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-        title: '',
-        //自定义分享标题
-        image: '',
-        //自定义分享图片
-        query: {},
-        //自定义分享参数
-        path: '' // 自定义分享路径
-      };
-
-      var that = this;
-      var defaultShareInfo = uni.getStorageSync('shareInfo');
-
-      //设置自定义分享标题
-      if (scene.title != '') {
-        that.shareInfo.title = scene.title;
-      } else {
-        that.shareInfo.title = defaultShareInfo.title;
-      }
-      //设置分享图片
-      if (scene.image != '') {
-        that.shareInfo.imageUrl = scene.image;
-      } else {
-        that.shareInfo.imageUrl = defaultShareInfo.image;
-      }
-
-      //设置分享路径
-      if (scene.path != '') {
-        that.shareInfo.path = scene.path;
-      } else {
-        that.shareInfo.path = 'pages/index/index';
-      }
-      uni.setStorageSync('shareInfo', that.shareInfo);
-    }
-  },
-  onShareAppMessage: function onShareAppMessage(res) {
-    var that = this;
-    return {
-      title: that.shareInfo.title,
-      path: that.shareInfo.path,
-      imageUrl: that.shareInfo.imageUrl,
-      success: function success(res) {
-        uni.showToast({
-          title: '分享成功'
-        });
-      },
-      fail: function fail(res) {
-        uni.showToast({
-          title: '分享失败',
-          icon: 'none'
-        });
-      },
-      complete: function complete() {}
-    };
-  },
-  onShareTimeline: function onShareTimeline(res) {
-    var that = this;
-    var query = '';
-    //携带当前页面资源ID参数
-    var currentPage = getCurrentPages()[getCurrentPages().length - 1];
-    var options = currentPage.options;
-    if (JSON.stringify(options) != '{}' && options.id) {
-      query += "id=".concat(options.id);
-    }
-    var shareInfoUrl = that.shareInfo.path.split('?');
-    if (shareInfoUrl.length > 1) {
-      if (query !== '') {
-        query += '&';
-      }
-      query += shareInfoUrl[1];
-    }
-    return {
-      title: that.shareInfo.title,
-      query: query,
-      imageUrl: that.shareInfo.imageUrl,
-      success: function success(res) {
-        uni.showToast({
-          title: '分享成功'
-        });
-      },
-      fail: function fail(res) {
-        uni.showToast({
-          title: '分享失败',
-          icon: 'none'
-        });
-      },
-      complete: function complete() {}
-    };
-  }
-};
-exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
-
-/***/ }),
-
-/***/ 46:
-/*!***************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/nxTemp/filter/index.js ***!
-  \***************************************************************************************/
+/*!***********************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/filter/index.js ***!
+  \***********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13895,7 +11756,7 @@ function autoAddPoints(address) {
 
 /***/ }),
 
-/***/ 49:
+/***/ 48:
 /*!**********************************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js ***!
   \**********************************************************************************************************/
@@ -14027,28 +11888,10 @@ function normalizeComponent (
 
 /***/ }),
 
-/***/ 5:
-/*!**************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/slicedToArray.js ***!
-  \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var arrayWithHoles = __webpack_require__(/*! ./arrayWithHoles.js */ 6);
-var iterableToArrayLimit = __webpack_require__(/*! ./iterableToArrayLimit.js */ 7);
-var unsupportedIterableToArray = __webpack_require__(/*! ./unsupportedIterableToArray.js */ 8);
-var nonIterableRest = __webpack_require__(/*! ./nonIterableRest.js */ 10);
-function _slicedToArray(arr, i) {
-  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
-}
-module.exports = _slicedToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 50:
-/*!***********************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/index.js ***!
-  \***********************************************************************************/
+/***/ 49:
+/*!*******************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/index.js ***!
+  \*******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14060,20 +11903,20 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _mixin = _interopRequireDefault(__webpack_require__(/*! ./libs/mixin/mixin.js */ 51));
-var _luchRequest = _interopRequireDefault(__webpack_require__(/*! ./libs/luch-request */ 52));
-var _updateCustomBarInfo = _interopRequireDefault(__webpack_require__(/*! ./libs/function/updateCustomBarInfo.js */ 32));
-var _color = _interopRequireDefault(__webpack_require__(/*! ./libs/function/color.js */ 70));
-var _message = _interopRequireDefault(__webpack_require__(/*! ./libs/function/message.js */ 71));
-var _uuid = _interopRequireDefault(__webpack_require__(/*! ./libs/function/uuid.js */ 72));
-var _array = _interopRequireDefault(__webpack_require__(/*! ./libs/function/array.js */ 73));
-var _test = _interopRequireDefault(__webpack_require__(/*! ./libs/function/test.js */ 74));
-var _$parent = _interopRequireDefault(__webpack_require__(/*! ./libs/function/$parent.js */ 75));
-var _string = _interopRequireDefault(__webpack_require__(/*! ./libs/function/string.js */ 76));
-var _number = _interopRequireDefault(__webpack_require__(/*! ./libs/function/number.js */ 77));
-var _deepClone = _interopRequireDefault(__webpack_require__(/*! ./libs/function/deepClone.js */ 78));
-var _zIndex = _interopRequireDefault(__webpack_require__(/*! ./libs/config/zIndex.js */ 79));
-var _color2 = _interopRequireDefault(__webpack_require__(/*! ./libs/config/color.js */ 80));
+var _mixin = _interopRequireDefault(__webpack_require__(/*! ./libs/mixin/mixin.js */ 50));
+var _luchRequest = _interopRequireDefault(__webpack_require__(/*! ./libs/luch-request */ 51));
+var _updateCustomBarInfo = _interopRequireDefault(__webpack_require__(/*! ./libs/function/updateCustomBarInfo.js */ 40));
+var _color = _interopRequireDefault(__webpack_require__(/*! ./libs/function/color.js */ 69));
+var _message = _interopRequireDefault(__webpack_require__(/*! ./libs/function/message.js */ 70));
+var _uuid = _interopRequireDefault(__webpack_require__(/*! ./libs/function/uuid.js */ 71));
+var _array = _interopRequireDefault(__webpack_require__(/*! ./libs/function/array.js */ 72));
+var _test = _interopRequireDefault(__webpack_require__(/*! ./libs/function/test.js */ 73));
+var _$parent = _interopRequireDefault(__webpack_require__(/*! ./libs/function/$parent.js */ 74));
+var _string = _interopRequireDefault(__webpack_require__(/*! ./libs/function/string.js */ 75));
+var _number = _interopRequireDefault(__webpack_require__(/*! ./libs/function/number.js */ 76));
+var _deepClone = _interopRequireDefault(__webpack_require__(/*! ./libs/function/deepClone.js */ 77));
+var _zIndex = _interopRequireDefault(__webpack_require__(/*! ./libs/config/zIndex.js */ 78));
+var _color2 = _interopRequireDefault(__webpack_require__(/*! ./libs/config/color.js */ 79));
 // 引入全局mixin
 
 // 全局挂载引入http相关请求拦截插件
@@ -14124,10 +11967,28 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 51:
-/*!**********************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/mixin/mixin.js ***!
-  \**********************************************************************************************/
+/***/ 5:
+/*!**************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/slicedToArray.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayWithHoles = __webpack_require__(/*! ./arrayWithHoles.js */ 6);
+var iterableToArrayLimit = __webpack_require__(/*! ./iterableToArrayLimit.js */ 7);
+var unsupportedIterableToArray = __webpack_require__(/*! ./unsupportedIterableToArray.js */ 8);
+var nonIterableRest = __webpack_require__(/*! ./nonIterableRest.js */ 10);
+function _slicedToArray(arr, i) {
+  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
+}
+module.exports = _slicedToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 50:
+/*!******************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/mixin/mixin.js ***!
+  \******************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14204,10 +12065,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 52:
-/*!*****************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/index.js ***!
-  \*****************************************************************************************************/
+/***/ 51:
+/*!*************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/index.js ***!
+  \*************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14219,16 +12080,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _Request = _interopRequireDefault(__webpack_require__(/*! ./core/Request */ 53));
+var _Request = _interopRequireDefault(__webpack_require__(/*! ./core/Request */ 52));
 var _default = _Request.default;
 exports.default = _default;
 
 /***/ }),
 
-/***/ 53:
-/*!************************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/core/Request.js ***!
-  \************************************************************************************************************/
+/***/ 52:
+/*!********************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/Request.js ***!
+  \********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14243,12 +12104,12 @@ exports.default = void 0;
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
 var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23));
 var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ 24));
-var _dispatchRequest = _interopRequireDefault(__webpack_require__(/*! ./dispatchRequest */ 54));
-var _InterceptorManager = _interopRequireDefault(__webpack_require__(/*! ./InterceptorManager */ 62));
-var _mergeConfig = _interopRequireDefault(__webpack_require__(/*! ./mergeConfig */ 63));
-var _defaults = _interopRequireDefault(__webpack_require__(/*! ./defaults */ 64));
-var _utils = __webpack_require__(/*! ../utils */ 57);
-var _clone = _interopRequireDefault(__webpack_require__(/*! ../utils/clone */ 65));
+var _dispatchRequest = _interopRequireDefault(__webpack_require__(/*! ./dispatchRequest */ 53));
+var _InterceptorManager = _interopRequireDefault(__webpack_require__(/*! ./InterceptorManager */ 61));
+var _mergeConfig = _interopRequireDefault(__webpack_require__(/*! ./mergeConfig */ 62));
+var _defaults = _interopRequireDefault(__webpack_require__(/*! ./defaults */ 63));
+var _utils = __webpack_require__(/*! ../utils */ 56);
+var _clone = _interopRequireDefault(__webpack_require__(/*! ../utils/clone */ 64));
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var Request = /*#__PURE__*/function () {
@@ -14432,10 +12293,10 @@ exports.default = Request;
 
 /***/ }),
 
-/***/ 54:
-/*!********************************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/core/dispatchRequest.js ***!
-  \********************************************************************************************************************/
+/***/ 53:
+/*!****************************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/dispatchRequest.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14447,7 +12308,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _index = _interopRequireDefault(__webpack_require__(/*! ../adapters/index */ 55));
+var _index = _interopRequireDefault(__webpack_require__(/*! ../adapters/index */ 54));
 var _default = function _default(config) {
   return (0, _index.default)(config);
 };
@@ -14455,10 +12316,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 55:
-/*!**************************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/adapters/index.js ***!
-  \**************************************************************************************************************/
+/***/ 54:
+/*!**********************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/adapters/index.js ***!
+  \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14471,10 +12332,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
-var _buildURL = _interopRequireDefault(__webpack_require__(/*! ../helpers/buildURL */ 56));
-var _buildFullPath = _interopRequireDefault(__webpack_require__(/*! ../core/buildFullPath */ 58));
-var _settle = _interopRequireDefault(__webpack_require__(/*! ../core/settle */ 61));
-var _utils = __webpack_require__(/*! ../utils */ 57);
+var _buildURL = _interopRequireDefault(__webpack_require__(/*! ../helpers/buildURL */ 55));
+var _buildFullPath = _interopRequireDefault(__webpack_require__(/*! ../core/buildFullPath */ 57));
+var _settle = _interopRequireDefault(__webpack_require__(/*! ../core/settle */ 60));
+var _utils = __webpack_require__(/*! ../utils */ 56);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 /**
@@ -14537,10 +12398,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 56:
-/*!****************************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/helpers/buildURL.js ***!
-  \****************************************************************************************************************/
+/***/ 55:
+/*!************************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/helpers/buildURL.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14552,7 +12413,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = buildURL;
-var utils = _interopRequireWildcard(__webpack_require__(/*! ./../utils */ 57));
+var utils = _interopRequireWildcard(__webpack_require__(/*! ./../utils */ 56));
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 function encode(val) {
@@ -14608,10 +12469,10 @@ function buildURL(url, params) {
 
 /***/ }),
 
-/***/ 57:
-/*!*****************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/utils.js ***!
-  \*****************************************************************************************************/
+/***/ 56:
+/*!*************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/utils.js ***!
+  \*************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14762,10 +12623,10 @@ function isUndefined(val) {
 
 /***/ }),
 
-/***/ 58:
-/*!******************************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/core/buildFullPath.js ***!
-  \******************************************************************************************************************/
+/***/ 57:
+/*!**************************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/buildFullPath.js ***!
+  \**************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14777,8 +12638,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = buildFullPath;
-var _isAbsoluteURL = _interopRequireDefault(__webpack_require__(/*! ../helpers/isAbsoluteURL */ 59));
-var _combineURLs = _interopRequireDefault(__webpack_require__(/*! ../helpers/combineURLs */ 60));
+var _isAbsoluteURL = _interopRequireDefault(__webpack_require__(/*! ../helpers/isAbsoluteURL */ 58));
+var _combineURLs = _interopRequireDefault(__webpack_require__(/*! ../helpers/combineURLs */ 59));
 /**
  * Creates a new URL by combining the baseURL with the requestedURL,
  * only when the requestedURL is not already an absolute URL.
@@ -14797,10 +12658,10 @@ function buildFullPath(baseURL, requestedURL) {
 
 /***/ }),
 
-/***/ 59:
-/*!*********************************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/helpers/isAbsoluteURL.js ***!
-  \*********************************************************************************************************************/
+/***/ 58:
+/*!*****************************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/helpers/isAbsoluteURL.js ***!
+  \*****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14826,24 +12687,10 @@ function isAbsoluteURL(url) {
 
 /***/ }),
 
-/***/ 6:
-/*!***************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/arrayWithHoles.js ***!
-  \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-module.exports = _arrayWithHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 60:
-/*!*******************************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/helpers/combineURLs.js ***!
-  \*******************************************************************************************************************/
+/***/ 59:
+/*!***************************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/helpers/combineURLs.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14867,10 +12714,24 @@ function combineURLs(baseURL, relativeURL) {
 
 /***/ }),
 
-/***/ 61:
-/*!***********************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/core/settle.js ***!
-  \***********************************************************************************************************/
+/***/ 6:
+/*!***************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/arrayWithHoles.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+module.exports = _arrayWithHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 60:
+/*!*******************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/settle.js ***!
+  \*******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14900,10 +12761,10 @@ function settle(resolve, reject, response) {
 
 /***/ }),
 
-/***/ 62:
-/*!***********************************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/core/InterceptorManager.js ***!
-  \***********************************************************************************************************************/
+/***/ 61:
+/*!*******************************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/InterceptorManager.js ***!
+  \*******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14965,10 +12826,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 63:
-/*!****************************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/core/mergeConfig.js ***!
-  \****************************************************************************************************************/
+/***/ 62:
+/*!************************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/mergeConfig.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14981,7 +12842,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
-var _utils = __webpack_require__(/*! ../utils */ 57);
+var _utils = __webpack_require__(/*! ../utils */ 56);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 /**
@@ -15042,10 +12903,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 64:
-/*!*************************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/core/defaults.js ***!
-  \*************************************************************************************************************/
+/***/ 63:
+/*!*********************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/core/defaults.js ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15075,10 +12936,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 65:
-/*!***********************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/luch-request/utils/clone.js ***!
-  \***********************************************************************************************************/
+/***/ 64:
+/*!*******************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/luch-request/utils/clone.js ***!
+  \*******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15324,11 +13185,11 @@ var clone = function () {
 }();
 var _default = clone;
 exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../../../../../Applications/HBuilderX.app/Contents/HBuilderX/plugins/uniapp-cli/node_modules/buffer/index.js */ 66).Buffer))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../../software/HBuilderX/plugins/uniapp-cli/node_modules/buffer/index.js */ 65).Buffer))
 
 /***/ }),
 
-/***/ 66:
+/***/ 65:
 /*!**************************************!*\
   !*** ./node_modules/buffer/index.js ***!
   \**************************************/
@@ -15346,9 +13207,9 @@ exports.default = _default;
 
 
 
-var base64 = __webpack_require__(/*! base64-js */ 67)
-var ieee754 = __webpack_require__(/*! ieee754 */ 68)
-var isArray = __webpack_require__(/*! isarray */ 69)
+var base64 = __webpack_require__(/*! base64-js */ 66)
+var ieee754 = __webpack_require__(/*! ieee754 */ 67)
+var isArray = __webpack_require__(/*! isarray */ 68)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -17130,7 +14991,7 @@ function isnan (val) {
 
 /***/ }),
 
-/***/ 67:
+/***/ 66:
 /*!*****************************************!*\
   !*** ./node_modules/base64-js/index.js ***!
   \*****************************************/
@@ -17292,7 +15153,7 @@ function fromByteArray (uint8) {
 
 /***/ }),
 
-/***/ 68:
+/***/ 67:
 /*!***************************************!*\
   !*** ./node_modules/ieee754/index.js ***!
   \***************************************/
@@ -17388,7 +15249,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 /***/ }),
 
-/***/ 69:
+/***/ 68:
 /*!***************************************!*\
   !*** ./node_modules/isarray/index.js ***!
   \***************************************/
@@ -17404,50 +15265,10 @@ module.exports = Array.isArray || function (arr) {
 
 /***/ }),
 
-/***/ 7:
+/***/ 69:
 /*!*********************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/iterableToArrayLimit.js ***!
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/color.js ***!
   \*********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function _iterableToArrayLimit(r, l) {
-  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
-  if (null != t) {
-    var e,
-      n,
-      i,
-      u,
-      a = [],
-      f = !0,
-      o = !1;
-    try {
-      if (i = (t = t.call(r)).next, 0 === l) {
-        if (Object(t) !== t) return;
-        f = !1;
-      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0) {
-        ;
-      }
-    } catch (r) {
-      o = !0, n = r;
-    } finally {
-      try {
-        if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
-      } finally {
-        if (o) throw n;
-      }
-    }
-    return a;
-  }
-}
-module.exports = _iterableToArrayLimit, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 70:
-/*!*************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/function/color.js ***!
-  \*************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17714,10 +15535,50 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 71:
-/*!***************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/function/message.js ***!
-  \***************************************************************************************************/
+/***/ 7:
+/*!*********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/iterableToArrayLimit.js ***!
+  \*********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _iterableToArrayLimit(r, l) {
+  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+  if (null != t) {
+    var e,
+      n,
+      i,
+      u,
+      a = [],
+      f = !0,
+      o = !1;
+    try {
+      if (i = (t = t.call(r)).next, 0 === l) {
+        if (Object(t) !== t) return;
+        f = !1;
+      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0) {
+        ;
+      }
+    } catch (r) {
+      o = !0, n = r;
+    } finally {
+      try {
+        if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
+      } finally {
+        if (o) throw n;
+      }
+    }
+    return a;
+  }
+}
+module.exports = _iterableToArrayLimit, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 70:
+/*!***********************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/message.js ***!
+  \***********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17808,10 +15669,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 72:
-/*!************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/function/uuid.js ***!
-  \************************************************************************************************/
+/***/ 71:
+/*!********************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/uuid.js ***!
+  \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17869,10 +15730,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 73:
-/*!*************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/function/array.js ***!
-  \*************************************************************************************************/
+/***/ 72:
+/*!*********************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/array.js ***!
+  \*********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17911,10 +15772,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 74:
-/*!************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/function/test.js ***!
-  \************************************************************************************************/
+/***/ 73:
+/*!********************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/test.js ***!
+  \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18160,10 +16021,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 75:
-/*!***************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/function/$parent.js ***!
-  \***************************************************************************************************/
+/***/ 74:
+/*!***********************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/$parent.js ***!
+  \***********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18195,10 +16056,10 @@ function $parent() {
 
 /***/ }),
 
-/***/ 76:
-/*!**************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/function/string.js ***!
-  \**************************************************************************************************/
+/***/ 75:
+/*!**********************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/string.js ***!
+  \**********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18284,10 +16145,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 77:
-/*!**************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/function/number.js ***!
-  \**************************************************************************************************/
+/***/ 76:
+/*!**********************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/number.js ***!
+  \**********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18430,10 +16291,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 78:
-/*!*****************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/function/deepClone.js ***!
-  \*****************************************************************************************************/
+/***/ 77:
+/*!*************************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/function/deepClone.js ***!
+  \*************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18478,10 +16339,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 79:
-/*!************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/config/zIndex.js ***!
-  \************************************************************************************************/
+/***/ 78:
+/*!********************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/config/zIndex.js ***!
+  \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18513,30 +16374,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 8:
-/*!***************************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js ***!
-  \***************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var arrayLikeToArray = __webpack_require__(/*! ./arrayLikeToArray.js */ 9);
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
-}
-module.exports = _unsupportedIterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 80:
-/*!***********************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/config/color.js ***!
-  \***********************************************************************************************/
+/***/ 79:
+/*!*******************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/config/color.js ***!
+  \*******************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18566,10 +16407,30 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 81:
-/*!**********************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/store/$t.mixin.js ***!
-  \**********************************************************************************/
+/***/ 8:
+/*!***************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js ***!
+  \***************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayLikeToArray = __webpack_require__(/*! ./arrayLikeToArray.js */ 9);
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
+}
+module.exports = _unsupportedIterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 80:
+/*!*************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/nxTemp/store/$t.mixin.js ***!
+  \*************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18578,14 +16439,14 @@ exports.default = _default;
 
 var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
-var _vuex = __webpack_require__(/*! vuex */ 31);
-var _store = _interopRequireDefault(__webpack_require__(/*! @/store */ 30));
+var _vuex = __webpack_require__(/*! vuex */ 34);
+var _index = _interopRequireDefault(__webpack_require__(/*! ./index.js */ 33));
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 // 尝试将用户在根目录中的store/index.js的vuex的state变量加载到全局变量中
 var $tStoreKey = [];
 try {
-  $tStoreKey = _store.default.state ? Object.keys(_store.default.state) : [];
+  $tStoreKey = _index.default.state ? Object.keys(_index.default.state) : [];
 } catch (e) {}
 module.exports = {
   beforeCreate: function beforeCreate() {
@@ -18606,10 +16467,10 @@ module.exports = {
 
 /***/ }),
 
-/***/ 82:
-/*!************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/tuniao-ui/libs/mixin/mpShare.js ***!
-  \************************************************************************************************/
+/***/ 81:
+/*!********************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/tuniao-ui/libs/mixin/mpShare.js ***!
+  \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18663,15 +16524,15 @@ module.exports = _arrayLikeToArray, module.exports.__esModule = true, module.exp
 
 /***/ }),
 
-/***/ 97:
-/*!**************************************************************************************************!*\
-  !*** /Users/luffy/MrMeng/Workspace/Uniapp/peanut-applet-ablum/libs/mixin/template_page_mixin.js ***!
-  \**************************************************************************************************/
+/***/ 96:
+/*!**********************************************************************!*\
+  !*** E:/_Luffy/Refer/photo-wechat/libs/mixin/template_page_mixin.js ***!
+  \**********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(uni) {var _regeneratorRuntime = __webpack_require__(/*! @babel/runtime/regenerator */ 34);
-var _asyncToGenerator = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 36);
+/* WEBPACK VAR INJECTION */(function(uni) {var _regeneratorRuntime = __webpack_require__(/*! @babel/runtime/regenerator */ 26);
+var _asyncToGenerator = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 28);
 /**
  * 演示页面mixin
  */
