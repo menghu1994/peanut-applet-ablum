@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "导航",
-  "usingComponents": {
-    "tn-nav-bar": "/tuniao-ui/components/tn-nav-bar/tn-nav-bar",
-    "nav-index-button": "/libs/components/nav-index-button"
-  }
-}

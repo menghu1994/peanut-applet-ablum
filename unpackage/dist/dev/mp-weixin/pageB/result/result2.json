@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "已发布Ai",
-  "usingComponents": {
-    "tn-nav-bar": "/tuniao-ui/components/tn-nav-bar/tn-nav-bar",
-    "tn-landscape": "/tuniao-ui/components/tn-landscape/tn-landscape"
-  }
-}
