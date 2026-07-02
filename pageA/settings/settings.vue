@@ -2,64 +2,61 @@
   <view class="settings-page">
     <tn-nav-bar :isBack="true" :bottomShadow="false" backgroundColor="#FFFFFF">
       <view class="custom-nav">
-        <text class="tn-text-bold tn-text-xl tn-color-black">设置</text>
+        <text class="tn-text-bold tn-text-xl tn-color-black">&#35774;&#32622;</text>
       </view>
     </tn-nav-bar>
 
-    <view :style="{paddingTop: vuex_custom_bar_height + 'px'}">
-      <!-- 用户信息 -->
+    <view :style="{ paddingTop: vuex_custom_bar_height + 'px' }">
       <view class="settings-section">
-        <view class="section-title">用户信息</view>
+        <view class="section-title">&#29992;&#25143;&#20449;&#24687;</view>
         <view class="setting-item">
-          <text class="setting-label">头像</text>
+          <text class="setting-label">&#22836;&#20687;</text>
           <button class="avatar-btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
             <image class="avatar-img" :src="userAvatar" mode="aspectFill" />
             <text class="tn-icon-right tn-color-gray"></text>
           </button>
         </view>
         <view class="setting-item">
-          <text class="setting-label">昵称</text>
+          <text class="setting-label">&#26165;&#31216;</text>
           <input
             class="nickname-input"
             type="nickname"
             :value="userName"
-            placeholder="请输入昵称"
+            placeholder="&#35831;&#36755;&#20837;&#26165;&#31216;"
             @blur="saveNickname"
             @confirm="saveNickname"
           />
         </view>
       </view>
 
-      <!-- 网络设置（仅开发环境可见） -->
       <!-- #ifdef H5 -->
       <view class="settings-section">
-        <view class="section-title">网络设置</view>
+        <view class="section-title">&#32593;&#32476;&#35774;&#32622;</view>
         <view class="setting-item">
-          <text class="setting-label">当前网络模式</text>
+          <text class="setting-label">&#24403;&#21069;&#32593;&#32476;&#27169;&#24335;</text>
           <view class="network-mode">
             <text>{{ networkLabel }}</text>
           </view>
         </view>
         <view class="setting-item">
-          <text class="setting-label">API地址</text>
+          <text class="setting-label">API &#22320;&#22336;</text>
           <text class="setting-value-text">{{ apiBaseUrl }}</text>
         </view>
         <view class="setting-item">
-          <text class="setting-label">媒体地址</text>
+          <text class="setting-label">&#23186;&#20307;&#22320;&#22336;</text>
           <text class="setting-value-text">{{ mediaBaseUrl }}</text>
         </view>
-        <view class="setting-item" @click="testNetwork">
-          <text class="setting-label">重新检测网络</text>
+        <view class="setting-item" @tap="testNetwork">
+          <text class="setting-label">&#37325;&#26032;&#26816;&#27979;&#32593;&#32476;</text>
           <text class="tn-icon-refresh tn-color-blue"></text>
         </view>
       </view>
       <!-- #endif -->
 
-      <!-- 关于 -->
       <view class="settings-section">
-        <view class="section-title">关于</view>
+        <view class="section-title">&#20851;&#20110;</view>
         <view class="setting-item">
-          <text class="setting-label">版本</text>
+          <text class="setting-label">&#29256;&#26412;</text>
           <text class="tn-color-gray">1.0.0</text>
         </view>
       </view>
@@ -75,13 +72,13 @@
   export default {
     data() {
       return {
-        userName: '微信用户',
+        userName: '\u5fae\u4fe1\u7528\u6237',
         userAvatar: DEFAULT_AVATAR
       }
     },
     computed: {
       networkLabel() {
-        return store.getters.networkLabel || '检测中'
+        return store.getters.networkLabel || '\u68c0\u6d4b\u4e2d'
       },
       apiBaseUrl() {
         return store.getters.apiBaseUrl || ''
@@ -96,45 +93,64 @@
     methods: {
       loadUserInfo() {
         try {
-          const userInfo = uni.getStorageSync('userInfo') || {}
-          if (userInfo.nickName) this.userName = userInfo.nickName
-          if (userInfo.avatarUrl) this.userAvatar = userInfo.avatarUrl
+          const stateUserInfo = store.state.userInfo || {}
+          const cacheUserInfo = uni.getStorageSync('userInfo') || {}
+          const userInfo = {
+            ...cacheUserInfo,
+            ...stateUserInfo
+          }
+
+          this.userName = userInfo.nickName || '\u5fae\u4fe1\u7528\u6237'
+          this.userAvatar = userInfo.avatarUrl || DEFAULT_AVATAR
         } catch (e) {}
       },
 
       onChooseAvatar(event) {
-        const avatarUrl = event?.detail?.avatarUrl
+        const avatarUrl = event && event.detail ? event.detail.avatarUrl : ''
         if (!avatarUrl) return
         this.userAvatar = avatarUrl
         this.saveUserInfo()
       },
 
       saveNickname(e) {
-        const value = e?.detail?.value || e?.detail
-        if (value) {
-          this.userName = value
-          this.saveUserInfo()
-        }
+        const value = e && e.detail ? e.detail.value || e.detail : ''
+        const nickName = typeof value === 'string' ? value.trim() : ''
+        if (!nickName) return
+        this.userName = nickName
+        this.saveUserInfo()
       },
 
       saveUserInfo() {
         try {
-          const userInfo = uni.getStorageSync('userInfo') || {}
-          userInfo.nickName = this.userName
-          userInfo.avatarUrl = this.userAvatar
-          uni.setStorageSync('userInfo', userInfo)
+          const stateUserInfo = store.state.userInfo || {}
+          const cacheUserInfo = uni.getStorageSync('userInfo') || {}
+          const userId = stateUserInfo.userId || cacheUserInfo.userId || uni.getStorageSync('photo_wechat_guest_user_id') || `guest_${Date.now()}`
+          const nextUserInfo = {
+            ...cacheUserInfo,
+            ...stateUserInfo,
+            userId,
+            nickName: this.userName,
+            avatarUrl: this.userAvatar
+          }
+
+          store.commit('setStateAttr', {
+            key: 'userInfo',
+            val: nextUserInfo
+          })
+          uni.setStorageSync('userInfo', nextUserInfo)
+          uni.setStorageSync('photo_wechat_guest_user_id', userId)
         } catch (e) {}
       },
 
       async testNetwork() {
-        uni.showLoading({ title: '检测中...' })
+        uni.showLoading({ title: '\u68c0\u6d4b\u4e2d...' })
         try {
           await store.dispatch('detectNetwork')
           uni.hideLoading()
-          uni.showToast({ title: '检测完成', icon: 'success' })
+          uni.showToast({ title: '\u68c0\u6d4b\u5b8c\u6210', icon: 'success' })
         } catch (e) {
           uni.hideLoading()
-          uni.showToast({ title: '检测失败', icon: 'none' })
+          uni.showToast({ title: '\u68c0\u6d4b\u5931\u8d25', icon: 'none' })
         }
       }
     }
@@ -144,7 +160,7 @@
 <style lang="scss" scoped>
   .settings-page {
     min-height: 100vh;
-    background: #F8F8F8;
+    background: #f8f8f8;
   }
 
   .custom-nav {
@@ -153,10 +169,10 @@
 
   .settings-section {
     margin: 20rpx 30rpx;
-    background: #FFFFFF;
+    background: #ffffff;
     border-radius: 16rpx;
     overflow: hidden;
-    box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+    box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
   }
 
   .section-title {
@@ -171,7 +187,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 28rpx 30rpx;
-    border-bottom: 1rpx solid #F5F5F5;
+    border-bottom: 1rpx solid #f5f5f5;
 
     &:last-child {
       border-bottom: none;
@@ -202,7 +218,7 @@
     width: 64rpx;
     height: 64rpx;
     border-radius: 50%;
-    background: #F6D7C1;
+    background: #f6d7c1;
   }
 
   .nickname-input {
@@ -223,9 +239,9 @@
 
   .network-mode {
     padding: 6rpx 16rpx;
-    background: #E8FAEB;
+    background: #e8faeb;
     border-radius: 20rpx;
-    color: #51CF66;
+    color: #51cf66;
     font-size: 24rpx;
   }
 </style>

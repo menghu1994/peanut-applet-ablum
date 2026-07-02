@@ -20,13 +20,13 @@
             <text class="favorite-time">{{ formatTime(item.createdAt) }}</text>
           </view>
           <view class="favorite-action" @click.stop="removeFavorite(item)">
-            <text class="tn-icon-heart-fill" style="color: #FF6B6B; font-size: 40rpx;"></text>
+            <text class="tn-icon-like-fill" style="color: #FF6B6B; font-size: 40rpx;"></text>
           </view>
         </view>
       </view>
 
       <view class="empty-state" v-else>
-        <text class="tn-icon-heart" style="font-size: 80rpx; color: #ddd;"></text>
+        <text class="tn-icon-like" style="font-size: 80rpx; color: #ddd;"></text>
         <text class="empty-title">还没有收藏</text>
         <text class="empty-desc">浏览相册时点击爱心即可收藏</text>
       </view>

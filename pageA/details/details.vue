@@ -7,23 +7,38 @@
       </view>
     </tn-nav-bar>
 
-    <view class="photo-container" v-if="imageUrl">
-      <image
-        class="photo-image"
-        :src="imageUrl"
-        mode="widthFix"
-        @click="previewImage"
-        @error="onImageError"
-      />
+    <view class="photo-container">
+      <view v-if="isVideo" class="media-stage">
+        <!-- #ifdef H5 -->
+        <video v-if="videoUrl" class="video-player" :src="videoUrl" :poster="imageUrl" controls></video>
+        <!-- #endif -->
+        <!-- #ifndef H5 -->
+        <image v-if="imageUrl" class="photo-image" :src="imageUrl" mode="widthFix" />
+        <view v-else class="media-placeholder">
+          <text class="media-placeholder__icon tn-icon-play-fill"></text>
+        </view>
+        <view class="media-notice">
+          <text class="media-notice__title">已识别为视频文件</text>
+          <text class="media-notice__desc">当前微信小程序未接入视频播放资质，先按就绪入库和展示处理</text>
+        </view>
+        <!-- #endif -->
+      </view>
+
+      <view v-else-if="imageUrl" class="media-stage">
+        <image class="photo-image" :src="imageUrl" mode="widthFix" @click="previewImage" @error="onImageError" />
+        <view v-if="isLivePhoto" class="live-pill">LIVE</view>
+      </view>
     </view>
 
     <view class="photo-info" v-if="photoName">
       <text class="photo-name">{{ photoName }}</text>
       <view class="photo-meta">
+        <text class="meta-item">{{ mediaTypeLabel }}</text>
         <text class="meta-item" v-if="photoCategory">{{ photoCategory }}</text>
         <text class="meta-item" v-if="photoLocation">{{ photoLocation }}</text>
         <text class="meta-item" v-if="photoTakenAt">{{ formatTakenAt(photoTakenAt) }}</text>
-        <text class="meta-item" v-if="photoWidth && photoHeight">{{ photoWidth }} × {{ photoHeight }}</text>
+        <text class="meta-item" v-if="photoDuration">{{ formatDuration(photoDuration) }}</text>
+        <text class="meta-item" v-if="photoWidth && photoHeight">{{ photoWidth }} x {{ photoHeight }}</text>
         <text class="meta-item" v-if="photoSize">{{ formatSize(photoSize) }}</text>
       </view>
 
@@ -38,12 +53,12 @@
 
     <view class="bottom-bar">
       <view class="action-item" @click="toggleFavorite">
-        <text :class="[isFavorited ? 'tn-icon-heart-fill' : 'tn-icon-heart']" :style="{ color: isFavorited ? '#FF6B6B' : '#666' }"></text>
+        <text :class="[isFavorited ? 'tn-icon-like-fill' : 'tn-icon-like']" :style="{ color: isFavorited ? '#FF6B6B' : '#666' }"></text>
         <text class="action-text">{{ isFavorited ? '已收藏' : '收藏' }}</text>
       </view>
       <view class="action-item" @click="downloadPhoto">
         <text class="tn-icon-download"></text>
-        <text class="action-text">下载</text>
+        <text class="action-text">{{ isVideo ? '不支持' : '下载' }}</text>
       </view>
       <view class="action-item">
         <button class="share-btn" open-type="share">
@@ -66,6 +81,8 @@
         photoId: '',
         photoName: '',
         imageUrl: '',
+        videoUrl: '',
+        mediaType: 'image',
         photoCategory: '',
         photoLocation: '',
         photoPeople: [],
@@ -74,6 +91,7 @@
         photoWidth: 0,
         photoHeight: 0,
         photoSize: 0,
+        photoDuration: 0,
         isFavorited: false,
         favoriteId: ''
       }
@@ -81,6 +99,17 @@
     computed: {
       mediaBaseUrl() {
         return store.getters.mediaBaseUrl
+      },
+      isVideo() {
+        return this.mediaType === 'video'
+      },
+      isLivePhoto() {
+        return this.mediaType === 'live_photo'
+      },
+      mediaTypeLabel() {
+        if (this.isLivePhoto) return '实况'
+        if (this.isVideo) return '视频'
+        return '图片'
       }
     },
     onLoad(options) {
@@ -94,10 +123,17 @@
       this.photoWidth = Number(options.w) || 0
       this.photoHeight = Number(options.h) || 0
       this.photoSize = Number(options.size) || 0
+      this.photoDuration = Number(options.duration) || 0
+      this.mediaType = options.mediaType ? decodeURIComponent(options.mediaType) : 'image'
 
       const rawUrl = options.url ? decodeURIComponent(options.url) : ''
       if (rawUrl) {
         this.imageUrl = rawUrl.startsWith('http') ? rawUrl : `${this.mediaBaseUrl}/${rawUrl}`
+      }
+
+      const rawVideoUrl = options.video ? decodeURIComponent(options.video) : ''
+      if (rawVideoUrl) {
+        this.videoUrl = rawVideoUrl.startsWith('http') ? rawVideoUrl : `${this.mediaBaseUrl}/${rawVideoUrl}`
       }
 
       if (this.photoId) {
@@ -106,7 +142,7 @@
     },
     methods: {
       onImageError(e) {
-        console.error('图片加载失败:', e, this.imageUrl)
+        console.error('album media load failed:', e, this.imageUrl)
       },
 
       async checkFavorite() {
@@ -141,7 +177,7 @@
               resourceId: this.photoId,
               resourceType: 'album',
               resourceName: this.photoName,
-              resourceCover: this.imageUrl
+              resourceCover: this.imageUrl || this.videoUrl
             })
             if (res.code === 0) {
               this.isFavorited = true
@@ -155,11 +191,15 @@
       },
 
       downloadPhoto() {
+        if (this.isVideo) {
+          uni.showToast({ title: '视频文件暂未接入小程序下载', icon: 'none' })
+          return
+        }
         saveImageToAlbumWithPermission(this.imageUrl)
       },
 
       previewImage() {
-        if (!this.imageUrl) return
+        if (!this.imageUrl || this.isVideo) return
         uni.previewImage({
           urls: [this.imageUrl],
           current: this.imageUrl
@@ -171,6 +211,14 @@
         if (bytes < 1024) return `${bytes} B`
         if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
         return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+      },
+
+      formatDuration(seconds) {
+        if (!seconds) return ''
+        const totalSeconds = Math.max(Number(seconds) || 0, 0)
+        const minutes = Math.floor(totalSeconds / 60)
+        const restSeconds = totalSeconds % 60
+        return `${String(minutes).padStart(2, '0')}:${String(restSeconds).padStart(2, '0')}`
       },
 
       formatTakenAt(value) {
@@ -187,8 +235,8 @@
 
     onShareAppMessage() {
       return {
-        title: this.photoName || '精彩照片',
-        path: `/pageA/details/details?id=${this.photoId}&url=${encodeURIComponent(this.imageUrl)}&name=${encodeURIComponent(this.photoName)}`
+        title: this.photoName || '相册媒体',
+        path: `/pageA/details/details?id=${this.photoId}&url=${encodeURIComponent(this.imageUrl)}&video=${encodeURIComponent(this.videoUrl)}&mediaType=${encodeURIComponent(this.mediaType)}&name=${encodeURIComponent(this.photoName)}`
       }
     }
   }
@@ -206,11 +254,66 @@
     background: #ffffff;
   }
 
+  .media-stage {
+    position: relative;
+  }
+
   .photo-image {
     width: 100%;
     display: block;
     min-height: 400rpx;
     background: #f0f0f0;
+  }
+
+  .video-player {
+    width: 100%;
+    min-height: 420rpx;
+    background: #000000;
+  }
+
+  .media-placeholder {
+    width: 100%;
+    min-height: 420rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #dfe7f4, #edf2f8);
+  }
+
+  .media-placeholder__icon {
+    font-size: 88rpx;
+    color: #556070;
+  }
+
+  .media-notice {
+    padding: 24rpx 30rpx;
+    display: flex;
+    flex-direction: column;
+    gap: 10rpx;
+    background: #ffffff;
+  }
+
+  .media-notice__title {
+    font-size: 28rpx;
+    font-weight: 600;
+    color: #303133;
+  }
+
+  .media-notice__desc {
+    font-size: 24rpx;
+    color: #7d8998;
+    line-height: 1.6;
+  }
+
+  .live-pill {
+    position: absolute;
+    top: 24rpx;
+    right: 24rpx;
+    padding: 10rpx 16rpx;
+    border-radius: 999rpx;
+    font-size: 22rpx;
+    color: #ffffff;
+    background: rgba(31, 42, 55, 0.72);
   }
 
   .photo-info {

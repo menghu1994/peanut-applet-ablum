@@ -1,65 +1,61 @@
 <template>
   <view class="page-e tn-safe-area-inset-bottom">
-    <!-- 顶部自定义导航 -->
     <tn-nav-bar :isBack="false" :bottomShadow="false" backgroundColor="none">
       <view class="custom-nav tn-flex tn-flex-col-center tn-flex-row-left">
         <view class="custom-nav__back">
-          <text class="tn-text-bold tn-text-xl tn-color-black">个人中心</text>
+          <text class="tn-text-bold tn-text-xl tn-color-black">&#20010;&#20154;&#20013;&#24515;</text>
         </view>
       </view>
     </tn-nav-bar>
 
-    <view :style="{paddingTop: vuex_custom_bar_height + 'px'}">
-      <!-- 用户信息卡片 -->
-      <view class="user-card" @click="goSettings">
+    <view :style="{ paddingTop: vuex_custom_bar_height + 'px' }">
+      <view class="user-card" @tap="goSettings">
         <view class="tn-flex tn-flex-col-center">
           <view class="user-avatar">
             <image :src="userAvatar" mode="aspectFill" class="avatar-image" />
           </view>
           <view class="user-info">
             <text class="user-name">{{ userName }}</text>
-            <text class="user-desc">相册爱好者</text>
+            <text class="user-desc">&#30456;&#20876;&#29233;&#22909;&#32773;</text>
           </view>
           <view class="tn-icon-right tn-color-white" style="margin-left: auto;"></view>
         </view>
       </view>
 
-      <!-- 功能列表 -->
       <view class="menu-section">
-        <view class="menu-item" @click="openFavoriteTab">
+        <view class="menu-item" @tap="openFavoriteTab">
           <view class="menu-icon tn-bg-red--light">
-            <text class="tn-icon-heart tn-color-red"></text>
+            <text class="tn-icon-star tn-color-red"></text>
           </view>
-          <text class="menu-text">我的收藏</text>
+          <text class="menu-text">&#25105;&#30340;&#25910;&#34255;</text>
           <text class="tn-icon-right menu-arrow"></text>
         </view>
 
-        <view class="menu-item" @click="goPage('/pageA/settings/settings')">
+        <view class="menu-item" @tap="goPage('/pageA/settings/settings')">
           <view class="menu-icon tn-bg-blue--light">
             <text class="tn-icon-set tn-color-blue"></text>
           </view>
-          <text class="menu-text">设置</text>
+          <text class="menu-text">&#35774;&#32622;</text>
           <text class="tn-icon-right menu-arrow"></text>
         </view>
 
-        <view class="menu-item" @click="showNetworkInfo">
+        <view class="menu-item" @tap="showNetworkInfo">
           <view class="menu-icon tn-bg-green--light">
             <text class="tn-icon-wifi tn-color-green"></text>
           </view>
-          <text class="menu-text">网络状态</text>
+          <text class="menu-text">&#32593;&#32476;&#29366;&#24577;</text>
           <view class="network-badge">
             <text class="tn-text-sm">{{ networkLabel }}</text>
           </view>
         </view>
       </view>
 
-      <!-- 关于 -->
       <view class="menu-section">
-        <view class="menu-item" @click="showAbout">
+        <view class="menu-item" @tap="showAbout">
           <view class="menu-icon tn-bg-grey--light">
-            <text class="tn-icon-info-circle tn-color-grey"></text>
+            <text class="tn-icon-safe tn-color-grey"></text>
           </view>
-          <text class="menu-text">关于</text>
+          <text class="menu-text">&#20851;&#20110;</text>
           <text class="tn-icon-right menu-arrow"></text>
         </view>
       </view>
@@ -72,32 +68,39 @@
 <script>
   import store from '@/nxTemp/store/index.js'
 
+  const DEFAULT_AVATAR = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"%3E%3Crect width="120" height="120" rx="32" fill="%23F6D7C1"/%3E%3Ccircle cx="60" cy="46" r="22" fill="%23FFFFFF" fill-opacity=".9"/%3E%3Cpath d="M25 103c7-20 21-30 35-30s28 10 35 30" fill="%23FFFFFF" fill-opacity=".9"/%3E%3C/svg%3E'
+
   export default {
     name: 'PageE',
     data() {
       return {
-        userName: '相册用户',
-        userAvatar: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'
+        userName: '\u5fae\u4fe1\u7528\u6237',
+        userAvatar: DEFAULT_AVATAR
       }
     },
     computed: {
       networkLabel() {
-        return store.getters.networkLabel || '检测中'
+        return store.getters.networkLabel || '\u68c0\u6d4b\u4e2d'
       }
     },
     created() {
       this.loadUserInfo()
     },
+    activated() {
+      this.loadUserInfo()
+    },
     methods: {
       loadUserInfo() {
         try {
-          const userInfo = uni.getStorageSync('userInfo') || {}
-          if (userInfo.nickName) {
-            this.userName = userInfo.nickName
+          const stateUserInfo = store.state.userInfo || {}
+          const cacheUserInfo = uni.getStorageSync('userInfo') || {}
+          const userInfo = {
+            ...cacheUserInfo,
+            ...stateUserInfo
           }
-          if (userInfo.avatarUrl) {
-            this.userAvatar = userInfo.avatarUrl
-          }
+
+          this.userName = userInfo.nickName || '\u5fae\u4fe1\u7528\u6237'
+          this.userAvatar = userInfo.avatarUrl || DEFAULT_AVATAR
         } catch (e) {}
       },
 
@@ -113,20 +116,42 @@
         uni.navigateTo({ url: '/pageA/settings/settings' })
       },
 
+      isDevEnvironment() {
+        try {
+          // #ifdef MP-WEIXIN
+          const accountInfo = wx.getAccountInfoSync()
+          if (accountInfo && accountInfo.miniProgram) {
+            return accountInfo.miniProgram.envVersion !== 'release'
+          }
+          // #endif
+        } catch (e) {}
+
+        return process.env.NODE_ENV !== 'production'
+      },
+
       showNetworkInfo() {
         const mode = store.state.networkMode
-        const config = store.state.networkConfig[mode]
+        const config = store.state.networkConfig[mode] || {}
+        const lines = [`\u5f53\u524d\u6a21\u5f0f: ${config.label || this.networkLabel}`]
+
+        if (this.isDevEnvironment()) {
+          lines.push(`API \u5730\u5740: ${config.apiBaseUrl || '-'}`)
+          lines.push(`\u5a92\u4f53\u5730\u5740: ${config.mediaBaseUrl || '-'}`)
+        } else {
+          lines.push('\u5177\u4f53\u5730\u5740\u4ec5\u5728\u5f00\u53d1\u73af\u5883\u663e\u793a')
+        }
+
         uni.showModal({
-          title: '网络信息',
-          content: `当前模式: ${config.label}\nAPI地址: ${config.apiBaseUrl}\n媒体地址: ${config.mediaBaseUrl}`,
+          title: '\u7f51\u7edc\u4fe1\u606f',
+          content: lines.join('\n'),
           showCancel: false
         })
       },
 
       showAbout() {
         uni.showModal({
-          title: '关于',
-          content: '相册展示应用 v1.0.0\n基于 baby-media 后端服务',
+          title: '\u5173\u4e8e',
+          content: '\u76f8\u518c\u5c55\u793a\u5e94\u7528 v1.0.0\n\u57fa\u4e8e baby-media \u540e\u7aef\u670d\u52a1',
           showCancel: false
         })
       }
@@ -137,11 +162,12 @@
 <style lang="scss" scoped>
   .page-e {
     max-height: 100vh;
-    background-color: #F8F8F8;
+    background-color: #f8f8f8;
   }
 
   .custom-nav {
     height: 100%;
+
     &__back {
       margin: auto 30rpx;
     }
@@ -166,7 +192,7 @@
     height: 120rpx;
     border-radius: 50%;
     overflow: hidden;
-    border: 4rpx solid rgba(255,255,255,0.3);
+    border: 4rpx solid rgba(255, 255, 255, 0.3);
   }
 
   .avatar-image {
@@ -182,29 +208,29 @@
     display: block;
     font-size: 36rpx;
     font-weight: bold;
-    color: #FFFFFF;
+    color: #ffffff;
   }
 
   .user-desc {
     display: block;
     font-size: 24rpx;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255, 255, 255, 0.8);
     margin-top: 8rpx;
   }
 
   .menu-section {
     margin: 20rpx 30rpx;
-    background: #FFFFFF;
+    background: #ffffff;
     border-radius: 16rpx;
     overflow: hidden;
-    box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+    box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
   }
 
   .menu-item {
     display: flex;
     align-items: center;
     padding: 30rpx;
-    border-bottom: 1rpx solid #F5F5F5;
+    border-bottom: 1rpx solid #f5f5f5;
 
     &:last-child {
       border-bottom: none;
@@ -230,14 +256,14 @@
 
   .menu-arrow {
     font-size: 28rpx;
-    color: #C0C4CC;
+    color: #c0c4cc;
   }
 
   .network-badge {
     padding: 6rpx 16rpx;
-    background: #E8FAEB;
+    background: #e8faeb;
     border-radius: 20rpx;
-    color: #51CF66;
+    color: #51cf66;
     font-size: 22rpx;
   }
 </style>

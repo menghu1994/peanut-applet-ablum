@@ -41,11 +41,33 @@ function getBaseUrl() {
 
 function getUserHeader() {
   try {
-    const userInfo = store.state.vuex_user || {};
-    if (userInfo.userId) {
-      return { 'X-User-Id': userInfo.userId };
+    const stateUserInfo = store.state.userInfo || {};
+    const storageUserInfo = uni.getStorageSync('userInfo') || {};
+    const cachedGuestId = uni.getStorageSync('photo_wechat_guest_user_id') || '';
+    const userId = stateUserInfo.userId || storageUserInfo.userId || store.state.openId || cachedGuestId || `guest_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+    const nextUserInfo = {
+      ...storageUserInfo,
+      ...stateUserInfo,
+      userId
+    };
+
+    if (userId !== cachedGuestId) {
+      uni.setStorageSync('photo_wechat_guest_user_id', userId);
     }
-    return {};
+
+    if (!stateUserInfo.userId || stateUserInfo.userId !== userId) {
+      store.commit('setStateAttr', {
+        key: 'userInfo',
+        val: nextUserInfo
+      });
+    }
+
+    if (!storageUserInfo.userId || storageUserInfo.userId !== userId) {
+      uni.setStorageSync('userInfo', nextUserInfo);
+    }
+
+    return { 'X-User-Id': userId };
   } catch (e) {
     return {};
   }

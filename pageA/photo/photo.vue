@@ -17,7 +17,7 @@
     <view class="tabbar footerfixed dd-glass tn-color-white" style="border-radius: 100rpx;">
       <view class="action" @click="toggleFavorite">
         <view class="bar-icon">
-          <view :class="[isFavorited ? 'tn-icon-heart-fill' : 'tn-icon-like-lack']"></view>
+          <view :class="[isFavorited ? 'tn-icon-like-fill' : 'tn-icon-like-lack']"></view>
         </view>
         <view class="">{{ isFavorited ? '已收藏' : '收藏' }}</view>
       </view>

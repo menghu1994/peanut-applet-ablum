@@ -116,6 +116,9 @@
         const ref = refs[index]
         if (ref && this.$refs[ref]) {
           const page = this.$refs[ref]
+          if (typeof page.loadUserInfo === 'function') {
+            page.loadUserInfo()
+          }
           if (typeof page.fetchFavorites === 'function') {
             page.fetchFavorites()
           }

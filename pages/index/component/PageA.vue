@@ -2,11 +2,11 @@
   <view class="page-a">
     <view class="hero" :style="{ paddingTop: `${(vuex_status_bar_height || 0) + 24}px` }">
       <view class="hero__copy">
-        <text class="hero__title">花生拾光</text>
+        <text class="hero__title">照片拾光</text>
         <text class="hero__meta">{{ totalLabel }}</text>
       </view>
       <view class="hero__action" @tap="resetFilters">
-        <text class="tn-icon-refresh"></text>
+        <text class="hero__action-text">重置</text>
       </view>
     </view>
 
@@ -16,7 +16,7 @@
         <input
           v-model.trim="keyword"
           class="search-bar__input"
-          placeholder="搜索照片、地点、人物或标签"
+          placeholder="搜索照片、地点或标签"
           confirm-type="search"
           @confirm="searchAlbums"
         />
@@ -24,7 +24,13 @@
       </view>
 
       <view class="filters">
-        <picker mode="selector" :range="timeOptions" range-key="label" @change="onFilterPickerChange('time', $event)">
+        <picker
+          v-if="timeOptions.length > 1"
+          mode="selector"
+          :range="timeOptions"
+          range-key="label"
+          @change="onFilterPickerChange('time', $event)"
+        >
           <view class="filter-pill" :class="{ 'filter-pill--active': selectedFilters.time !== 'all' }">
             <text class="tn-icon-time filter-pill__icon"></text>
             <text class="filter-pill__label">{{ getFilterLabel('time') }}</text>
@@ -33,26 +39,31 @@
 
         <picker mode="selector" :range="categoryOptions" range-key="label" @change="onFilterPickerChange('category', $event)">
           <view class="filter-pill" :class="{ 'filter-pill--active': selectedFilters.category !== 'all' }">
-            <text class="tn-icon-app filter-pill__icon"></text>
+            <text class="tn-icon-image-text filter-pill__icon"></text>
             <text class="filter-pill__label">{{ getFilterLabel('category') }}</text>
           </view>
         </picker>
 
-        <picker mode="selector" :range="locationOptions" range-key="label" @change="onFilterPickerChange('location', $event)">
+        <picker
+          v-if="locationOptions.length > 1"
+          mode="selector"
+          :range="locationOptions"
+          range-key="label"
+          @change="onFilterPickerChange('location', $event)"
+        >
           <view class="filter-pill" :class="{ 'filter-pill--active': !!selectedFilters.location }">
             <text class="tn-icon-location filter-pill__icon"></text>
             <text class="filter-pill__label">{{ getFilterLabel('location') }}</text>
           </view>
         </picker>
 
-        <picker mode="selector" :range="personOptions" range-key="label" @change="onFilterPickerChange('person', $event)">
-          <view class="filter-pill" :class="{ 'filter-pill--active': !!selectedFilters.person }">
-            <text class="tn-icon-my filter-pill__icon"></text>
-            <text class="filter-pill__label">{{ getFilterLabel('person') }}</text>
-          </view>
-        </picker>
-
-        <picker mode="selector" :range="tagOptions" range-key="label" @change="onFilterPickerChange('tag', $event)">
+        <picker
+          v-if="tagOptions.length > 1"
+          mode="selector"
+          :range="tagOptions"
+          range-key="label"
+          @change="onFilterPickerChange('tag', $event)"
+        >
           <view class="filter-pill" :class="{ 'filter-pill--active': !!selectedFilters.tag }">
             <text class="tn-icon-tag filter-pill__icon"></text>
             <text class="filter-pill__label">{{ getFilterLabel('tag') }}</text>
@@ -67,45 +78,59 @@
     </view>
 
     <view class="album-container">
-      <tn-waterfall ref="waterfall" v-model="displayList" @finish="handleWaterFallFinish">
-        <template v-slot:left="{ leftList }">
-          <view v-for="item in leftList" :key="item.id" class="wallpaper__item" @click="goDetail(item)">
+      <view v-if="waterfall.left.length || waterfall.right.length" class="waterfall">
+        <view class="waterfall__column">
+          <view v-for="item in waterfall.left" :key="item.id" class="wallpaper__item" @tap="goDetail(item)">
             <view class="item__image">
-              <tn-lazy-load :threshold="1600" height="100%" :image="getImageUrl(item)" :index="item.id" imgMode="widthFix"></tn-lazy-load>
+              <view v-if="getMediaBadge(item)" class="item__badge">{{ getMediaBadge(item) }}</view>
+              <tn-lazy-load
+                :threshold="1600"
+                height="100%"
+                :image="getImageUrl(item)"
+                :index="item.id"
+                imgMode="widthFix"
+              ></tn-lazy-load>
             </view>
             <view class="item__data">
               <text class="item__title tn-color-black">{{ item.name }}</text>
               <view class="item__meta">
-                <text class="item__meta-text">{{ item.categoryName || item.category }}</text>
+                <text class="item__meta-text">{{ item.categoryName || item.category || '未分类' }}</text>
                 <text v-if="item.location" class="item__meta-text">{{ item.location }}</text>
               </view>
-              <view v-if="item.people && item.people.length" class="item__tags">
-                <text v-for="person in item.people.slice(0, 2)" :key="person" class="item__tag">{{ person }}</text>
+              <view v-if="item.tags && item.tags.length" class="item__tags">
+                <text v-for="tag in item.tags.slice(0, 2)" :key="tag" class="item__tag">{{ tag }}</text>
               </view>
             </view>
           </view>
-        </template>
+        </view>
 
-        <template v-slot:right="{ rightList }">
-          <view v-for="item in rightList" :key="item.id" class="wallpaper__item" @click="goDetail(item)">
+        <view class="waterfall__column">
+          <view v-for="item in waterfall.right" :key="item.id" class="wallpaper__item" @tap="goDetail(item)">
             <view class="item__image">
-              <tn-lazy-load :threshold="1600" height="100%" :image="getImageUrl(item)" :index="item.id" imgMode="widthFix"></tn-lazy-load>
+              <view v-if="getMediaBadge(item)" class="item__badge">{{ getMediaBadge(item) }}</view>
+              <tn-lazy-load
+                :threshold="1600"
+                height="100%"
+                :image="getImageUrl(item)"
+                :index="item.id"
+                imgMode="widthFix"
+              ></tn-lazy-load>
             </view>
             <view class="item__data">
               <text class="item__title tn-color-black">{{ item.name }}</text>
               <view class="item__meta">
-                <text class="item__meta-text">{{ item.categoryName || item.category }}</text>
+                <text class="item__meta-text">{{ item.categoryName || item.category || '未分类' }}</text>
                 <text v-if="item.location" class="item__meta-text">{{ item.location }}</text>
               </view>
-              <view v-if="item.people && item.people.length" class="item__tags">
-                <text v-for="person in item.people.slice(0, 2)" :key="person" class="item__tag">{{ person }}</text>
+              <view v-if="item.tags && item.tags.length" class="item__tags">
+                <text v-for="tag in item.tags.slice(0, 2)" :key="tag" class="item__tag">{{ tag }}</text>
               </view>
             </view>
           </view>
-        </template>
-      </tn-waterfall>
+        </view>
+      </view>
 
-      <view v-if="!displayList.length && loadStatus !== 'loading'" class="empty-state">
+      <view v-if="!albumList.length && loadStatus !== 'loading'" class="empty-state">
         <text class="tn-icon-image empty-state__icon"></text>
         <text class="empty-state__title">没有找到符合条件的照片</text>
       </view>
@@ -121,9 +146,9 @@
   import { buildAlbumDetailUrl, resolveAlbumMediaUrl } from '@/libs/album/utils.js'
 
   const DEFAULT_OPTION = {
+    time: { label: '全部日期', value: 'all' },
     category: { label: '全部分类', value: 'all' },
     location: { label: '全部地点', value: '' },
-    person: { label: '全部人物', value: '' },
     tag: { label: '全部标签', value: '' }
   }
 
@@ -132,34 +157,31 @@
     data() {
       return {
         keyword: '',
-        timeOptions: [
-          { label: '全部时间', value: 'all', days: 0 },
-          { label: '近7天', value: '7d', days: 7 },
-          { label: '近30天', value: '30d', days: 30 },
-          { label: '近90天', value: '90d', days: 90 },
-          { label: '近1年', value: '365d', days: 365 }
-        ],
+        timeOptions: [DEFAULT_OPTION.time],
         filterOptions: {
           categories: [DEFAULT_OPTION.category],
           locations: [DEFAULT_OPTION.location],
-          people: [DEFAULT_OPTION.person],
           tags: [DEFAULT_OPTION.tag]
         },
         selectedFilters: {
           time: 'all',
           category: 'all',
           location: '',
-          person: '',
           tag: ''
         },
         albumList: [],
-        displayList: [],
+        waterfall: {
+          left: [],
+          right: []
+        },
+        waterfallHeight: {
+          left: 0,
+          right: 0
+        },
         page: 1,
         pageSize: 20,
         total: 0,
-        loadStatus: 'loadmore',
-        appendTaskId: 0,
-        appendTimer: null
+        loadStatus: 'loadmore'
       }
     },
     computed: {
@@ -172,9 +194,6 @@
       locationOptions() {
         return this.filterOptions.locations
       },
-      personOptions() {
-        return this.filterOptions.people
-      },
       tagOptions() {
         return this.filterOptions.tags
       },
@@ -183,7 +202,6 @@
           this.selectedFilters.time !== 'all',
           this.selectedFilters.category !== 'all',
           !!this.selectedFilters.location,
-          !!this.selectedFilters.person,
           !!this.selectedFilters.tag,
           !!this.keyword
         ].filter(Boolean).length
@@ -202,12 +220,20 @@
       this.fetchFilterOptions()
       this.fetchAlbumList(true)
     },
-    beforeDestroy() {
-      this.clearAppendTimer()
-    },
     methods: {
       getImageUrl(item) {
-        return resolveAlbumMediaUrl(this.mediaBaseUrl, item.thumbnailUrl || item.displayUrl || item.url)
+        return resolveAlbumMediaUrl(this.mediaBaseUrl, item.thumbnailUrl || item.displayUrl || '')
+      },
+
+      getMediaBadge(item) {
+        if (!item) return ''
+        if (item.mediaType === 'live_photo' || item.isLivePhoto) {
+          return 'LIVE'
+        }
+        if (item.mediaType === 'video') {
+          return 'VIDEO'
+        }
+        return ''
       },
 
       getFilterLabel(type) {
@@ -215,7 +241,6 @@
           time: this.timeOptions,
           category: this.categoryOptions,
           location: this.locationOptions,
-          person: this.personOptions,
           tag: this.tagOptions
         }
         const options = map[type] || []
@@ -229,9 +254,9 @@
           const res = await getAlbumFilters()
           if (res.code !== 0 || !res.data) return
 
+          this.timeOptions = this.buildOptions(res.data.dates, DEFAULT_OPTION.time, false)
           this.filterOptions.categories = this.buildOptions(res.data.categories, DEFAULT_OPTION.category)
           this.filterOptions.locations = this.buildOptions(res.data.locations, DEFAULT_OPTION.location, false)
-          this.filterOptions.people = this.buildOptions(res.data.people, DEFAULT_OPTION.person, false)
           this.filterOptions.tags = this.buildOptions(res.data.tags, DEFAULT_OPTION.tag, false)
         } catch (e) {
           console.error('获取筛选项失败:', e)
@@ -245,9 +270,12 @@
             if (objectValue && item && typeof item === 'object') {
               return {
                 label: item.label || item.value || fallbackOption.label,
-                value: item.value !== undefined && item.value !== null
-                  ? item.value
-                  : (item.label !== undefined && item.label !== null ? item.label : fallbackOption.value)
+                value:
+                  item.value !== undefined && item.value !== null
+                    ? item.value
+                    : item.label !== undefined && item.label !== null
+                      ? item.label
+                      : fallbackOption.value
               }
             }
 
@@ -258,9 +286,10 @@
           })
           .filter((item) => item.label)
 
-        const firstValue = fallbackOption.value
-        const deduped = normalized.filter((item, index) => normalized.findIndex((entry) => entry.value === item.value) === index)
-        const hasFallback = deduped.some((item) => item.value === firstValue)
+        const deduped = normalized.filter(
+          (item, index) => normalized.findIndex((entry) => entry.value === item.value) === index
+        )
+        const hasFallback = deduped.some((item) => item.value === fallbackOption.value)
         return hasFallback ? deduped : [fallbackOption, ...deduped]
       },
 
@@ -282,20 +311,15 @@
           params.location = this.selectedFilters.location
         }
 
-        if (this.selectedFilters.person) {
-          params.person = this.selectedFilters.person
-        }
-
         if (this.selectedFilters.tag) {
           params.tag = this.selectedFilters.tag
         }
 
-        const timeOption = this.timeOptions.find((item) => item.value === this.selectedFilters.time)
-        if (timeOption && timeOption.days > 0) {
-          const start = new Date()
-          start.setHours(0, 0, 0, 0)
-          start.setDate(start.getDate() - timeOption.days + 1)
+        if (this.selectedFilters.time && this.selectedFilters.time !== 'all') {
+          const start = new Date(`${this.selectedFilters.time}T00:00:00`)
+          const end = new Date(`${this.selectedFilters.time}T23:59:59`)
           params.startTime = start.toISOString()
+          params.endTime = end.toISOString()
         }
 
         return params
@@ -306,9 +330,9 @@
 
         if (reset) {
           this.page = 1
+          this.total = 0
           this.albumList = []
-          this.displayList = []
-          this.clearAppendTimer()
+          this.resetWaterfall()
         }
 
         this.loadStatus = 'loading'
@@ -316,15 +340,19 @@
         try {
           const res = await getAlbumList(this.buildQueryParams())
           if (res.code !== 0) {
-            this.loadStatus = 'loadmore'
+            this.loadStatus = reset ? 'loadmore' : this.loadStatus
             return
           }
 
-          const newData = res.data || []
+          const newData = (res.data || []).map((item, index) => ({
+            ...item,
+            id: item.id || item.resourceId || `album_${this.page}_${index}_${Date.now()}`
+          }))
+
           this.albumList = reset ? newData : [...this.albumList, ...newData]
           this.total = (res.pagination && res.pagination.total) || this.albumList.length
-          const nextStatus = this.albumList.length >= this.total ? 'nomore' : 'loadmore'
-          this.applyWaterfallData(newData, { reset, nextStatus })
+          this.appendWaterfallItems(newData, reset)
+          this.loadStatus = this.albumList.length >= this.total ? 'nomore' : 'loadmore'
         } catch (e) {
           console.error('获取相册列表失败:', e)
           if (!reset && this.page > 1) {
@@ -334,52 +362,36 @@
         }
       },
 
-      applyWaterfallData(data, { reset, nextStatus }) {
-        this.clearAppendTimer()
-
-        const queue = (Array.isArray(data) ? data : []).map((item, index) => ({
-          ...item,
-          id: item.id || `album_${Date.now()}_${index}`
-        }))
-
-        if (reset) {
-          this.displayList = []
+      resetWaterfall() {
+        this.waterfall = {
+          left: [],
+          right: []
         }
-
-        if (!queue.length) {
-          this.loadStatus = nextStatus
-          return
+        this.waterfallHeight = {
+          left: 0,
+          right: 0
         }
-
-        const taskId = Date.now()
-        this.appendTaskId = taskId
-
-        const appendChunk = () => {
-          if (this.appendTaskId !== taskId) return
-
-          const chunk = queue.splice(0, 8)
-          if (chunk.length) {
-            this.displayList = [...this.displayList, ...chunk]
-          }
-
-          if (queue.length) {
-            this.appendTimer = setTimeout(appendChunk, 16)
-            return
-          }
-
-          this.appendTimer = null
-          this.loadStatus = nextStatus
-        }
-
-        appendChunk()
       },
 
-      clearAppendTimer() {
-        this.appendTaskId = 0
-        if (this.appendTimer) {
-          clearTimeout(this.appendTimer)
-          this.appendTimer = null
+      appendWaterfallItems(items, reset = false) {
+        if (reset) {
+          this.resetWaterfall()
         }
+
+        ;(Array.isArray(items) ? items : []).forEach((item) => {
+          const side = this.waterfallHeight.left <= this.waterfallHeight.right ? 'left' : 'right'
+          this.waterfall[side].push(item)
+          this.waterfallHeight[side] += this.estimateCardHeight(item)
+        })
+      },
+
+      estimateCardHeight(item) {
+        const width = Number(item.width) || 1
+        const height = Number(item.height) || width
+        const ratioHeight = height / width
+        const imageHeight = 320 * ratioHeight
+        const metaLines = 110 + ((item.location || item.categoryName || item.category) ? 28 : 0) + ((item.tags && item.tags.length) ? 32 : 0)
+        return imageHeight + metaLines
       },
 
       onFilterPickerChange(type, event) {
@@ -388,7 +400,6 @@
           time: this.timeOptions,
           category: this.categoryOptions,
           location: this.locationOptions,
-          person: this.personOptions,
           tag: this.tagOptions
         }
         const options = optionsMap[type] || []
@@ -415,28 +426,24 @@
           time: 'all',
           category: 'all',
           location: '',
-          person: '',
           tag: ''
         }
         this.fetchAlbumList(true)
       },
 
-      handleWaterFallFinish() {
-        if (this.loadStatus === 'loading' && !this.appendTimer) {
-          this.loadStatus = this.albumList.length >= this.total ? 'nomore' : 'loadmore'
-        }
-      },
-
       goDetail(item) {
-        uni.navigateTo({
-          url: buildAlbumDetailUrl(item, this.mediaBaseUrl)
-        })
+        const url = buildAlbumDetailUrl(item, this.mediaBaseUrl)
+        if (!url) {
+          uni.showToast({ title: '详情信息不完整', icon: 'none' })
+          return
+        }
+        uni.navigateTo({ url })
       },
 
       getRandomData() {
         if (this.loadStatus === 'loading' || this.loadStatus === 'nomore') return
         this.page += 1
-        this.fetchAlbumList()
+        this.fetchAlbumList(false)
       }
     }
   }
@@ -472,16 +479,21 @@
     }
 
     &__action {
-      width: 72rpx;
+      min-width: 88rpx;
       height: 72rpx;
+      padding: 0 18rpx;
       border-radius: 20rpx;
       background: rgba(255, 255, 255, 0.86);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 34rpx;
-      color: #4c6fff;
       box-shadow: 0 10rpx 24rpx rgba(76, 111, 255, 0.08);
+    }
+
+    &__action-text {
+      font-size: 24rpx;
+      font-weight: 600;
+      color: #4c6fff;
     }
   }
 
@@ -571,11 +583,22 @@
   }
 
   .album-container {
-    padding: 8rpx 14rpx 0;
+    padding: 8rpx 20rpx 0;
+  }
+
+  .waterfall {
+    display: flex;
+    align-items: flex-start;
+    gap: 18rpx;
+  }
+
+  .waterfall__column {
+    flex: 1;
+    min-width: 0;
   }
 
   .wallpaper__item {
-    margin: 0 10rpx 20rpx;
+    margin-bottom: 20rpx;
     background: #ffffff;
     border-radius: 18rpx;
     overflow: hidden;
@@ -583,9 +606,23 @@
   }
 
   .item__image {
+    position: relative;
     width: 100%;
     overflow: hidden;
     background: #edf1f5;
+  }
+
+  .item__badge {
+    position: absolute;
+    top: 14rpx;
+    right: 14rpx;
+    z-index: 2;
+    padding: 6rpx 12rpx;
+    border-radius: 999rpx;
+    font-size: 20rpx;
+    line-height: 1;
+    color: #ffffff;
+    background: rgba(31, 42, 55, 0.72);
   }
 
   .item__data {

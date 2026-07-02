@@ -1,6 +1,5 @@
 <template>
   <view class="page-b">
-    <!-- 顶部自定义导航 -->
     <tn-nav-bar :isBack="false" :bottomShadow="false" backgroundColor="none">
       <view class="custom-nav tn-flex tn-flex-col-center tn-flex-row-left">
         <view class="custom-nav__back">
@@ -9,16 +8,16 @@
       </view>
     </tn-nav-bar>
 
-    <view class="classify-wrap" :style="{paddingTop: vuex_custom_bar_height + 'px'}">
+    <view class="classify-wrap" :style="{ paddingTop: vuex_custom_bar_height + 'px' }">
       <view class="classify-container">
-        <!-- 左边分类导航 -->
-        <scroll-view class="left-box" scroll-y :style="{height: scrollHeight + 'px'}">
+        <scroll-view class="left-box" scroll-y :style="{ height: scrollHeight + 'px' }">
           <view
             v-for="(item, index) in categoryList"
             :key="index"
             class="left-item"
             :class="{ active: currentTabbarIndex === index }"
-            @tap.stop="clickClassifyNav(index)">
+            @tap.stop="clickClassifyNav(index)"
+          >
             <text>{{ item.label || item.value || '全部' }}</text>
           </view>
           <view v-if="categoryList.length === 0" class="left-item active">
@@ -26,16 +25,13 @@
           </view>
         </scroll-view>
 
-        <!-- 右边内容 -->
-        <scroll-view class="right-box" scroll-y :style="{height: scrollHeight + 'px'}" @scrolltolower="loadMore">
+        <scroll-view class="right-box" scroll-y :style="{ height: scrollHeight + 'px' }" @scrolltolower="loadMore">
           <view class="right-content" v-if="categoryPhotos.length > 0">
-            <view
-              v-for="(item, index) in categoryPhotos"
-              :key="item.id || index"
-              class="photo-card"
-              @click="goDetail(item)"
-            >
-              <image :src="getImageUrl(item)" mode="aspectFill" class="photo-image" />
+            <view v-for="(item, index) in categoryPhotos" :key="item.id || index" class="photo-card" @tap="goDetail(item)">
+              <view class="photo-image-wrap">
+                <view v-if="getMediaBadge(item)" class="photo-badge">{{ getMediaBadge(item) }}</view>
+                <image :src="getImageUrl(item)" mode="aspectFill" class="photo-image" />
+              </view>
               <text class="photo-name">{{ item.name }}</text>
             </view>
           </view>
@@ -82,7 +78,6 @@
       calcScrollHeight() {
         try {
           const sysInfo = uni.getSystemInfoSync()
-          // 减去状态栏 + 导航栏 + 底部tabbar
           this.scrollHeight = sysInfo.windowHeight - (this.vuex_custom_bar_height || 44) - 50
         } catch (e) {
           this.scrollHeight = 500
@@ -90,7 +85,18 @@
       },
 
       getImageUrl(item) {
-        return resolveAlbumMediaUrl(this.mediaBaseUrl, item.thumbnailUrl || item.displayUrl || item.url)
+        return resolveAlbumMediaUrl(this.mediaBaseUrl, item.thumbnailUrl || item.displayUrl || '')
+      },
+
+      getMediaBadge(item) {
+        if (!item) return ''
+        if (item.mediaType === 'live_photo' || item.isLivePhoto) {
+          return 'LIVE'
+        }
+        if (item.mediaType === 'video') {
+          return 'VIDEO'
+        }
+        return ''
       },
 
       async fetchCategories() {
@@ -102,7 +108,6 @@
         } catch (e) {
           console.error('获取分类失败:', e)
         }
-        // 无论分类是否成功，都加载照片
         this.fetchCategoryPhotos(true)
       },
 
@@ -150,14 +155,17 @@
 
       loadMore() {
         if (this.loadStatus === 'nomore') return
-        this.page++
+        this.page += 1
         this.fetchCategoryPhotos(false)
       },
 
       goDetail(item) {
-        uni.navigateTo({
-          url: buildAlbumDetailUrl(item, this.mediaBaseUrl)
-        })
+        const url = buildAlbumDetailUrl(item, this.mediaBaseUrl)
+        if (!url) {
+          uni.showToast({ title: '详情信息不完整', icon: 'none' })
+          return
+        }
+        uni.navigateTo({ url })
       }
     }
   }
@@ -171,6 +179,7 @@
 
   .custom-nav {
     height: 100%;
+
     &__back {
       margin: auto 30rpx;
     }
@@ -187,7 +196,7 @@
 
   .left-box {
     width: 200rpx;
-    background: #F5F5F5;
+    background: #f5f5f5;
   }
 
   .left-item {
@@ -200,8 +209,8 @@
     position: relative;
 
     &.active {
-      background: #FFFFFF;
-      color: #3668FC;
+      background: #ffffff;
+      color: #3668fc;
       font-weight: bold;
 
       &::before {
@@ -212,7 +221,7 @@
         transform: translateY(-50%);
         width: 6rpx;
         height: 40rpx;
-        background: #3668FC;
+        background: #3668fc;
         border-radius: 0 6rpx 6rpx 0;
       }
     }
@@ -220,7 +229,7 @@
 
   .right-box {
     flex: 1;
-    background: #FFFFFF;
+    background: #ffffff;
   }
 
   .right-content {
@@ -235,11 +244,28 @@
     box-sizing: border-box;
   }
 
+  .photo-image-wrap {
+    position: relative;
+  }
+
   .photo-image {
     width: 100%;
     height: 240rpx;
     border-radius: 12rpx;
-    background: #F0F0F0;
+    background: #f0f0f0;
+  }
+
+  .photo-badge {
+    position: absolute;
+    top: 12rpx;
+    right: 12rpx;
+    z-index: 2;
+    padding: 6rpx 12rpx;
+    border-radius: 999rpx;
+    font-size: 20rpx;
+    line-height: 1;
+    color: #ffffff;
+    background: rgba(31, 42, 55, 0.72);
   }
 
   .photo-name {
