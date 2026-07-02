@@ -82,7 +82,6 @@
         <view class="waterfall__column">
           <view v-for="item in waterfall.left" :key="item.id" class="wallpaper__item" @tap="goDetail(item)">
             <view class="item__image">
-              <view v-if="getMediaBadge(item)" class="item__badge">{{ getMediaBadge(item) }}</view>
               <tn-lazy-load
                 :threshold="1600"
                 height="100%"
@@ -107,7 +106,6 @@
         <view class="waterfall__column">
           <view v-for="item in waterfall.right" :key="item.id" class="wallpaper__item" @tap="goDetail(item)">
             <view class="item__image">
-              <view v-if="getMediaBadge(item)" class="item__badge">{{ getMediaBadge(item) }}</view>
               <tn-lazy-load
                 :threshold="1600"
                 height="100%"
@@ -223,17 +221,6 @@
     methods: {
       getImageUrl(item) {
         return resolveAlbumMediaUrl(this.mediaBaseUrl, item.thumbnailUrl || item.displayUrl || '')
-      },
-
-      getMediaBadge(item) {
-        if (!item) return ''
-        if (item.mediaType === 'live_photo' || item.isLivePhoto) {
-          return 'LIVE'
-        }
-        if (item.mediaType === 'video') {
-          return 'VIDEO'
-        }
-        return ''
       },
 
       getFilterLabel(type) {
@@ -610,19 +597,6 @@
     width: 100%;
     overflow: hidden;
     background: #edf1f5;
-  }
-
-  .item__badge {
-    position: absolute;
-    top: 14rpx;
-    right: 14rpx;
-    z-index: 2;
-    padding: 6rpx 12rpx;
-    border-radius: 999rpx;
-    font-size: 20rpx;
-    line-height: 1;
-    color: #ffffff;
-    background: rgba(31, 42, 55, 0.72);
   }
 
   .item__data {

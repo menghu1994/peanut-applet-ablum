@@ -29,7 +29,6 @@
           <view class="right-content" v-if="categoryPhotos.length > 0">
             <view v-for="(item, index) in categoryPhotos" :key="item.id || index" class="photo-card" @tap="goDetail(item)">
               <view class="photo-image-wrap">
-                <view v-if="getMediaBadge(item)" class="photo-badge">{{ getMediaBadge(item) }}</view>
                 <image :src="getImageUrl(item)" mode="aspectFill" class="photo-image" />
               </view>
               <text class="photo-name">{{ item.name }}</text>
@@ -86,17 +85,6 @@
 
       getImageUrl(item) {
         return resolveAlbumMediaUrl(this.mediaBaseUrl, item.thumbnailUrl || item.displayUrl || '')
-      },
-
-      getMediaBadge(item) {
-        if (!item) return ''
-        if (item.mediaType === 'live_photo' || item.isLivePhoto) {
-          return 'LIVE'
-        }
-        if (item.mediaType === 'video') {
-          return 'VIDEO'
-        }
-        return ''
       },
 
       async fetchCategories() {
@@ -253,19 +241,6 @@
     height: 240rpx;
     border-radius: 12rpx;
     background: #f0f0f0;
-  }
-
-  .photo-badge {
-    position: absolute;
-    top: 12rpx;
-    right: 12rpx;
-    z-index: 2;
-    padding: 6rpx 12rpx;
-    border-radius: 999rpx;
-    font-size: 20rpx;
-    line-height: 1;
-    color: #ffffff;
-    background: rgba(31, 42, 55, 0.72);
   }
 
   .photo-name {

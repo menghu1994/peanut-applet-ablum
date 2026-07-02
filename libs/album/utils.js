@@ -7,17 +7,14 @@ export function resolveAlbumMediaUrl(mediaBaseUrl, url) {
 export function buildAlbumDetailUrl(item, mediaBaseUrl = '') {
   const imageUrl = resolveAlbumMediaUrl(mediaBaseUrl, item.displayUrl || item.url || item.resourceCover || '')
   const thumbUrl = resolveAlbumMediaUrl(mediaBaseUrl, item.thumbnailUrl || '')
-  const videoUrl = resolveAlbumMediaUrl(mediaBaseUrl, item.videoUrl || item.livePhotoVideoUrl || '')
   const categoryName = item.categoryName || item.category || ''
   const location = item.location || ''
   const people = Array.isArray(item.people) ? item.people.join(',') : ''
   const tags = Array.isArray(item.tags) ? item.tags.join(',') : ''
   const takenAt = item.takenAt || item.modifiedAt || ''
   const photoId = item.resourceId || item.id || ''
-  const mediaType = item.mediaType || (item.isLivePhoto ? 'live_photo' : 'image')
-  const duration = Number(item.duration || 0)
 
-  return `/pageA/details/details?id=${photoId}&name=${encodeURIComponent(item.name || item.resourceName || '')}&url=${encodeURIComponent(imageUrl)}&thumb=${encodeURIComponent(thumbUrl)}&video=${encodeURIComponent(videoUrl)}&mediaType=${encodeURIComponent(mediaType)}&duration=${duration}&cat=${encodeURIComponent(categoryName)}&w=${item.width || 0}&h=${item.height || 0}&size=${item.size || 0}&location=${encodeURIComponent(location)}&people=${encodeURIComponent(people)}&tags=${encodeURIComponent(tags)}&takenAt=${encodeURIComponent(takenAt)}`
+  return `/pageA/details/details?id=${photoId}&name=${encodeURIComponent(item.name || item.resourceName || '')}&url=${encodeURIComponent(imageUrl)}&thumb=${encodeURIComponent(thumbUrl)}&cat=${encodeURIComponent(categoryName)}&w=${item.width || 0}&h=${item.height || 0}&size=${item.size || 0}&location=${encodeURIComponent(location)}&people=${encodeURIComponent(people)}&tags=${encodeURIComponent(tags)}&takenAt=${encodeURIComponent(takenAt)}`
 }
 
 function openAlbumPermissionSetting() {
