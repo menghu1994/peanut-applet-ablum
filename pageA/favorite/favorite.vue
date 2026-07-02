@@ -1,16 +1,12 @@
 <template>
-  <view class="page-c">
-    <!-- 顶部自定义导航 -->
-    <tn-nav-bar :isBack="false" :bottomShadow="false" backgroundColor="none">
-      <view class="custom-nav tn-flex tn-flex-col-center tn-flex-row-left">
-        <view class="custom-nav__back">
-          <text class="tn-text-bold tn-text-xl tn-color-black">我的收藏</text>
-        </view>
+  <view class="favorite-page">
+    <tn-nav-bar :isBack="true" :bottomShadow="false" backgroundColor="#FFFFFF">
+      <view class="custom-nav">
+        <text class="tn-text-bold tn-text-xl tn-color-black">我的收藏</text>
       </view>
     </tn-nav-bar>
 
     <view :style="{paddingTop: vuex_custom_bar_height + 'px'}">
-      <!-- 收藏列表 -->
       <view class="favorite-list" v-if="favoriteList.length > 0">
         <view
           v-for="(item, index) in favoriteList"
@@ -21,19 +17,16 @@
           <image class="favorite-cover" :src="getImageUrl(item.resourceCover)" mode="aspectFill" />
           <view class="favorite-info">
             <text class="favorite-name">{{ item.resourceName }}</text>
-            <text class="favorite-type">{{ getTypeLabel(item.resourceType) }}</text>
+            <text class="favorite-time">{{ formatTime(item.createdAt) }}</text>
           </view>
           <view class="favorite-action" @click.stop="removeFavorite(item)">
-            <text class="tn-icon-heart-fill" style="color: #FF6B6B;"></text>
+            <text class="tn-icon-heart-fill" style="color: #FF6B6B; font-size: 40rpx;"></text>
           </view>
         </view>
       </view>
 
-      <!-- 空状态 -->
       <view class="empty-state" v-else>
-        <view class="empty-icon">
-          <text class="tn-icon-heart" style="font-size: 80rpx; color: #ddd;"></text>
-        </view>
+        <text class="tn-icon-heart" style="font-size: 80rpx; color: #ddd;"></text>
         <text class="empty-title">还没有收藏</text>
         <text class="empty-desc">浏览相册时点击爱心即可收藏</text>
       </view>
@@ -47,7 +40,6 @@
   import { buildAlbumDetailUrl, resolveAlbumMediaUrl } from '@/libs/album/utils.js'
 
   export default {
-    name: 'PageC',
     data() {
       return {
         favoriteList: []
@@ -58,7 +50,7 @@
         return store.getters.mediaBaseUrl
       }
     },
-    created() {
+    onLoad() {
       this.fetchFavorites()
     },
     methods: {
@@ -66,15 +58,10 @@
         return resolveAlbumMediaUrl(this.mediaBaseUrl, cover)
       },
 
-      getTypeLabel(type) {
-        const labels = {
-          album: '相册',
-          audio: '音频',
-          video: '视频',
-          picture_book: '绘本',
-          recipe: '食谱'
-        }
-        return labels[type] || type
+      formatTime(time) {
+        if (!time) return ''
+        const date = new Date(time)
+        return `${date.getMonth() + 1}月${date.getDate()}日`
       },
 
       async fetchFavorites() {
@@ -84,7 +71,7 @@
             this.favoriteList = res.data || []
           }
         } catch (e) {
-          console.error('获取收藏列表失败:', e)
+          console.error('获取收藏失败:', e)
         }
       },
 
@@ -120,15 +107,13 @@
 </script>
 
 <style lang="scss" scoped>
-  .page-c {
-    max-height: 100vh;
+  .favorite-page {
+    min-height: 100vh;
+    background: #F8F8F8;
   }
 
   .custom-nav {
-    height: 100%;
-    &__back {
-      margin: auto 30rpx;
-    }
+    text-align: center;
   }
 
   .favorite-list {
@@ -169,7 +154,7 @@
     white-space: nowrap;
   }
 
-  .favorite-type {
+  .favorite-time {
     display: block;
     font-size: 24rpx;
     color: #909399;
@@ -178,7 +163,6 @@
 
   .favorite-action {
     padding: 16rpx;
-    font-size: 40rpx;
   }
 
   .empty-state {
@@ -188,14 +172,11 @@
     padding-top: 200rpx;
   }
 
-  .empty-icon {
-    margin-bottom: 30rpx;
-  }
-
   .empty-title {
     font-size: 32rpx;
     color: #303133;
     font-weight: 600;
+    margin-top: 20rpx;
   }
 
   .empty-desc {

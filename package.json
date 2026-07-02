@@ -1,13 +1,11 @@
 {
     "id": "peanut-album",
-    "name": "花生饭",
-    "displayName": "花生饭",
+    "name": "花生拾光",
+    "displayName": "花生拾光",
     "version": "0.0.1",
     "description": "",
     "keywords": [
-        "图鸟",
-        "壁纸"
     ],
-		"dependencies": {
-		}
+	"dependencies": {
+	}
 }

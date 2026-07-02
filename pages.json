@@ -2,182 +2,69 @@
   "easycom": {
     "^tn-(.*)": "@/tuniao-ui/components/tn-$1/tn-$1.vue"
   },
-	"pages": [
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "图鸟壁纸"
-			}
-		}
-	],
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "相册"
+      }
+    }
+  ],
   "subPackages": [
     {
       "root": "pageA",
       "pages": [
         {
-          "path": "search/search",
+          "path": "album/album",
           "style": {
-          	"navigationBarTitleText": "搜索"
-          }
-        },
-        {
-          "path": "set/set",
-          "style": {
-          	"navigationBarTitleText": "设置"
-          }
-        },
-        {
-          "path": "about/about",
-          "style": {
-          	"navigationBarTitleText": "关于图鸟"
+            "navigationBarTitleText": "相册列表"
           }
         },
         {
           "path": "details/details",
           "style": {
-          	"navigationBarTitleText": "详情"
-          }
-        },
-        {
-          "path": "atlas/atlas",
-          "style": {
-          	"navigationBarTitleText": "套图"
+            "navigationBarTitleText": "照片详情"
           }
         },
         {
           "path": "photo/photo",
           "style": {
-          	"navigationBarTitleText": "单图"
+            "navigationBarTitleText": "照片查看"
           }
         },
         {
-          "path": "author/author",
+          "path": "navigation/navigation",
           "style": {
-          	"navigationBarTitleText": "作者"
+            "navigationBarTitleText": "分类"
           }
         },
         {
-          "path": "me/me",
+          "path": "interact/interact",
           "style": {
-          	"navigationBarTitleText": "我的发布"
+            "navigationBarTitleText": "收藏下载"
           }
         },
         {
-          "path": "history/history",
+          "path": "favorite/favorite",
           "style": {
-          	"navigationBarTitleText": "发布记录"
+            "navigationBarTitleText": "我的收藏"
           }
         },
         {
-          "path": "create/create",
+          "path": "settings/settings",
           "style": {
-          	"navigationBarTitleText": "创作"
+            "navigationBarTitleText": "设置"
           }
-        },
-        {
-        	"path": "navigation/navigation",
-        	"style": {
-        		"navigationBarTitleText": "导航"
-        	}
-        },
-        {
-        	"path": "interact/interact",
-        	"style": {
-        		"navigationBarTitleText": "收藏下载"
-        	}
-        },
-        {
-        	"path": "help/help",
-        	"style": {
-        		"navigationBarTitleText": "帮助中心"
-        	}
-        }
-      ]
-    },
-    {
-      "root": "pageB",
-      "pages": [
-        {
-          "path": "wallpaper/wallpaper",
-          "style": {
-          	"navigationBarTitleText": "壁纸"
-          }
-        },
-        {
-          "path": "chat/chat",
-          "style": {
-          	"navigationBarTitleText": "聊天"
-          }
-        },
-        {
-          "path": "chat/chatGPT",
-          "style": {
-          	"navigationBarTitleText": "智能助手"
-          }
-        },
-        {
-          "path": "edit/edit",
-          "style": {
-          	"navigationBarTitleText": "发布"
-          }
-        },
-        {
-          "path": "result/result",
-          "style": {
-          	"navigationBarTitleText": "智能生成"
-          }
-        },
-        {
-          "path": "result/result2",
-          "style": {
-          	"navigationBarTitleText": "已发布Ai"
-          }
-        },
-        {
-          "path": "activity/activity",
-          "style": {
-          	"navigationBarTitleText": "Ai广场"
-          }
-        },
-        {
-          "path": "article/article",
-          "style": {
-          	"navigationBarTitleText": "公众号"
-          }
-        },
-        {
-        	"path": "task/task",
-        	"style": {
-        		"navigationBarTitleText": "日签任务"
-        	}
-        },
-        {
-        	"path": "integral/integral",
-        	"style": {
-        		"navigationBarTitleText": "积分明细"
-        	}
-        },
-        {
-        	"path": "loading/loading",
-        	"style": {
-        		"navigationBarTitleText": "加载中"
-        	}
         }
       ]
     }
   ],
-  "preloadRule": {
-    "pages/index/index": {
-      "packages": ["pageA", "pageB"],
-      "network": "all"
-    }
-  },
-	"globalStyle": {
+  "globalStyle": {
     "navigationStyle": "custom",
-		"navigationBarTextStyle": "black",
-    "navigationBarTitleText": "孟允轶",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	},
-	"uniIdRouter": {}
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "相册",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "uniIdRouter": {}
 }

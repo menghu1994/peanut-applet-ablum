@@ -9,7 +9,7 @@ let lifeData = {}
 try {
   lifeData = uni.getStorageSync('lifeData')
 } catch(e) {
-  
+
 }
 
 // 标记需要永久存储的变量，在每次启动时取出，在state中的变量名
@@ -17,37 +17,31 @@ let saveStateKeys = ['vuex_user']
 
 // 保存变量到本地存储
 const saveLifeData = function(key, value) {
-  // 判断变量是否在存储数组中
   if (saveStateKeys.indexOf(key) != -1) {
-    // 获取本地存储的lifeData对象，将变量添加到对象中
     let tmpLifeData = uni.getStorageSync('lifeData')
-    // 第一次启动时不存在，则放一个空对象
     tmpLifeData = tmpLifeData ? tmpLifeData : {},
     tmpLifeData[key] = value
-    // 将变量再次放回本地存储中
     uni.setStorageSync('lifeData', tmpLifeData)
   }
 }
 
+// 导入网络模块
+import * as networkModule from '../../store/modules/network.js'
+
 const files = require.context("./modules", false, /\.js$/);
 let modules = {
 	state: {
-		// 如果上面从本地获取的lifeData对象下有对应的属性，就赋值给state中对应的变量
 		vuex_user: lifeData.vuex_user ? lifeData.vuex_user : {name: 'MYY'},
-		
-		// 如果vuex_version无需保存到本地永久存储，无需lifeData.vuex_version方式
-		// app版本
 		vuex_version: "1.0.0",
-		// 是否使用自定义导航栏
 		vuex_custom_nav_bar: true,
-		// 状态栏高度
 		vuex_status_bar_height: 0,
-		// 自定义导航栏的高度
-		vuex_custom_bar_height: 0
+		vuex_custom_bar_height: 0,
+
+		// 网络模块状态
+		...networkModule.state
 	},
 	mutations: {
 		$tStore(state, payload) {
-		  // 判断是否多层调用，state中为对象存在的情况，例如user.info.score = 1
 		  let nameArr = payload.name.split('.')
 		  let saveKey = ''
 		  let len = nameArr.length
@@ -59,23 +53,30 @@ let modules = {
 		    obj[nameArr[len - 1]] = payload.value
 		    saveKey = nameArr[0]
 		  } else {
-		    // 单层级变量
 		    state[payload.name] = payload.value
 		    saveKey = payload.name
 		  }
-		  
-		  // 保存变量到本地中
 		  saveLifeData(saveKey, state[saveKey])
-		}
+		},
+		// 网络模块 mutations
+		...networkModule.mutations
 	},
-	actions: {}
+	actions: {
+		// 网络模块 actions
+		...networkModule.actions
+	},
+	getters: {
+		// 网络模块 getters
+		...(networkModule.getters || {})
+	}
 };
 
 files.keys().forEach((key) => {
+  // 跳过 network.js，已经手动导入了
+  if (key.includes('network')) return;
   Object.assign(modules.state, files(key)["state"]);
   Object.assign(modules.mutations, files(key)["mutations"]);
   Object.assign(modules.actions, files(key)["actions"]);
 });
 const store = new Vuex.Store(modules);
 export default store;
-

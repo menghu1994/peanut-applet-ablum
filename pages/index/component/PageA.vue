@@ -1,783 +1,648 @@
 <template>
-  <view class="pages-a">
-    <!-- 顶部自定义导航 -->
-    <tn-nav-bar :isBack="false" :bottomShadow="false" backgroundColor="#FFFFFF">
-      <view class="custom-nav tn-flex tn-flex-col-center tn-flex-row-left">
-        <view class="custom-nav__back" @click="tn('/pageA/navigation/navigation')">
-          <view class="tn-icon-deploy"></view>
-        </view>
-        <view class="tn-margin-top" style="text-shadow:  1rpx 0 0 #FFF, 0 1rpx 0 #FFF, -1rpx 0 0 #FFF , 0 -1rpx 0 #FFF;">
-          <tn-tabs :list="scrollList" :current="current" @change="tabChange" activeColor="#000" :bold="true" :fontSize="36"></tn-tabs>
-        </view>
+  <view class="page-a">
+    <view class="hero" :style="{ paddingTop: `${(vuex_status_bar_height || 0) + 24}px` }">
+      <view class="hero__copy">
+        <text class="hero__title">花生拾光</text>
+        <text class="hero__meta">{{ totalLabel }}</text>
       </view>
-    </tn-nav-bar>
-    
-    <view class="" :style="{paddingTop: vuex_custom_bar_height + 'px'}">
-      
-      <view class="tn-color-gray--dark" style="margin: 20rpx 30rpx 0 30rpx;border-radius: 100rpx;padding-left: 6rpx;background-color: rgba(248, 247, 248, 0.9);" @click="tn('/pageA/search/search')">
-        <tn-notice-bar :list="searlist" mode="vertical" leftIconName="search" :duration="6000"></tn-notice-bar>
-      </view>  
-      
-      <swiper class="card-swiper" :circular="true"
-        :autoplay="true" duration="500" interval="8000" @change="cardSwiper"> 
-        <swiper-item v-for="(item,index) in swiperList" :key="index" :class="cardCur==index?'cur':''">
-          <view class="swiper-item image-banner" :style="'background-image:url('+ item.url + ');background-size: cover;border-radius: 15rpx;'">
-          </view>
-          <view class="swiper-item-text">
-            <view class="tn-text-bold tn-color-white" style="font-size: 50rpx;">{{item.title}}</view>
-            <view class="tn-color-white tn-padding-top" style="font-size: 30rpx;">{{item.name}}</view>
-            <view class="tn-text-sm tn-text-bold tn-color-white tn-padding-top-sm tn-padding-bottom-sm">{{item.text}}</view>
-          </view>
-        </swiper-item>
-      </swiper>
-      <view class="indication">
-          <block v-for="(item,index) in swiperList" :key="index">
-              <view class="spot" :class="cardCur==index?'active':''"></view>
-          </block>
+      <view class="hero__action" @tap="resetFilters">
+        <text class="tn-icon-refresh"></text>
       </view>
     </view>
-    
-    <!-- 方式5，图片形式，安卓手机 start-->
-    <view v-if="isAndroid" class="tn-flex tn-flex-wrap tn-padding-top home-shadow">
-     <block v-for="(item, index) in icons1" :key="index">
-      <view class="tn-margin-bottom tn-margin-top-sm" style="width: 25%;" @click="tn(item.url)">
-        <view class="tn-flex tn-flex-direction-column tn-flex-row-center tn-flex-col-center">
-          <view class="icon5__item--icon tn-flex tn-flex-row-center tn-flex-col-center" :style="'background-image:url('+ item.icon +');background-size:100% 100%;background-size: cover;'">
-          </view>
-          <view class="tn-color-black tn-text-center">
-            <text class="tn-text-ellipsis">{{ item.title }}</text>
-          </view>
-        </view>
+
+    <view class="search-panel">
+      <view class="search-bar">
+        <text class="tn-icon-search search-bar__icon"></text>
+        <input
+          v-model.trim="keyword"
+          class="search-bar__input"
+          placeholder="搜索照片、地点、人物或标签"
+          confirm-type="search"
+          @confirm="searchAlbums"
+        />
+        <text v-if="keyword" class="tn-icon-close-circle search-bar__clear" @tap.stop="clearKeyword"></text>
       </view>
-     </block>
-    </view>
-    <!-- 方式5 end-->
-    
-    <!-- 方式5，图片形式，苹果手机 start-->
-    <view v-else class="tn-flex tn-flex-wrap tn-padding-top home-shadow">
-     <block v-for="(item, index) in icons2" :key="index">
-      <view class="tn-margin-bottom tn-margin-top-sm" style="width: 25%;" @click="tn(item.url)">
-        <view class="tn-flex tn-flex-direction-column tn-flex-row-center tn-flex-col-center">
-          <view class="icon5__item--icon tn-flex tn-flex-row-center tn-flex-col-center" :style="'background-image:url('+ item.icon +');background-size:100% 100%;background-size: cover;'">
+
+      <view class="filters">
+        <picker mode="selector" :range="timeOptions" range-key="label" @change="onFilterPickerChange('time', $event)">
+          <view class="filter-pill" :class="{ 'filter-pill--active': selectedFilters.time !== 'all' }">
+            <text class="tn-icon-time filter-pill__icon"></text>
+            <text class="filter-pill__label">{{ getFilterLabel('time') }}</text>
           </view>
-          <view class="tn-color-black tn-text-center">
-            <text class="tn-text-ellipsis">{{ item.title }}</text>
+        </picker>
+
+        <picker mode="selector" :range="categoryOptions" range-key="label" @change="onFilterPickerChange('category', $event)">
+          <view class="filter-pill" :class="{ 'filter-pill--active': selectedFilters.category !== 'all' }">
+            <text class="tn-icon-app filter-pill__icon"></text>
+            <text class="filter-pill__label">{{ getFilterLabel('category') }}</text>
           </view>
-        </view>
+        </picker>
+
+        <picker mode="selector" :range="locationOptions" range-key="label" @change="onFilterPickerChange('location', $event)">
+          <view class="filter-pill" :class="{ 'filter-pill--active': !!selectedFilters.location }">
+            <text class="tn-icon-location filter-pill__icon"></text>
+            <text class="filter-pill__label">{{ getFilterLabel('location') }}</text>
+          </view>
+        </picker>
+
+        <picker mode="selector" :range="personOptions" range-key="label" @change="onFilterPickerChange('person', $event)">
+          <view class="filter-pill" :class="{ 'filter-pill--active': !!selectedFilters.person }">
+            <text class="tn-icon-my filter-pill__icon"></text>
+            <text class="filter-pill__label">{{ getFilterLabel('person') }}</text>
+          </view>
+        </picker>
+
+        <picker mode="selector" :range="tagOptions" range-key="label" @change="onFilterPickerChange('tag', $event)">
+          <view class="filter-pill" :class="{ 'filter-pill--active': !!selectedFilters.tag }">
+            <text class="tn-icon-tag filter-pill__icon"></text>
+            <text class="filter-pill__label">{{ getFilterLabel('tag') }}</text>
+          </view>
+        </picker>
       </view>
-     </block>
+
+      <view class="filters-meta">
+        <text class="filters-meta__text">{{ activeFilterSummary }}</text>
+        <text v-if="activeFilterCount" class="filters-meta__reset" @tap="resetFilters">清空</text>
+      </view>
     </view>
-    <!-- 方式5 end-->
-    
-    <!--胶囊 banner 需要可用显示出来即可 start-->
-    <view class="tn-flex tn-flex-wrap tn-padding-bottom" @click="tn('')">
-      <view class="" style="width: 100%;">
-        <view class="image-piccapsule tn-shadow-blur" style="background-image:url('https://resource.tuniaokj.com/images/capsule-banner/banner-tnmb.png');">
-           <view class="image-capsule">
-           </view>
-         </view>  
-      </view>  
-    </view>
-    <!-- banner end-->
-    
-    
-    <view class="">
-      
-      <view class="" v-if="current==0">
-        <view class="" style="padding: 30rpx 20rpx;" >
-          <tn-waterfall ref="waterfall" v-model="list" @finish="handleWaterFallFinish">
-            <template v-slot:left="{ leftList }">
-              <view v-for="(item, index) in leftList" :key="item.id" class="wallpaper__item" @click="tn('/pageA/details/details')">
-                <view class="item__image">
-                  <tn-lazy-load :threshold="6000" height="100%" :image="item.mainImage" :index="item.id" imgMode="widthFix"></tn-lazy-load>
-                </view>
-                <view class="item__data">
-                  <view class="item__title-container">
-                    <text class="item__title tn-color-black">{{ item.title }}</text>
-                  </view>
-                  <view v-if="item.tags && item.tags.length > 0" class="item__tags-container">
-                    <view v-for="(tagItem, tagIndex) in item.tags" :key="tagIndex" class="item__tag">{{ tagItem }}</view>
-                  </view>
-      
-                  <view class="tn-flex tn-flex-row-between tn-flex-col-center tn-padding-top-xs">
-                    <view class="justify-content-item">
-                      <view class="tn-flex tn-flex-col-center tn-flex-row-left">
-                        <view class="logo-pic">
-                          <view class="logo-image">
-                            <view class="" :style="'background-image:url('+ item.userImage +');width: 40rpx;height: 40rpx;background-size: cover;'">
-                            </view>
-                          </view>
-                        </view>
-                        <view class="tn-padding-left-xs">
-                          <text class="tn-color-gray tn-text-sm">{{ item.userName }}</text>
-                        </view>
-                  
-                      </view>
-                    </view>
-                    <view class="justify-content-item">
-                      <text class="tn-icon-rocket tn-color-gray tn-padding-right-xs"></text>
-                      <text class="tn-color-gray">{{ item.viewUser.viewUserCount }}</text>
-                    </view>
-                  </view>
-                  
-                  
-                </view>
+
+    <view class="album-container">
+      <tn-waterfall ref="waterfall" v-model="displayList" @finish="handleWaterFallFinish">
+        <template v-slot:left="{ leftList }">
+          <view v-for="item in leftList" :key="item.id" class="wallpaper__item" @click="goDetail(item)">
+            <view class="item__image">
+              <tn-lazy-load :threshold="1600" height="100%" :image="getImageUrl(item)" :index="item.id" imgMode="widthFix"></tn-lazy-load>
+            </view>
+            <view class="item__data">
+              <text class="item__title tn-color-black">{{ item.name }}</text>
+              <view class="item__meta">
+                <text class="item__meta-text">{{ item.categoryName || item.category }}</text>
+                <text v-if="item.location" class="item__meta-text">{{ item.location }}</text>
               </view>
-            </template>
-            <template v-slot:right="{ rightList }">
-              <view class="tn-color-black tn-text-bold tn-bg-yellow home-shadow" style="height: 160rpx;margin: 0 10rpx 20rpx 10rpx;border-radius: 10rpx;" @click="tn('/pageB/activity/activity')">
-                <view class="tn-padding-left tn-padding-top-lg">
-                  Ai · 广场
-                </view>
-                <view class="tn-padding-left tn-padding-top-xs">
-                  晒出你的ai创作
-                  <text class="tn-icon-right tn-padding-left-xs"></text>
-                </view>
+              <view v-if="item.people && item.people.length" class="item__tags">
+                <text v-for="person in item.people.slice(0, 2)" :key="person" class="item__tag">{{ person }}</text>
               </view>
-              <view v-for="(item, index) in rightList" :key="item.id" class="wallpaper__item" @click="tn('/pageA/details/details')">
-                <view class="item__image">
-                  <tn-lazy-load :threshold="6000" height="100%" :image="item.mainImage" :index="item.id" imgMode="widthFix"></tn-lazy-load>
-                </view>
-                <view class="item__data">
-                  <view class="item__title-container">
-                    <text class="item__title tn-color-black">{{ item.title }}</text>
-                  </view>
-                  <view class="item__tags-container">
-                    <view v-for="(tagItem, tagIndex) in item.tags" :key="tagIndex" class="item__tag">{{ tagItem }}</view>
-                  </view>
-                  <view class="tn-flex tn-flex-row-between tn-flex-col-center tn-padding-top-xs">
-                    <view class="justify-content-item">
-                      <view class="tn-flex tn-flex-col-center tn-flex-row-left">
-                        <view class="logo-pic">
-                          <view class="logo-image">
-                            <view class="" :style="'background-image:url('+ item.userImage +');width: 40rpx;height: 40rpx;background-size: cover;'">
-                            </view>
-                          </view>
-                        </view>
-                        <view class="tn-padding-left-xs">
-                          <text class="tn-color-gray tn-text-sm">{{ item.userName }}</text>
-                        </view>
-                  
-                      </view>
-                    </view>
-                    <view class="justify-content-item">
-                      <text class="tn-icon-rocket tn-color-gray tn-padding-right-xs"></text>
-                      <text class="tn-color-gray">{{ item.viewUser.viewUserCount }}</text>
-                    </view>
-                  </view>
-                </view>
+            </view>
+          </view>
+        </template>
+
+        <template v-slot:right="{ rightList }">
+          <view v-for="item in rightList" :key="item.id" class="wallpaper__item" @click="goDetail(item)">
+            <view class="item__image">
+              <tn-lazy-load :threshold="1600" height="100%" :image="getImageUrl(item)" :index="item.id" imgMode="widthFix"></tn-lazy-load>
+            </view>
+            <view class="item__data">
+              <text class="item__title tn-color-black">{{ item.name }}</text>
+              <view class="item__meta">
+                <text class="item__meta-text">{{ item.categoryName || item.category }}</text>
+                <text v-if="item.location" class="item__meta-text">{{ item.location }}</text>
               </view>
-            </template>
-          </tn-waterfall>
-        </view>
-        <tn-load-more :status="loadStatus"></tn-load-more>
+              <view v-if="item.people && item.people.length" class="item__tags">
+                <text v-for="person in item.people.slice(0, 2)" :key="person" class="item__tag">{{ person }}</text>
+              </view>
+            </view>
+          </view>
+        </template>
+      </tn-waterfall>
+
+      <view v-if="!displayList.length && loadStatus !== 'loading'" class="empty-state">
+        <text class="tn-icon-image empty-state__icon"></text>
+        <text class="empty-state__title">没有找到符合条件的照片</text>
       </view>
-      
-      <view class="" v-if="current==1">
-       <view class="" style="padding: 6vh 20rpx;">
-         <view class="tn-text-center" style="font-size: 200rpx;padding-top: 30rpx;">
-           <text class="tn-icon-wea-wind tn-color-gray--light"></text>
-         </view>
-         <view class="tn-color-gray--disabled tn-text-center tn-text-lg">内容被台风吹走了</view>
-       </view>
-      </view>
-      
-      <view class="" v-if="current==2">
-       <view class="" style="padding: 6vh 20rpx;">
-         <view class="tn-text-center" style="font-size: 200rpx;padding-top: 30rpx;">
-           <text class="tn-icon-wea-wind tn-color-gray--light"></text>
-         </view>
-         <view class="tn-color-gray--disabled tn-text-center tn-text-lg">内容被台风卷走了</view>
-       </view>
-      </view>
-      
+
+      <tn-load-more :status="loadStatus"></tn-load-more>
     </view>
-    
-   
-    <!-- <view class='tn-tabbar-height'></view> -->
-    
   </view>
 </template>
 
 <script>
+  import { getAlbumFilters, getAlbumList } from '@/api/modules/album.js'
+  import store from '@/nxTemp/store/index.js'
+  import { buildAlbumDetailUrl, resolveAlbumMediaUrl } from '@/libs/album/utils.js'
+
+  const DEFAULT_OPTION = {
+    category: { label: '全部分类', value: 'all' },
+    location: { label: '全部地点', value: '' },
+    person: { label: '全部人物', value: '' },
+    tag: { label: '全部标签', value: '' }
+  }
+
   export default {
     name: 'PagesA',
-    data(){
+    data() {
       return {
-        icons1: [
-          {
-            icon: "https://cdn.nlark.com/yuque/0/2022/png/280373/1666765211148-assets/web-upload/bc9ff0e7-36a5-4d99-8698-cd589b00dc99.png",
-            title: "人物写真",
-            url: "/pageB/wallpaper/wallpaper"
-          },
-          {
-            icon: "https://cdn.nlark.com/yuque/0/2022/png/280373/1666764788499-assets/web-upload/4cf1bbab-efb8-401c-9a2d-21689d024491.png",
-            title: "动漫壁纸",
-            url: "/pageB/wallpaper/wallpaper"
-          },
-          {
-            icon: "https://cdn.nlark.com/yuque/0/2022/png/280373/1666765049011-assets/web-upload/e49243fa-5182-4fbb-a850-33e927316a90.png",
-            title: "风景系列",
-            url: "/pageB/wallpaper/wallpaper"
-          },
-          {
-            icon: "https://cdn.nlark.com/yuque/0/2022/png/280373/1666764932305-assets/web-upload/8d5ff7dd-c2b0-4455-acf9-df6ba3a064b1.png",
-            title: "安卓专属",
-            url: "/pageB/wallpaper/wallpaper"
-          }
+        keyword: '',
+        timeOptions: [
+          { label: '全部时间', value: 'all', days: 0 },
+          { label: '近7天', value: '7d', days: 7 },
+          { label: '近30天', value: '30d', days: 30 },
+          { label: '近90天', value: '90d', days: 90 },
+          { label: '近1年', value: '365d', days: 365 }
         ],
-        icons2: [
-          {
-            icon: "https://cdn.nlark.com/yuque/0/2022/png/280373/1666765211148-assets/web-upload/bc9ff0e7-36a5-4d99-8698-cd589b00dc99.png",
-            title: "人物写真",
-            url: "/pageB/wallpaper/wallpaper"
-          },
-          {
-            icon: "https://cdn.nlark.com/yuque/0/2022/png/280373/1666764788499-assets/web-upload/4cf1bbab-efb8-401c-9a2d-21689d024491.png",
-            title: "动漫壁纸",
-            url: "/pageB/wallpaper/wallpaper"
-          },
-          {
-            icon: "https://cdn.nlark.com/yuque/0/2022/png/280373/1666765049011-assets/web-upload/e49243fa-5182-4fbb-a850-33e927316a90.png",
-            title: "风景系列",
-            url: "/pageB/wallpaper/wallpaper"
-          },
-          {
-            icon: "https://cdn.nlark.com/yuque/0/2022/png/280373/1666764932305-assets/web-upload/8d5ff7dd-c2b0-4455-acf9-df6ba3a064b1.png",
-            title: "苹果专属",
-            url: "/pageB/wallpaper/wallpaper"
-          }
-        ],
-        searlist: [
-          '凶姐精美壁纸',
-          '情侣聊天背景',
-          '热血动漫头像',
-          '手机屏保壁纸'
-        ],
-        cardCur: 0,
-        isAndroid: true,
-        swiperList: [{
-          id: 0,
-          type: 'image',
-          title: '合作勾搭',
-          name: '作者微信 tnkewo',
-          url: 'https://resource.tuniaokj.com/images/swiper/adno3.jpg',
-        }, {
-          id: 1,
-          type: 'image',
-          title: '海量分享',
-          name: '总有你想不到的创意',
-          url: 'https://resource.tuniaokj.com/images/swiper/adno2.jpg',
-        }, {
-          id: 2,
-          type: 'image',
-          title: '酷炫多彩',
-          name: '更多彩蛋等你探索',
-          url: 'https://resource.tuniaokj.com/images/swiper/adno4.jpg',
-        }, {
-          id: 3,
-          type: 'image',
-          title: '适配多端',
-          name: 'APP、微信小程序、H5、Finclip',
-          url: 'https://resource.tuniaokj.com/images/swiper/adno5.jpg',
-        },{
-          id: 4,
-          type: 'image',
-          title: '',
-          name: '',
-          url: 'https://resource.tuniaokj.com/images/swiper/ad1.jpg',
-        }],
-        
-        current: 0,
-        scrollList: [
-          {name: '推荐'},
-          {name: '最新'},
-          {name: '热门'}
-        ],
-        
-        
-        /* 瀑布流*/
+        filterOptions: {
+          categories: [DEFAULT_OPTION.category],
+          locations: [DEFAULT_OPTION.location],
+          people: [DEFAULT_OPTION.person],
+          tags: [DEFAULT_OPTION.tag]
+        },
+        selectedFilters: {
+          time: 'all',
+          category: 'all',
+          location: '',
+          person: '',
+          tag: ''
+        },
+        albumList: [],
+        displayList: [],
+        page: 1,
+        pageSize: 20,
+        total: 0,
         loadStatus: 'loadmore',
-        list: [],
-        data: [
-          {
-            title: '看月亮爬上来',
-            userName: '试试就逝世',
-            mainImage: 'http://129.204.224.75:5678/avatar.jpg',
-            userImage: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg',
-            tags: ['头像','校园青春'],
-            viewUser: {
-              latestUserAvatar: [
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg'},
-              ],
-              viewUserCount: 338
-            },
-          },
-          {
-            title: '万科神奇动物主场',
-            userName: '你的名字',
-            mainImage: 'http://129.204.224.75:5678/logo.png',
-            userImage: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg',
-            tags: ['壁纸','动态壁纸'],
-            viewUser: {
-              latestUserAvatar: [
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg'},
-              ],
-              viewUserCount: 289
-            },
-          },
-          {
-            title: '北海世博园灯笼走廊',
-            userName: '青梅煮马',
-            mainImage: 'https://resource.tuniaokj.com/images/avatar/xiong/x3.jpg',
-            userImage: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg',
-            tags: ['男生头像','情侣头像'],
-            viewUser: {
-              latestUserAvatar: [
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg'},
-              ],
-              viewUserCount: 381
-            },
-          },
-          {
-            title: '浦江航拍夜上海',
-            userName: '你的名字',
-            mainImage: 'https://resource.tuniaokj.com/images/avatar/xiong/x4.jpg',
-            userImage: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg',
-            tags: [],
-            viewUser: {
-              latestUserAvatar: [
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg'},
-              ],
-              viewUserCount: 526
-            },
-          },
-          {
-            title: '疫情也阻挡不了滑滑板',
-            userName: '凶一下试试',
-            mainImage: 'https://resource.tuniaokj.com/images/avatar/xiong/x5.jpg',
-            userImage: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg',
-            tags: [],
-            viewUser: {
-              latestUserAvatar: [
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg'},
-              ],
-              viewUserCount: 526
-            },
-          },
-          {
-            title: '疫情也阻挡不了滑滑板',
-            userName: '凶一下试试',
-            mainImage: 'https://resource.tuniaokj.com/images/avatar/xiong/x6.jpg',
-            userImage: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg',
-            tags: [],
-            viewUser: {
-              latestUserAvatar: [
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg'},
-              ],
-              viewUserCount: 526
-            },
-          },
-          {
-            title: '2022建档百年 外滩灯光秀 与你一起',
-            userName: '坟头草三米高',
-            mainImage: 'https://resource.tuniaokj.com/images/avatar/xiong/x7.jpg',
-            userImage: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg',
-            tags: [],
-            viewUser: {
-              latestUserAvatar: [
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg'},
-              ],
-              viewUserCount: 372
-            },
-          },
-          {
-            title: '广州纳达堡三室两厅',
-            userName: '不许凶我',
-            mainImage: 'https://resource.tuniaokj.com/images/avatar/xiong/x8.jpg',
-            userImage: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg',
-            tags: ['头像','女生头像'],
-            viewUser: {
-              latestUserAvatar: [
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg'},
-              ],
-              viewUserCount: 694
-            },
-          },
-          {
-            title: '冰岛极光航拍',
-            userName: '试试就逝世',
-            mainImage: 'https://resource.tuniaokj.com/images/avatar/xiong/x9.jpg',
-            userImage: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg',
-            tags: [],
-            viewUser: {
-              latestUserAvatar: [
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg'},
-              ],
-              viewUserCount: 508
-            },
-          },
-          {
-            title: '泰山之巅',
-            userName: '你的名字',
-            mainImage: 'https://resource.tuniaokj.com/images/avatar/xiong/x10.jpg',
-            userImage: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg',
-            tags: [],
-            viewUser: {
-              latestUserAvatar: [
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg'},
-              ],
-              viewUserCount: 923
-            },
-          },
-          {
-            title: '广州分手塔',
-            userName: '图鸟东东',
-            mainImage: 'https://resource.tuniaokj.com/images/avatar/xiong/x11.jpg',
-            userImage: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg',
-            tags: [],
-            viewUser: {
-              latestUserAvatar: [
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg'},
-              ],
-              viewUserCount: 989
-            },
-          },
-          {
-            title: '珠海澳门捉猪行动',
-            userName: '此处凶姐承包',
-            mainImage: 'https://resource.tuniaokj.com/images/avatar/xiong/x12.jpg',
-            userImage: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg',
-            tags: [],
-            viewUser: {
-              latestUserAvatar: [
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_1.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_2.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_3.jpeg'},
-                {src: 'https://resource.tuniaokj.com/images/blogger/avatar_4.jpeg'},
-              ],
-              viewUserCount: 129
-            },
-          }
-        ],
+        appendTaskId: 0,
+        appendTimer: null
+      }
+    },
+    computed: {
+      mediaBaseUrl() {
+        return store.getters.mediaBaseUrl
+      },
+      categoryOptions() {
+        return this.filterOptions.categories
+      },
+      locationOptions() {
+        return this.filterOptions.locations
+      },
+      personOptions() {
+        return this.filterOptions.people
+      },
+      tagOptions() {
+        return this.filterOptions.tags
+      },
+      activeFilterCount() {
+        return [
+          this.selectedFilters.time !== 'all',
+          this.selectedFilters.category !== 'all',
+          !!this.selectedFilters.location,
+          !!this.selectedFilters.person,
+          !!this.selectedFilters.tag,
+          !!this.keyword
+        ].filter(Boolean).length
+      },
+      activeFilterSummary() {
+        if (!this.activeFilterCount) {
+          return '全部照片'
+        }
+        return `已启用 ${this.activeFilterCount} 项筛选`
+      },
+      totalLabel() {
+        return this.total ? `${this.total} 张照片` : '整理中的回忆'
       }
     },
     created() {
-      const systemInfo = uni.getSystemInfoSync()
-      if (systemInfo.system.toLocaleLowerCase().includes('ios')) {
-        this.isAndroid = false
-      } else {
-        this.isAndroid = true
-      }
-      /* 瀑布流*/
-      this.getRandomData()
+      this.fetchFilterOptions()
+      this.fetchAlbumList(true)
+    },
+    beforeDestroy() {
+      this.clearAppendTimer()
     },
     methods: {
-      // cardSwiper
-      cardSwiper(e) {
-        this.cardCur = e.detail.current
-      },
-      
-      // tab选项卡切换
-      tabChange(index) {
-        this.current = index
+      getImageUrl(item) {
+        return resolveAlbumMediaUrl(this.mediaBaseUrl, item.thumbnailUrl || item.displayUrl || item.url)
       },
 
-      // 跳转
-      tn(e) {
-      	uni.navigateTo({
-      		url: e,
-      	});
-      },
-      
-      /* 瀑布流*/
-      // 获取随机数据
-      getRandomData() {
-        console.log(13);
-        this.loadStatus = 'loading'
-        for (let i = 0; i < 10; i++) {
-          let index = this.$t.number.randomInt(0, this.data.length - 1)
-          let item = JSON.parse(JSON.stringify(this.data[index]))
-          item.id = this.$t.uuid()
-          this.list.push(item)
+      getFilterLabel(type) {
+        const map = {
+          time: this.timeOptions,
+          category: this.categoryOptions,
+          location: this.locationOptions,
+          person: this.personOptions,
+          tag: this.tagOptions
         }
-				console.error(this.list, 'v')
+        const options = map[type] || []
+        const value = this.selectedFilters[type]
+        const current = options.find((item) => item.value === value)
+        return current ? current.label : ((options[0] && options[0].label) || '')
       },
-      // 瀑布流加载完毕事件
+
+      async fetchFilterOptions() {
+        try {
+          const res = await getAlbumFilters()
+          if (res.code !== 0 || !res.data) return
+
+          this.filterOptions.categories = this.buildOptions(res.data.categories, DEFAULT_OPTION.category)
+          this.filterOptions.locations = this.buildOptions(res.data.locations, DEFAULT_OPTION.location, false)
+          this.filterOptions.people = this.buildOptions(res.data.people, DEFAULT_OPTION.person, false)
+          this.filterOptions.tags = this.buildOptions(res.data.tags, DEFAULT_OPTION.tag, false)
+        } catch (e) {
+          console.error('获取筛选项失败:', e)
+        }
+      },
+
+      buildOptions(source, fallbackOption, objectValue = true) {
+        const list = Array.isArray(source) ? source : []
+        const normalized = list
+          .map((item) => {
+            if (objectValue && item && typeof item === 'object') {
+              return {
+                label: item.label || item.value || fallbackOption.label,
+                value: item.value !== undefined && item.value !== null
+                  ? item.value
+                  : (item.label !== undefined && item.label !== null ? item.label : fallbackOption.value)
+              }
+            }
+
+            return {
+              label: item || fallbackOption.label,
+              value: item || fallbackOption.value
+            }
+          })
+          .filter((item) => item.label)
+
+        const firstValue = fallbackOption.value
+        const deduped = normalized.filter((item, index) => normalized.findIndex((entry) => entry.value === item.value) === index)
+        const hasFallback = deduped.some((item) => item.value === firstValue)
+        return hasFallback ? deduped : [fallbackOption, ...deduped]
+      },
+
+      buildQueryParams() {
+        const params = {
+          page: this.page,
+          pageSize: this.pageSize
+        }
+
+        if (this.keyword) {
+          params.keyword = this.keyword
+        }
+
+        if (this.selectedFilters.category && this.selectedFilters.category !== 'all') {
+          params.category = this.selectedFilters.category
+        }
+
+        if (this.selectedFilters.location) {
+          params.location = this.selectedFilters.location
+        }
+
+        if (this.selectedFilters.person) {
+          params.person = this.selectedFilters.person
+        }
+
+        if (this.selectedFilters.tag) {
+          params.tag = this.selectedFilters.tag
+        }
+
+        const timeOption = this.timeOptions.find((item) => item.value === this.selectedFilters.time)
+        if (timeOption && timeOption.days > 0) {
+          const start = new Date()
+          start.setHours(0, 0, 0, 0)
+          start.setDate(start.getDate() - timeOption.days + 1)
+          params.startTime = start.toISOString()
+        }
+
+        return params
+      },
+
+      async fetchAlbumList(reset = false) {
+        if (this.loadStatus === 'loading') return
+
+        if (reset) {
+          this.page = 1
+          this.albumList = []
+          this.displayList = []
+          this.clearAppendTimer()
+        }
+
+        this.loadStatus = 'loading'
+
+        try {
+          const res = await getAlbumList(this.buildQueryParams())
+          if (res.code !== 0) {
+            this.loadStatus = 'loadmore'
+            return
+          }
+
+          const newData = res.data || []
+          this.albumList = reset ? newData : [...this.albumList, ...newData]
+          this.total = (res.pagination && res.pagination.total) || this.albumList.length
+          const nextStatus = this.albumList.length >= this.total ? 'nomore' : 'loadmore'
+          this.applyWaterfallData(newData, { reset, nextStatus })
+        } catch (e) {
+          console.error('获取相册列表失败:', e)
+          if (!reset && this.page > 1) {
+            this.page -= 1
+          }
+          this.loadStatus = 'loadmore'
+        }
+      },
+
+      applyWaterfallData(data, { reset, nextStatus }) {
+        this.clearAppendTimer()
+
+        const queue = (Array.isArray(data) ? data : []).map((item, index) => ({
+          ...item,
+          id: item.id || `album_${Date.now()}_${index}`
+        }))
+
+        if (reset) {
+          this.displayList = []
+        }
+
+        if (!queue.length) {
+          this.loadStatus = nextStatus
+          return
+        }
+
+        const taskId = Date.now()
+        this.appendTaskId = taskId
+
+        const appendChunk = () => {
+          if (this.appendTaskId !== taskId) return
+
+          const chunk = queue.splice(0, 8)
+          if (chunk.length) {
+            this.displayList = [...this.displayList, ...chunk]
+          }
+
+          if (queue.length) {
+            this.appendTimer = setTimeout(appendChunk, 16)
+            return
+          }
+
+          this.appendTimer = null
+          this.loadStatus = nextStatus
+        }
+
+        appendChunk()
+      },
+
+      clearAppendTimer() {
+        this.appendTaskId = 0
+        if (this.appendTimer) {
+          clearTimeout(this.appendTimer)
+          this.appendTimer = null
+        }
+      },
+
+      onFilterPickerChange(type, event) {
+        const index = Number(event && event.detail ? event.detail.value : 0)
+        const optionsMap = {
+          time: this.timeOptions,
+          category: this.categoryOptions,
+          location: this.locationOptions,
+          person: this.personOptions,
+          tag: this.tagOptions
+        }
+        const options = optionsMap[type] || []
+        const selected = options[index]
+        if (!selected) return
+
+        this.selectedFilters[type] = selected.value
+        this.fetchAlbumList(true)
+      },
+
+      searchAlbums() {
+        this.fetchAlbumList(true)
+      },
+
+      clearKeyword() {
+        if (!this.keyword) return
+        this.keyword = ''
+        this.fetchAlbumList(true)
+      },
+
+      resetFilters() {
+        this.keyword = ''
+        this.selectedFilters = {
+          time: 'all',
+          category: 'all',
+          location: '',
+          person: '',
+          tag: ''
+        }
+        this.fetchAlbumList(true)
+      },
+
       handleWaterFallFinish() {
-        this.loadStatus = 'loadmore'
+        if (this.loadStatus === 'loading' && !this.appendTimer) {
+          this.loadStatus = this.albumList.length >= this.total ? 'nomore' : 'loadmore'
+        }
+      },
+
+      goDetail(item) {
+        uni.navigateTo({
+          url: buildAlbumDetailUrl(item, this.mediaBaseUrl)
+        })
+      },
+
+      getRandomData() {
+        if (this.loadStatus === 'loading' || this.loadStatus === 'nomore') return
+        this.page += 1
+        this.fetchAlbumList()
       }
     }
   }
 </script>
 
 <style lang="scss" scoped>
-  .pages-a{
-    max-height: 100vh;
+  .page-a {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f6f9ff 0%, #f9fafc 220rpx, #f7f7f7 100%);
   }
-  
-  
-  /* 自定义导航栏内容 start */
-  .custom-nav {
-    height: 100%;
-    
-    &__back {
-      margin: auto 5rpx;
-      font-size: 50rpx;
-      margin-right: 10rpx;
-      margin-left: 30rpx;
-      flex-basis: 5%;
+
+  .hero {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0 30rpx 20rpx;
+
+    &__copy {
+      display: flex;
+      flex-direction: column;
+      gap: 12rpx;
+    }
+
+    &__title {
+      font-size: 44rpx;
+      font-weight: bold;
+      color: #1f2a37;
+    }
+
+    &__meta {
+      font-size: 24rpx;
+      color: #7d8998;
+    }
+
+    &__action {
+      width: 72rpx;
+      height: 72rpx;
+      border-radius: 20rpx;
+      background: rgba(255, 255, 255, 0.86);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34rpx;
+      color: #4c6fff;
+      box-shadow: 0 10rpx 24rpx rgba(76, 111, 255, 0.08);
     }
   }
-  
-  /* 底部安全边距 start*/
-  .tn-tabbar-height {
-  	min-height: 120rpx;
-  	height: calc(140rpx + env(safe-area-inset-bottom) / 2);
-    height: calc(140rpx + constant(safe-area-inset-bottom));
+
+  .search-panel {
+    margin: 0 24rpx 20rpx;
+    padding: 24rpx;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 24rpx;
+    box-shadow: 0 12rpx 36rpx rgba(31, 42, 55, 0.06);
   }
-  
-  /* 图标容器5 start */
-  .icon5 {
-    &__item {
-      // width: 30%;
-      background-color: #FFFFFF;
-      border-radius: 10rpx;
-      padding: 0rpx;
-      margin: 0rpx;
-      transform: scale(1);
-      transition: transform 0.3s linear;
-      transform-origin: center center;
-      
-      &--icon {
-        width: 96rpx;
-        height: 96rpx;
-        border-radius: 50%;
-        margin-bottom: 18rpx;
-        position: relative;
-        z-index: 1;
-      }
-    }
-  }  
-  
-  /* 轮播视觉差 start */
-  .card-swiper {
-    height: 330rpx !important;
-  }
-    
-  .card-swiper swiper-item {
-    width: 750rpx !important;
-    left: 0rpx;
-    box-sizing: border-box;
-    padding: 40rpx 30rpx 30rpx 30rpx;
-    overflow: initial;
-  }
-    
-  .card-swiper swiper-item .swiper-item {
-    width: 100%;
-    display: block;
-    height: 100%;
-    border-radius: 15rpx;
-    transform: scale(1);
-    transition: all 0.2s ease-in 0s;
-    will-change: transform;
-    // overflow: hidden;
-  }
-    
-  .card-swiper swiper-item.cur .swiper-item {
-    transform: none;
-    transition: all 0.2s ease-in 0s;
-    will-change: transform;
-  }
-    
-  .card-swiper swiper-item .swiper-item-text {
-    margin-top: -220rpx;
-    text-align: center;
-    width: 100%;
-    display: block;
-    border-radius: 10rpx;
-    transform: translate(100rpx, 0rpx) scale(0.9, 0.9);
-    transition: all 0.6s ease 0s;
-    will-change: transform;
-    overflow: hidden;
-  }
-    
-  .card-swiper swiper-item.cur .swiper-item-text {
-    margin-top: -220rpx;
-    width: 100%;
-    transform: translate(0rpx, 0rpx) scale(0.9, 0.9);
-    transition: all 0.6s ease 0s;
-    will-change: transform;
-  }
-  
-  .image-banner{
+
+  .search-bar {
     display: flex;
     align-items: center;
-    justify-content: center;
-  }
-  .image-banner image{
-    width: 100%;
-    height: 100%;
-  }
-  
-  /* 轮播指示点 start*/
-  .indication{
-    z-index: 9999;
-    width: 100%;
-    height: 36rpx;
-    position: absolute;
-    display:flex;
-    flex-direction:row;
-    align-items:center;
-    justify-content:center;
-  }
-  
-  .spot{
-    background-color: #FFFFFF;
-    opacity: 0.6;
-    width: 10rpx;
-    height: 10rpx;
-    border-radius: 20rpx;
-    top: -70rpx;
-    margin: 0 8rpx !important;
-    position: relative;
-  }
-  
-  .spot.active{
-    opacity: 1;
-    width: 30rpx;
-    background-color: #FFFFFF;
-  }
-  
+    padding: 18rpx 22rpx;
+    border-radius: 18rpx;
+    background: #f4f7fb;
 
-  /* 胶囊banner*/
-  .image-capsule{
-    padding: 100rpx 0rpx;
-    font-size: 40rpx;
-    font-weight: 300;
-    position: relative;
-  }
-  .image-piccapsule{
-    background-size: cover;
-    background-repeat:no-repeat;
-    // background-attachment:fixed;
-    background-position:top;
-    border-radius: 20rpx 20rpx 0 0;
-  }
-  
-  /* 用户头像 start */
-  .logo-image {
-    width: 40rpx;
-    height: 40rpx;
-    position: relative;
-  }
-  
-  .logo-pic {
-    background-size: cover;
-    background-repeat: no-repeat;
-    // background-attachment:fixed;
-    background-position: top;
-    border: 1rpx solid rgba(255,255,255,0.05);
-    // box-shadow: 0rpx 0rpx 80rpx 0rpx rgba(0, 0, 0, 0.15);
-    border-radius: 50%;
-    overflow: hidden;
-    // background-color: #FFFFFF;
-  }
-  
-  /* 瀑布流*/
-  .wallpaper__item {
-    background-color: #FFFFFF;
-    overflow: hidden;
-    margin: 0 10rpx;
-    margin-bottom: 40rpx;
-    // box-shadow: 0rpx 0rpx 30rpx 0rpx rgba(0, 0, 0, 0.07);
-    
-    .item {
-      /* 图片 start */
-      &__image {
-        width: 100%;
-        height: auto;
-        background-color: #FFFFFF;
-        border: 1rpx solid #F8F7F8;
-        border-radius: 10rpx;
-        overflow: hidden;
-      }
-      /* 图片 end */
-      
-      /* 内容 start */
-      &__data {
-        padding: 14rpx 0rpx;
-      }
-      
-      /* 标题 start */
-      &__title-container {
-        text-align: justify;
-        line-height: 38rpx;
-        vertical-align: middle;
-      }
-      &__title {
-        font-size: 30rpx;
-      }
-      /* 标题 end */
-      
-      /* 标签 start */
-      &__tags-container {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        align-items: center;
-        justify-content: flex-start;
-      }
-      &__tag {
-        margin: 10rpx;
-        color: #7C8191;
-        background-color: #F3F2F7;
-        padding: 4rpx 14rpx 6rpx;
-        border-radius: 10rpx;
-        font-size: 20rpx;
-        
-        &:first-child {
-          margin-left: 0rpx !important;
-        }
-      }
-      /* 标签 end */
-      
-      /* 内容 end */
+    &__icon {
+      font-size: 30rpx;
+      color: #8a94a6;
+    }
+
+    &__input {
+      flex: 1;
+      margin: 0 14rpx;
+      font-size: 28rpx;
+      color: #263238;
+    }
+
+    &__clear {
+      font-size: 30rpx;
+      color: #a1abba;
     }
   }
-  
-  
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16rpx;
+    margin-top: 20rpx;
+  }
+
+  .filter-pill {
+    min-width: 196rpx;
+    max-width: 100%;
+    padding: 16rpx 18rpx;
+    border-radius: 18rpx;
+    background: #f6f8fc;
+    display: flex;
+    align-items: center;
+    gap: 10rpx;
+
+    &--active {
+      background: #eaf0ff;
+      color: #2f62ff;
+    }
+
+    &__icon {
+      font-size: 24rpx;
+    }
+
+    &__label {
+      flex: 1;
+      font-size: 24rpx;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .filters-meta {
+    margin-top: 18rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &__text {
+      font-size: 24rpx;
+      color: #8a94a6;
+    }
+
+    &__reset {
+      font-size: 24rpx;
+      color: #4c6fff;
+    }
+  }
+
+  .album-container {
+    padding: 8rpx 14rpx 0;
+  }
+
+  .wallpaper__item {
+    margin: 0 10rpx 20rpx;
+    background: #ffffff;
+    border-radius: 18rpx;
+    overflow: hidden;
+    box-shadow: 0 8rpx 24rpx rgba(31, 42, 55, 0.05);
+  }
+
+  .item__image {
+    width: 100%;
+    overflow: hidden;
+    background: #edf1f5;
+  }
+
+  .item__data {
+    padding: 18rpx 18rpx 20rpx;
+  }
+
+  .item__title {
+    display: block;
+    font-size: 28rpx;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .item__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10rpx;
+    margin-top: 10rpx;
+  }
+
+  .item__meta-text {
+    font-size: 22rpx;
+    color: #7d8998;
+  }
+
+  .item__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8rpx;
+    margin-top: 12rpx;
+  }
+
+  .item__tag {
+    padding: 6rpx 12rpx;
+    border-radius: 999rpx;
+    font-size: 20rpx;
+    color: #4763c7;
+    background: #eef3ff;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 160rpx 20rpx 100rpx;
+
+    &__icon {
+      font-size: 80rpx;
+      color: #d1d6de;
+    }
+
+    &__title {
+      margin-top: 24rpx;
+      font-size: 28rpx;
+      color: #8a94a6;
+    }
+  }
 </style>

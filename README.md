@@ -3,4 +3,3 @@
 ## 技术栈
  - 框架: `Uniapp`
  - UI: `图鸟UI`
- - 图片API: `photoprism`

@@ -49,8 +49,7 @@
             "es6" : false,
             "minified" : true
         },
-        "usingComponents" : true,
-        "requiredPrivateInfos" : [ "chooseAddress" ]
+        "usingComponents" : true
     },
     "mp-alipay" : {
         "usingComponents" : true
@@ -64,5 +63,21 @@
     "uniStatistics" : {
         "enable" : false
     },
+		"h5": {
+		    "devServer" : {
+		        "https" : true,
+		        "disableHostCheck" : true,
+		        "proxy" : {
+		            "/photoprism" : {
+		                "target" : "https://media.mengyunyi.top/",
+		                "changeOrigin" : true, //是否跨域
+		                "secure" : false, // 设置支持https协议的代理
+		                "pathRewrite" : {
+		                    "^/photoprism" : "/"
+		                }
+		            }
+		        }
+		    }
+		},
     "vueVersion" : "2"
 }

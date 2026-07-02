@@ -3,7 +3,7 @@
   import store from '@/nxTemp/store/index.js'
   import updateCustomBarInfo from './tuniao-ui/libs/function/updateCustomBarInfo.js'
 	import {init} from "@/nxTemp";
-  
+
 	export default {
 		onLaunch(options) {
 			// 检查小程序更新
@@ -11,10 +11,8 @@
 			uni.getSystemInfo({
 			  success: function(e) {
 			    // #ifndef H5
-			    // 获取手机系统版本
 			    const system = e.system.toLowerCase()
 			    const platform = e.platform.toLowerCase()
-			    // 判断是否为ios设备
 			    if (platform.indexOf('ios') != -1 && (system.indexOf('ios') != -1 || system.indexOf('macos') != -1)) {
 			      Vue.prototype.SystemPlatform = 'apple'
 			    } else if (platform.indexOf('android') != -1 && (system.indexOf('android') != -1)) {
@@ -25,9 +23,8 @@
 			    // #endif
 			  }
 			})
-      
+
       // 获取设备的状态栏信息和自定义顶栏信息
-      // store.dispatch('updateCustomBarInfo')
       updateCustomBarInfo().then((res) => {
         store.commit('$tStore', {
           name: 'vuex_status_bar_height',
@@ -38,12 +35,19 @@
           value: res.customBarHeight
         })
       })
+
+      // 初始化网络模式（内外网自动探测）
+      store.dispatch('initNetworkMode').catch(e => {
+        console.warn('[App] 网络初始化失败:', e)
+      })
 		},
 		onShow: function() {
-			// console.log('App Show')
+			// 恢复定时探测
+			store.dispatch('startNetworkProbe')
 		},
 		onHide: function() {
-			// console.log('App Hide')
+			// 停止定时探测
+			store.dispatch('stopNetworkProbe')
 		}
 	}
 </script>
