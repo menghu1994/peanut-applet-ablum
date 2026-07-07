@@ -47,7 +47,11 @@
         {
           "path": "favorite/favorite",
           "style": {
-            "navigationBarTitleText": "我的收藏"
+            "navigationBarTitleText": "我的收藏",
+            "disableScroll": true,
+            "app-plus": {
+              "bounce": "none"
+            }
           }
         },
         {

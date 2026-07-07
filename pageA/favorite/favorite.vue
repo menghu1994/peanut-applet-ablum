@@ -7,7 +7,7 @@
       </view>
     </tn-nav-bar>
 
-    <view v-if="favoriteList.length" class="favorite-stage">
+    <view v-if="favoriteList.length" class="favorite-stage" :style="stageStyle">
       <view class="swiper-shell" :style="{ height: swiperHeight }">
         <tn-stack-swiper
           :list="swiperList"
@@ -48,7 +48,9 @@
         favoriteList: [],
         currentIndex: 0,
         initialIndex: 0,
-        swiperContainerHeight: 0
+        swiperContainerHeight: 0,
+        stagePaddingTop: 0,
+        stagePaddingBottom: 0
       }
     },
     computed: {
@@ -66,7 +68,13 @@
         return this.favoriteList[this.currentIndex] || this.favoriteList[0]
       },
       swiperHeight() {
-        return this.swiperContainerHeight ? `${this.swiperContainerHeight}px` : '100vh'
+        return this.swiperContainerHeight ? `${this.swiperContainerHeight}px` : '72vh'
+      },
+      stageStyle() {
+        return {
+          paddingTop: `${this.stagePaddingTop}px`,
+          paddingBottom: `${this.stagePaddingBottom}px`
+        }
       }
     },
     onLoad(options) {
@@ -99,7 +107,11 @@
       initSwiperContainer() {
         const systemInfo = uni.getSystemInfoSync()
         const safeHeight = systemInfo.safeArea ? systemInfo.safeArea.height : systemInfo.windowHeight
-        this.swiperContainerHeight = safeHeight
+        const safeTop = systemInfo.safeAreaInsets ? systemInfo.safeAreaInsets.top : 0
+        const safeBottom = systemInfo.safeAreaInsets ? systemInfo.safeAreaInsets.bottom : 0
+        this.stagePaddingTop = (this.vuex_custom_bar_height || safeTop + 88) + 24
+        this.stagePaddingBottom = safeBottom + 140
+        this.swiperContainerHeight = Math.max(safeHeight - this.stagePaddingTop, 420)
       },
 
       getImageUrl(cover) {
@@ -208,10 +220,20 @@
   .favorite-stage {
     width: 100%;
     height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-left: 28rpx;
+    padding-right: 28rpx;
+    box-sizing: border-box;
   }
 
   .swiper-shell {
     width: 100%;
+    max-width: 694rpx;
+    margin: 0 auto;
+    border-radius: 36rpx;
+    overflow: hidden;
+    box-shadow: 0 24rpx 80rpx rgba(0, 0, 0, 0.28);
   }
 
   .floating-action {
