@@ -1,5 +1,5 @@
 <template>
-  <view class="details-page">
+  <view class="template-details">
     <tn-nav-bar fixed alpha customBack>
       <view slot="back" class="tn-custom-nav-bar__back" @click="goBack">
         <text class="icon tn-icon-left"></text>
@@ -7,46 +7,51 @@
       </view>
     </tn-nav-bar>
 
-    <view class="photo-container">
-      <view v-if="imageUrl" class="media-stage">
-        <image class="photo-image" :src="imageUrl" mode="widthFix" @click="previewImage" @error="onImageError" />
+    <view class="slideshow" @click="previewImage">
+      <view v-if="!imageLoaded && !thumbUrl" class="slideshow-placeholder"></view>
+      <image
+        v-if="thumbUrl"
+        class="slideshow-thumb"
+        :src="thumbUrl"
+        mode="aspectFit"
+      ></image>
+      <image
+        v-if="imageUrl"
+        class="slideshow-image"
+        :class="{ 'slideshow-image--loaded': imageLoaded }"
+        :src="imageUrl"
+        mode="aspectFit"
+        @load="handleImageLoad"
+        @error="handleImageError"
+      ></image>
+    </view>
+
+    <view class="detail-panel" :style="{ bottom: panelBottom }">
+      <view class="detail-panel__content">
+        <text class="detail-title">{{ photoName || '照片详情' }}</text>
+        <view class="detail-tags">
+          <text class="detail-tag">图片</text>
+          <text v-if="photoCategory" class="detail-tag">{{ photoCategory }}</text>
+          <text v-if="photoLocation" class="detail-tag">{{ photoLocation }}</text>
+          <text v-if="photoTakenAt" class="detail-tag">{{ formatTakenAt(photoTakenAt) }}</text>
+          <text v-if="photoWidth && photoHeight" class="detail-tag">{{ photoWidth }} x {{ photoHeight }}</text>
+          <text v-if="photoSize" class="detail-tag">{{ formatSize(photoSize) }}</text>
+        </view>
+        <view v-if="photoPeople.length" class="detail-tags detail-tags--soft">
+          <text v-for="person in photoPeople" :key="person" class="detail-tag detail-tag--soft">{{ person }}</text>
+        </view>
+        <view v-if="photoTags.length" class="detail-tags detail-tags--soft">
+          <text v-for="tag in photoTags" :key="tag" class="detail-tag detail-tag--warm">{{ tag }}</text>
+        </view>
       </view>
     </view>
 
-    <view class="photo-info" v-if="photoName">
-      <text class="photo-name">{{ photoName }}</text>
-      <view class="photo-meta">
-        <text class="meta-item">图片</text>
-        <text class="meta-item" v-if="photoCategory">{{ photoCategory }}</text>
-        <text class="meta-item" v-if="photoLocation">{{ photoLocation }}</text>
-        <text class="meta-item" v-if="photoTakenAt">{{ formatTakenAt(photoTakenAt) }}</text>
-        <text class="meta-item" v-if="photoWidth && photoHeight">{{ photoWidth }} x {{ photoHeight }}</text>
-        <text class="meta-item" v-if="photoSize">{{ formatSize(photoSize) }}</text>
-      </view>
-
-      <view v-if="photoPeople.length" class="tag-group">
-        <text v-for="person in photoPeople" :key="person" class="tag-pill">{{ person }}</text>
-      </view>
-
-      <view v-if="photoTags.length" class="tag-group">
-        <text v-for="tag in photoTags" :key="tag" class="tag-pill tag-pill--soft">{{ tag }}</text>
-      </view>
-    </view>
-
-    <view class="bottom-bar">
-      <view class="action-item" @click="toggleFavorite">
-        <text :class="[isFavorited ? 'tn-icon-like-fill' : 'tn-icon-like']" :style="{ color: isFavorited ? '#FF6B6B' : '#666' }"></text>
-        <text class="action-text">{{ isFavorited ? '已收藏' : '收藏' }}</text>
-      </view>
-      <view class="action-item" @click="downloadPhoto">
-        <text class="tn-icon-download"></text>
-        <text class="action-text">下载</text>
-      </view>
-      <view class="action-item">
-        <button class="share-btn" open-type="share">
-          <text class="tn-icon-send"></text>
-          <text class="action-text">分享</text>
-        </button>
+    <view class="tabbar footerfixed dd-glass tn-color-white">
+      <view class="action" @click="toggleFavorite">
+        <view class="bar-icon">
+          <view :class="[isFavorited ? 'tn-icon-like-fill' : 'tn-icon-like-lack']"></view>
+        </view>
+        <view>{{ isFavorited ? '已收藏' : '收藏' }}</view>
       </view>
     </view>
   </view>
@@ -54,7 +59,6 @@
 
 <script>
   import { getFavoriteList, addFavorite, removeFavorite } from '@/api/modules/favorite.js'
-  import { saveImageToAlbumWithPermission } from '@/libs/album/utils.js'
 
   export default {
     data() {
@@ -62,6 +66,7 @@
         photoId: '',
         photoName: '',
         imageUrl: '',
+        thumbUrl: '',
         photoCategory: '',
         photoLocation: '',
         photoPeople: [],
@@ -70,13 +75,20 @@
         photoWidth: 0,
         photoHeight: 0,
         photoSize: 0,
+        imageLoaded: false,
         isFavorited: false,
         favoriteId: ''
+      }
+    },
+    computed: {
+      panelBottom() {
+        return 'calc(170rpx + env(safe-area-inset-bottom))'
       }
     },
     onLoad(options) {
       this.photoId = options.id || ''
       this.photoName = options.name ? decodeURIComponent(options.name) : ''
+      this.thumbUrl = options.thumb ? decodeURIComponent(options.thumb) : ''
       this.photoCategory = options.cat ? decodeURIComponent(options.cat) : ''
       this.photoLocation = options.location ? decodeURIComponent(options.location) : ''
       this.photoPeople = options.people ? decodeURIComponent(options.people).split(',').filter(Boolean) : []
@@ -85,17 +97,38 @@
       this.photoWidth = Number(options.w) || 0
       this.photoHeight = Number(options.h) || 0
       this.photoSize = Number(options.size) || 0
+      this.imageUrl = options.url ? decodeURIComponent(options.url) : ''
 
-      const rawUrl = options.url ? decodeURIComponent(options.url) : ''
-      this.imageUrl = rawUrl || ''
+      this.preloadImage()
 
       if (this.photoId) {
         this.checkFavorite()
       }
     },
     methods: {
-      onImageError(e) {
-        console.error('album image load failed:', e, this.imageUrl)
+      preloadImage() {
+        if (!this.imageUrl) return
+
+        uni.getImageInfo({
+          src: this.imageUrl,
+          success: (res) => {
+            if (!this.photoWidth) {
+              this.photoWidth = Number(res.width) || 0
+            }
+            if (!this.photoHeight) {
+              this.photoHeight = Number(res.height) || 0
+            }
+          },
+          fail: () => {}
+        })
+      },
+
+      handleImageLoad() {
+        this.imageLoaded = true
+      },
+
+      handleImageError() {
+        this.imageLoaded = true
       },
 
       async checkFavorite() {
@@ -131,7 +164,7 @@
           const res = await addFavorite({
             resourceId: this.photoId,
             resourceType: 'album',
-            resourceName: this.photoName,
+            resourceName: this.photoName || '照片',
             resourceCover: this.imageUrl
           })
           if (res.code === 0) {
@@ -142,10 +175,6 @@
         } catch (e) {
           uni.showToast({ title: '收藏失败', icon: 'none' })
         }
-      },
-
-      downloadPhoto() {
-        saveImageToAlbumWithPermission(this.imageUrl)
       },
 
       previewImage() {
@@ -173,126 +202,205 @@
       goBack() {
         uni.navigateBack()
       }
-    },
-
-    onShareAppMessage() {
-      return {
-        title: this.photoName || '相册图片',
-        path: `/pageA/details/details?id=${this.photoId}&url=${encodeURIComponent(this.imageUrl)}&name=${encodeURIComponent(this.photoName)}`
-      }
     }
   }
 </script>
 
 <style lang="scss" scoped>
-  .details-page {
-    min-height: 100vh;
-    background: #f8f8f8;
-    padding-bottom: 140rpx;
-  }
-
-  .photo-container {
+  .template-details {
+    margin: 0;
     width: 100%;
-    background: #ffffff;
-  }
-
-  .media-stage {
+    height: 100vh;
+    color: #fff;
+    overflow: hidden;
+    background: #000;
     position: relative;
   }
 
-  .photo-image {
+  .tn-custom-nav-bar__back {
     width: 100%;
-    display: block;
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 1000rpx;
+    border: 1rpx solid rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+    font-size: 18px;
+
+    .icon {
+      display: block;
+      flex: 1;
+      margin: auto;
+      text-align: center;
+    }
+
+    &:before {
+      content: ' ';
+      width: 1rpx;
+      height: 110%;
+      position: absolute;
+      top: 22.5%;
+      left: 0;
+      right: 0;
+      margin: auto;
+      transform: scale(0.5);
+      transform-origin: 0 0;
+      pointer-events: none;
+      box-sizing: border-box;
+      opacity: 0.7;
+      background-color: #ffffff;
+    }
   }
 
-  .photo-info {
-    margin: 24rpx;
-    padding: 28rpx;
-    background: #ffffff;
+  .slideshow {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    background: #05070c;
+    overflow: hidden;
+  }
+
+  .slideshow-placeholder {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(56, 63, 79, 0.9) 18%, rgba(79, 86, 103, 0.9) 38%, rgba(56, 63, 79, 0.9) 58%);
+    background-size: 200% 100%;
+    animation: photo-shimmer 1.4s ease-in-out infinite;
+  }
+
+  .slideshow-thumb,
+  .slideshow-image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+  }
+
+  .slideshow-thumb {
+    transform: scale(1.06);
+    filter: blur(18rpx);
+    opacity: 0.42;
+  }
+
+  .slideshow-image {
+    opacity: 0;
+    transition: opacity 0.24s ease;
+  }
+
+  .slideshow-image--loaded {
+    opacity: 1;
+  }
+
+  .detail-panel {
+    position: fixed;
+    left: 24rpx;
+    right: 24rpx;
+    z-index: 20;
+  }
+
+  .detail-panel__content {
+    padding: 24rpx 24rpx 22rpx;
     border-radius: 24rpx;
+    background: rgba(7, 10, 17, 0.44);
+    backdrop-filter: blur(20rpx);
+    -webkit-backdrop-filter: blur(20rpx);
+    box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.18);
   }
 
-  .photo-name {
+  .detail-title {
     display: block;
     font-size: 34rpx;
-    color: #222222;
-    font-weight: 600;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.4;
   }
 
-  .photo-meta {
+  .detail-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 14rpx;
+    gap: 12rpx;
     margin-top: 18rpx;
   }
 
-  .meta-item {
+  .detail-tags--soft {
+    margin-top: 14rpx;
+  }
+
+  .detail-tag {
     padding: 8rpx 16rpx;
     border-radius: 999rpx;
-    background: #f3f5fb;
+    background: rgba(255, 255, 255, 0.14);
     font-size: 22rpx;
-    color: #5b6475;
+    color: rgba(255, 255, 255, 0.92);
   }
 
-  .tag-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14rpx;
-    margin-top: 20rpx;
+  .detail-tag--soft {
+    background: rgba(76, 111, 255, 0.22);
   }
 
-  .tag-pill {
-    padding: 10rpx 18rpx;
-    border-radius: 999rpx;
-    background: #eef3ff;
-    color: #3668fc;
-    font-size: 22rpx;
+  .detail-tag--warm {
+    background: rgba(255, 181, 71, 0.22);
   }
 
-  .tag-pill--soft {
-    background: #fff3e8;
-    color: #f08a24;
+  .dd-glass {
+    width: 100%;
+    backdrop-filter: blur(20rpx);
+    -webkit-backdrop-filter: blur(20rpx);
   }
 
-  .bottom-bar {
+  .footerfixed {
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 20rpx 24rpx calc(env(safe-area-inset-bottom) + 20rpx);
-    background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 -8rpx 30rpx rgba(32, 55, 120, 0.08);
+    margin: 40rpx 5%;
+    width: 90%;
+    bottom: calc(env(safe-area-inset-bottom) / 2);
+    z-index: 999;
+    background-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0rpx 0rpx 30rpx 0rpx rgba(0, 0, 0, 0.07);
   }
 
-  .action-item {
+  .tabbar {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 10rpx;
-    font-size: 22rpx;
-    color: #666666;
-  }
-
-  .action-text {
-    font-size: 22rpx;
-    color: inherit;
-  }
-
-  .share-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10rpx;
-    background: transparent;
+    min-height: 110rpx;
+    justify-content: space-between;
     padding: 0;
-    line-height: 1;
-    color: #666666;
+    height: calc(110rpx + env(safe-area-inset-bottom) / 2);
   }
 
-  .share-btn::after {
-    border: 0;
+  .tabbar .action {
+    font-size: 22rpx;
+    position: relative;
+    flex: 1;
+    text-align: center;
+    padding: 0;
+    display: block;
+    height: auto;
+    line-height: 1;
+    margin: 0;
+    overflow: initial;
+  }
+
+  .tabbar .action .bar-icon {
+    width: 100rpx;
+    position: relative;
+    display: block;
+    height: auto;
+    margin: 0 auto 10rpx;
+    text-align: center;
+    font-size: 42rpx;
+  }
+
+  @keyframes photo-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+
+    100% {
+      background-position: -200% 0;
+    }
   }
 </style>

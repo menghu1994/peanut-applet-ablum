@@ -1,1 +1,34 @@
-@import 'tuniao-ui/theme.scss'
+@import 'tuniao-ui/theme.scss';
+
+.custom-nav {
+  height: 100%;
+}
+
+.custom-nav__back {
+  margin: auto 30rpx;
+  margin-right: 10rpx;
+  margin-left: 30rpx;
+  min-width: 120rpx;
+  font-size: 40rpx;
+  line-height: 1.2;
+}
+
+.custom-nav .tn-text-xl,
+.custom-nav__back .tn-text-xl {
+  font-size: 40rpx !important;
+  line-height: 1.2;
+}
+
+.tn-custom-nav-bar__back {
+  min-height: 88rpx;
+  padding: 0 18rpx;
+  display: inline-flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.tn-custom-nav-bar__back text,
+.tn-custom-nav-bar__back view {
+  font-size: 44rpx;
+  line-height: 1;
+}

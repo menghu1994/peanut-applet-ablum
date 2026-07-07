@@ -8,7 +8,7 @@
       </view>
     </tn-nav-bar>
 
-    <view :style="{ paddingTop: vuex_custom_bar_height + 'px' }">
+    <view class="page-e__body" :style="{ paddingTop: vuex_custom_bar_height + 'px' }">
       <view class="user-card" @tap="goSettings">
         <view class="tn-flex tn-flex-col-center">
           <view class="user-avatar">
@@ -50,15 +50,6 @@
         </view>
       </view>
 
-      <view class="menu-section">
-        <view class="menu-item" @tap="showAbout">
-          <view class="menu-icon tn-bg-grey--light">
-            <text class="tn-icon-safe tn-color-grey"></text>
-          </view>
-          <text class="menu-text">&#20851;&#20110;</text>
-          <text class="tn-icon-right menu-arrow"></text>
-        </view>
-      </view>
     </view>
 
     <view class="tn-tabbar-height"></view>
@@ -147,22 +138,19 @@
           showCancel: false
         })
       },
-
-      showAbout() {
-        uni.showModal({
-          title: '\u5173\u4e8e',
-          content: '\u76f8\u518c\u5c55\u793a\u5e94\u7528 v1.0.0\n\u57fa\u4e8e baby-media \u540e\u7aef\u670d\u52a1',
-          showCancel: false
-        })
-      }
     }
   }
 </script>
 
 <style lang="scss" scoped>
   .page-e {
-    max-height: 100vh;
+    min-height: 100vh;
     background-color: #f8f8f8;
+  }
+
+  .page-e__body {
+    min-height: calc(100vh - 40rpx);
+    background-color: inherit;
   }
 
   .custom-nav {

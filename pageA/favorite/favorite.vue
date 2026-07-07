@@ -1,35 +1,38 @@
 <template>
-  <view class="favorite-page">
-    <tn-nav-bar :isBack="true" :bottomShadow="false" backgroundColor="#FFFFFF">
-      <view class="custom-nav">
-        <text class="tn-text-bold tn-text-xl tn-color-black">我的收藏</text>
+  <view class="favorite-viewer">
+    <tn-nav-bar fixed alpha customBack>
+      <view slot="back" class="tn-custom-nav-bar__back" @click="goBack">
+        <text class="icon tn-icon-left"></text>
+        <text class="icon tn-icon-home-capsule-fill"></text>
       </view>
     </tn-nav-bar>
 
-    <view :style="{paddingTop: vuex_custom_bar_height + 'px'}">
-      <view class="favorite-list" v-if="favoriteList.length > 0">
-        <view
-          v-for="(item, index) in favoriteList"
-          :key="item.id"
-          class="favorite-item"
-          @click="goDetail(item)"
-        >
-          <image class="favorite-cover" :src="getImageUrl(item.resourceCover)" mode="aspectFill" />
-          <view class="favorite-info">
-            <text class="favorite-name">{{ item.resourceName }}</text>
-            <text class="favorite-time">{{ formatTime(item.createdAt) }}</text>
-          </view>
-          <view class="favorite-action" @click.stop="removeFavorite(item)">
-            <text class="tn-icon-like-fill" style="color: #FF6B6B; font-size: 40rpx;"></text>
-          </view>
-        </view>
+    <view v-if="favoriteList.length" class="favorite-stage">
+      <view class="swiper-shell" :style="{ height: swiperHeight }">
+        <tn-stack-swiper
+          :list="swiperList"
+          direction="vertical"
+          height="100%"
+          :switchRate="20"
+          :scaleRate="0.05"
+          :translateRate="7.2"
+          @change="onSwiperChange"
+        ></tn-stack-swiper>
       </view>
+    </view>
 
-      <view class="empty-state" v-else>
-        <text class="tn-icon-like" style="font-size: 80rpx; color: #ddd;"></text>
-        <text class="empty-title">还没有收藏</text>
-        <text class="empty-desc">浏览相册时点击爱心即可收藏</text>
+    <view v-if="currentFavorite" class="floating-action button-unfavorite" @tap="removeFavorite(currentFavorite)">
+      <view class="icon15__item--icon tn-flex tn-flex-row-center tn-flex-col-center tn-shadow-blur">
+        <view class="tn-icon-like-fill"></view>
       </view>
+    </view>
+
+    <view v-else class="empty-state">
+      <view class="empty-icon tn-flex tn-flex-row-center tn-flex-col-center">
+        <text class="tn-icon-like"></text>
+      </view>
+      <text class="empty-title">还没有收藏</text>
+      <text class="empty-desc">返回首页挑几张喜欢的吧</text>
     </view>
   </view>
 </template>
@@ -37,41 +40,98 @@
 <script>
   import { getFavoriteList, removeFavorite as apiRemoveFavorite } from '@/api/modules/favorite.js'
   import store from '@/nxTemp/store/index.js'
-  import { buildAlbumDetailUrl, resolveAlbumMediaUrl } from '@/libs/album/utils.js'
+  import { resolveAlbumMediaUrl } from '@/libs/album/utils.js'
 
   export default {
     data() {
       return {
-        favoriteList: []
+        favoriteList: [],
+        currentIndex: 0,
+        initialIndex: 0,
+        swiperContainerHeight: 0
       }
     },
     computed: {
       mediaBaseUrl() {
         return store.getters.mediaBaseUrl
+      },
+      swiperList() {
+        return this.favoriteList.map((item) => ({
+          ...item,
+          image: this.getImageUrl(item.displayUrl || item.url || item.resourceCover)
+        }))
+      },
+      currentFavorite() {
+        if (!this.favoriteList.length) return null
+        return this.favoriteList[this.currentIndex] || this.favoriteList[0]
+      },
+      swiperHeight() {
+        return this.swiperContainerHeight ? `${this.swiperContainerHeight}px` : '100vh'
       }
     },
-    onLoad() {
+    onLoad(options) {
+      const nextIndex = Number(options && options.index)
+      this.initialIndex = Number.isNaN(nextIndex) ? 0 : Math.max(nextIndex, 0)
       this.fetchFavorites()
     },
+    onShow() {
+      if (this.favoriteList.length) {
+        this.fetchFavorites()
+      }
+    },
+    onReady() {
+      this.$nextTick(() => {
+        this.initSwiperContainer()
+      })
+    },
     methods: {
+      goBack() {
+        uni.navigateBack({
+          delta: 1,
+          fail: () => {
+            uni.switchTab({
+              url: '/pages/index/index'
+            })
+          }
+        })
+      },
+
+      initSwiperContainer() {
+        const systemInfo = uni.getSystemInfoSync()
+        const safeHeight = systemInfo.safeArea ? systemInfo.safeArea.height : systemInfo.windowHeight
+        this.swiperContainerHeight = safeHeight
+      },
+
       getImageUrl(cover) {
         return resolveAlbumMediaUrl(this.mediaBaseUrl, cover)
       },
 
-      formatTime(time) {
-        if (!time) return ''
-        const date = new Date(time)
-        return `${date.getMonth() + 1}月${date.getDate()}日`
+      normalizeFavorites(list) {
+        if (!Array.isArray(list) || !list.length) return []
+        if (!this.initialIndex) return list
+        const safeIndex = Math.min(this.initialIndex, list.length - 1)
+        return [...list.slice(safeIndex), ...list.slice(0, safeIndex)]
       },
 
       async fetchFavorites() {
         try {
-          const res = await getFavoriteList()
+          const res = await getFavoriteList({ resourceType: 'album' })
           if (res.code === 0) {
-            this.favoriteList = res.data || []
+            this.favoriteList = this.normalizeFavorites(res.data || [])
+            if (this.currentIndex >= this.favoriteList.length) {
+              this.currentIndex = this.favoriteList.length > 0 ? this.favoriteList.length - 1 : 0
+            }
+            this.initialIndex = 0
           }
         } catch (e) {
-          console.error('获取收藏失败:', e)
+          console.error('获取收藏列表失败:', e)
+        }
+      },
+
+      onSwiperChange(event) {
+        const nextIndex = Number(event && event.index)
+        if (!Number.isNaN(nextIndex)) {
+          this.currentIndex = nextIndex
         }
       },
 
@@ -80,108 +140,144 @@
           title: '提示',
           content: '确定取消收藏吗？',
           success: async (res) => {
-            if (res.confirm) {
-              try {
-                const result = await apiRemoveFavorite(item.id)
-                if (result.code === 0) {
-                  uni.showToast({ title: '已取消收藏', icon: 'success' })
-                  this.fetchFavorites()
-                }
-              } catch (e) {
-                uni.showToast({ title: '操作失败', icon: 'none' })
+            if (!res.confirm) return
+
+            try {
+              const result = await apiRemoveFavorite(item.id)
+              if (result.code === 0) {
+                uni.showToast({ title: '已取消收藏', icon: 'success' })
+                await this.fetchFavorites()
               }
+            } catch (e) {
+              uni.showToast({ title: '操作失败', icon: 'none' })
             }
           }
         })
-      },
-
-      goDetail(item) {
-        if (item.resourceType === 'album') {
-          uni.navigateTo({
-            url: buildAlbumDetailUrl(item, this.mediaBaseUrl)
-          })
-        }
       }
     }
   }
 </script>
 
 <style lang="scss" scoped>
-  .favorite-page {
-    min-height: 100vh;
-    background: #F8F8F8;
+  .favorite-viewer {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #0f1115;
   }
 
-  .custom-nav {
-    text-align: center;
-  }
-
-  .favorite-list {
-    padding: 20rpx 30rpx;
-  }
-
-  .favorite-item {
+  .tn-custom-nav-bar__back {
+    width: 100%;
+    height: 100%;
+    position: relative;
     display: flex;
+    justify-content: space-evenly;
     align-items: center;
-    padding: 20rpx;
-    margin-bottom: 20rpx;
-    background: #FFFFFF;
-    border-radius: 16rpx;
-    box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 1000rpx;
+    border: 1rpx solid rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+    font-size: 18px;
+
+    .icon {
+      display: block;
+      flex: 1;
+      margin: auto;
+      text-align: center;
+    }
+
+    &:before {
+      content: '';
+      width: 1rpx;
+      height: 110%;
+      position: absolute;
+      top: 22.5%;
+      left: 0;
+      right: 0;
+      margin: auto;
+      transform: scale(0.5);
+      transform-origin: 0 0;
+      pointer-events: none;
+      box-sizing: border-box;
+      opacity: 0.7;
+      background-color: #ffffff;
+    }
   }
 
-  .favorite-cover {
-    width: 120rpx;
-    height: 120rpx;
-    flex-shrink: 0;
-    border-radius: 12rpx;
-    background: #F5F7FA;
+  .favorite-stage {
+    width: 100%;
+    height: 100vh;
   }
 
-  .favorite-info {
-    flex: 1;
-    margin-left: 20rpx;
-    overflow: hidden;
+  .swiper-shell {
+    width: 100%;
   }
 
-  .favorite-name {
-    display: block;
-    font-size: 30rpx;
-    font-weight: 600;
-    color: #303133;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .floating-action {
+    position: fixed;
+    right: 30rpx;
+    bottom: calc(36rpx + env(safe-area-inset-bottom));
+    z-index: 1001;
   }
 
-  .favorite-time {
-    display: block;
-    font-size: 24rpx;
-    color: #909399;
-    margin-top: 8rpx;
+  .icon15__item--icon {
+    width: 100rpx;
+    height: 100rpx;
+    font-size: 50rpx;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.15);
+    border: 1rpx solid rgba(255, 255, 255, 0.2);
+
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      bottom: 0;
+      border-radius: inherit;
+      background-size: 100% 100%;
+    }
   }
 
-  .favorite-action {
-    padding: 16rpx;
+  .button-unfavorite {
+    border-radius: 100rpx;
   }
 
   .empty-state {
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 200rpx;
+    justify-content: center;
+    padding-left: 30rpx;
+    padding-right: 30rpx;
+    color: #ffffff;
+  }
+
+  .empty-icon {
+    width: 140rpx;
+    height: 140rpx;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    font-size: 72rpx;
   }
 
   .empty-title {
-    font-size: 32rpx;
-    color: #303133;
-    font-weight: 600;
-    margin-top: 20rpx;
+    margin-top: 28rpx;
+    font-size: 34rpx;
+    font-weight: 700;
   }
 
   .empty-desc {
+    margin-top: 14rpx;
     font-size: 26rpx;
-    color: #909399;
-    margin-top: 12rpx;
+    color: rgba(255, 255, 255, 0.76);
   }
 </style>

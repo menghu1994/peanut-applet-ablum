@@ -1,7 +1,6 @@
 <template>
   <view class="page-c">
-    <!-- 顶部自定义导航 -->
-    <tn-nav-bar :isBack="false" :bottomShadow="false" backgroundColor="none">
+    <tn-nav-bar :isBack="false" :bottomShadow="false" backgroundColor="#FFFFFF">
       <view class="custom-nav tn-flex tn-flex-col-center tn-flex-row-left">
         <view class="custom-nav__back">
           <text class="tn-text-bold tn-text-xl tn-color-black">我的收藏</text>
@@ -9,45 +8,44 @@
       </view>
     </tn-nav-bar>
 
-    <view :style="{paddingTop: vuex_custom_bar_height + 'px'}">
-      <!-- 收藏列表 -->
-      <view class="favorite-list" v-if="favoriteList.length > 0">
+    <view class="page-c__body" :style="{ paddingTop: vuex_custom_bar_height + 'px' }">
+      <view v-if="favoriteList.length" class="favorite-list">
         <view
           v-for="(item, index) in favoriteList"
-          :key="item.id"
+          :key="item.id || `${item.resourceId || 'favorite'}-${index}`"
           class="favorite-item"
-          @click="goDetail(item)"
+          hover-class="favorite-item--hover"
+          @tap="goFavoriteViewer(index)"
         >
           <image class="favorite-cover" :src="getImageUrl(item.resourceCover)" mode="aspectFill" />
           <view class="favorite-info">
-            <text class="favorite-name">{{ item.resourceName }}</text>
-            <text class="favorite-type">{{ getTypeLabel(item.resourceType) }}</text>
+            <text class="favorite-name">{{ item.resourceName || item.name || '未命名图片' }}</text>
+            <text class="favorite-time">{{ formatTime(item.createdAt || item.updatedAt) }}</text>
           </view>
-          <view class="favorite-action" @click.stop="removeFavorite(item)">
-            <text class="tn-icon-like-fill" style="color: #FF6B6B;"></text>
+          <view class="favorite-arrow tn-flex tn-flex-row-center tn-flex-col-center">
+            <text class="tn-icon-right"></text>
           </view>
         </view>
       </view>
 
-      <!-- 空状态 -->
-      <view class="empty-state" v-else>
-        <view class="empty-icon">
-          <text class="tn-icon-like" style="font-size: 80rpx; color: #ddd;"></text>
+      <view v-else class="empty-state">
+        <view class="empty-icon tn-flex tn-flex-row-center tn-flex-col-center">
+          <text class="tn-icon-like"></text>
         </view>
         <text class="empty-title">还没有收藏</text>
-        <text class="empty-desc">浏览相册时点击爱心即可收藏</text>
+        <text class="empty-desc">浏览图片时点击爱心即可收藏</text>
       </view>
     </view>
   </view>
 </template>
 
 <script>
-  import { getFavoriteList, removeFavorite as apiRemoveFavorite } from '@/api/modules/favorite.js'
+  import { getFavoriteList } from '@/api/modules/favorite.js'
   import store from '@/nxTemp/store/index.js'
-  import { buildAlbumDetailUrl, resolveAlbumMediaUrl } from '@/libs/album/utils.js'
+  import { resolveAlbumMediaUrl } from '@/libs/album/utils.js'
 
   export default {
-    name: 'PageC',
+    name: 'PagesC',
     data() {
       return {
         favoriteList: []
@@ -61,25 +59,26 @@
     created() {
       this.fetchFavorites()
     },
+    activated() {
+      this.fetchFavorites()
+    },
     methods: {
       getImageUrl(cover) {
         return resolveAlbumMediaUrl(this.mediaBaseUrl, cover)
       },
 
-      getTypeLabel(type) {
-        const labels = {
-          album: '相册',
-          audio: '音频',
-          video: '视频',
-          picture_book: '绘本',
-          recipe: '食谱'
-        }
-        return labels[type] || type
+      formatTime(time) {
+        if (!time) return '最近收藏'
+        const date = new Date(time)
+        if (Number.isNaN(date.getTime())) return '最近收藏'
+        const month = `${date.getMonth() + 1}`.padStart(2, '0')
+        const day = `${date.getDate()}`.padStart(2, '0')
+        return `${month}-${day} 收藏`
       },
 
       async fetchFavorites() {
         try {
-          const res = await getFavoriteList()
+          const res = await getFavoriteList({ resourceType: 'album' })
           if (res.code === 0) {
             this.favoriteList = res.data || []
           }
@@ -88,32 +87,10 @@
         }
       },
 
-      async removeFavorite(item) {
-        uni.showModal({
-          title: '提示',
-          content: '确定取消收藏吗？',
-          success: async (res) => {
-            if (res.confirm) {
-              try {
-                const result = await apiRemoveFavorite(item.id)
-                if (result.code === 0) {
-                  uni.showToast({ title: '已取消收藏', icon: 'success' })
-                  this.fetchFavorites()
-                }
-              } catch (e) {
-                uni.showToast({ title: '操作失败', icon: 'none' })
-              }
-            }
-          }
+      goFavoriteViewer(index) {
+        uni.navigateTo({
+          url: `/pageA/favorite/favorite?index=${index}`
         })
-      },
-
-      goDetail(item) {
-        if (item.resourceType === 'album') {
-          uni.navigateTo({
-            url: buildAlbumDetailUrl(item, this.mediaBaseUrl)
-          })
-        }
       }
     }
   }
@@ -121,86 +98,119 @@
 
 <style lang="scss" scoped>
   .page-c {
-    max-height: 100vh;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f6f8fc 0%, #ffffff 100%);
   }
 
   .custom-nav {
     height: 100%;
+
     &__back {
       margin: auto 30rpx;
+      font-size: 40rpx;
+      margin-right: 10rpx;
+      flex-basis: 5%;
+      width: 160rpx;
+      position: absolute;
     }
   }
 
+  .page-c__body {
+    padding-bottom: 40rpx;
+  }
+
   .favorite-list {
-    padding: 20rpx 30rpx;
+    padding: 24rpx 30rpx 40rpx;
   }
 
   .favorite-item {
     display: flex;
     align-items: center;
+    min-height: 148rpx;
     padding: 20rpx;
     margin-bottom: 20rpx;
-    background: #FFFFFF;
-    border-radius: 16rpx;
-    box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 24rpx;
+    box-shadow: 0 16rpx 40rpx rgba(31, 42, 55, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .favorite-item--hover {
+    transform: translateY(-2rpx);
+    box-shadow: 0 20rpx 46rpx rgba(31, 42, 55, 0.12);
   }
 
   .favorite-cover {
-    width: 120rpx;
-    height: 120rpx;
+    width: 108rpx;
+    height: 108rpx;
     flex-shrink: 0;
-    border-radius: 12rpx;
-    background: #F5F7FA;
+    border-radius: 18rpx;
+    background: #eef2f7;
   }
 
   .favorite-info {
     flex: 1;
+    min-width: 0;
     margin-left: 20rpx;
-    overflow: hidden;
   }
 
   .favorite-name {
     display: block;
     font-size: 30rpx;
+    line-height: 1.45;
+    color: #1f2937;
     font-weight: 600;
-    color: #303133;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .favorite-type {
+  .favorite-time {
     display: block;
+    margin-top: 10rpx;
     font-size: 24rpx;
     color: #909399;
-    margin-top: 8rpx;
   }
 
-  .favorite-action {
-    padding: 16rpx;
-    font-size: 40rpx;
+  .favorite-arrow {
+    width: 56rpx;
+    height: 56rpx;
+    margin-left: 16rpx;
+    border-radius: 50%;
+    background: #f4f7fb;
+    color: #6b7280;
+    font-size: 26rpx;
+    flex-shrink: 0;
   }
 
   .empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 200rpx;
+    padding-top: 220rpx;
+    padding-left: 30rpx;
+    padding-right: 30rpx;
   }
 
   .empty-icon {
-    margin-bottom: 30rpx;
+    width: 140rpx;
+    height: 140rpx;
+    border-radius: 50%;
+    background: #fff1f1;
+    color: #ff8b8b;
+    font-size: 72rpx;
   }
 
   .empty-title {
-    font-size: 32rpx;
+    margin-top: 28rpx;
+    font-size: 34rpx;
     color: #303133;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .empty-desc {
+    margin-top: 14rpx;
     font-size: 26rpx;
     color: #909399;
-    margin-top: 12rpx;
   }
 </style>

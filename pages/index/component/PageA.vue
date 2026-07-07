@@ -1,16 +1,24 @@
 <template>
   <view class="page-a">
-    <view class="hero" :style="{ paddingTop: `${(vuex_status_bar_height || 0) + 24}px` }">
+    <view v-if="initialLoading" class="hero hero--skeleton" :style="{ paddingTop: `${(vuex_status_bar_height || 0) + 24}px` }">
+      <view class="hero__copy">
+        <view class="skeleton-block hero__title-skeleton"></view>
+        <view class="skeleton-block hero__meta-skeleton"></view>
+      </view>
+    </view>
+
+    <view v-else class="hero" :style="{ paddingTop: `${(vuex_status_bar_height || 0) + 24}px` }">
       <view class="hero__copy">
         <text class="hero__title">照片拾光</text>
         <text class="hero__meta">{{ totalLabel }}</text>
       </view>
-      <view class="hero__action" @tap="resetFilters">
-        <text class="hero__action-text">重置</text>
-      </view>
     </view>
 
-    <view class="search-panel">
+    <view v-if="initialLoading" class="search-panel search-panel--skeleton">
+      <view class="skeleton-block search-bar-skeleton"></view>
+    </view>
+
+    <view v-else class="search-panel">
       <view class="search-bar">
         <text class="tn-icon-search search-bar__icon"></text>
         <input
@@ -22,63 +30,38 @@
         />
         <text v-if="keyword" class="tn-icon-close-circle search-bar__clear" @tap.stop="clearKeyword"></text>
       </view>
-
-      <view class="filters">
-        <picker
-          v-if="timeOptions.length > 1"
-          mode="selector"
-          :range="timeOptions"
-          range-key="label"
-          @change="onFilterPickerChange('time', $event)"
-        >
-          <view class="filter-pill" :class="{ 'filter-pill--active': selectedFilters.time !== 'all' }">
-            <text class="tn-icon-time filter-pill__icon"></text>
-            <text class="filter-pill__label">{{ getFilterLabel('time') }}</text>
-          </view>
-        </picker>
-
-        <picker mode="selector" :range="categoryOptions" range-key="label" @change="onFilterPickerChange('category', $event)">
-          <view class="filter-pill" :class="{ 'filter-pill--active': selectedFilters.category !== 'all' }">
-            <text class="tn-icon-image-text filter-pill__icon"></text>
-            <text class="filter-pill__label">{{ getFilterLabel('category') }}</text>
-          </view>
-        </picker>
-
-        <picker
-          v-if="locationOptions.length > 1"
-          mode="selector"
-          :range="locationOptions"
-          range-key="label"
-          @change="onFilterPickerChange('location', $event)"
-        >
-          <view class="filter-pill" :class="{ 'filter-pill--active': !!selectedFilters.location }">
-            <text class="tn-icon-location filter-pill__icon"></text>
-            <text class="filter-pill__label">{{ getFilterLabel('location') }}</text>
-          </view>
-        </picker>
-
-        <picker
-          v-if="tagOptions.length > 1"
-          mode="selector"
-          :range="tagOptions"
-          range-key="label"
-          @change="onFilterPickerChange('tag', $event)"
-        >
-          <view class="filter-pill" :class="{ 'filter-pill--active': !!selectedFilters.tag }">
-            <text class="tn-icon-tag filter-pill__icon"></text>
-            <text class="filter-pill__label">{{ getFilterLabel('tag') }}</text>
-          </view>
-        </picker>
-      </view>
-
-      <view class="filters-meta">
-        <text class="filters-meta__text">{{ activeFilterSummary }}</text>
-        <text v-if="activeFilterCount" class="filters-meta__reset" @tap="resetFilters">清空</text>
-      </view>
     </view>
 
     <view class="album-container">
-      <view v-if="waterfall.left.length || waterfall.right.length" class="waterfall">
+      <view v-if="initialLoading" class="waterfall waterfall--skeleton">
+        <view class="waterfall__column">
+          <view v-for="item in skeletonLeft" :key="`left-${item}`" class="wallpaper__item wallpaper__item--skeleton">
+            <view class="item__image skeleton-block" :style="{ height: `${280 + item * 36}rpx` }"></view>
+            <view class="item__data">
+              <view class="skeleton-block item__title-skeleton"></view>
+              <view class="item__meta">
+                <view class="skeleton-block item__meta-skeleton"></view>
+                <view class="skeleton-block item__meta-skeleton item__meta-skeleton--short"></view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <view class="waterfall__column">
+          <view v-for="item in skeletonRight" :key="`right-${item}`" class="wallpaper__item wallpaper__item--skeleton">
+            <view class="item__image skeleton-block" :style="{ height: `${330 + item * 28}rpx` }"></view>
+            <view class="item__data">
+              <view class="skeleton-block item__title-skeleton"></view>
+              <view class="item__meta">
+                <view class="skeleton-block item__meta-skeleton"></view>
+                <view class="skeleton-block item__meta-skeleton item__meta-skeleton--short"></view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view v-else-if="waterfall.left.length || waterfall.right.length" class="waterfall">
         <view class="waterfall__column">
           <view v-for="item in waterfall.left" :key="item.id" class="wallpaper__item" @tap="goDetail(item)">
             <view class="item__image">
@@ -133,40 +116,21 @@
         <text class="empty-state__title">没有找到符合条件的照片</text>
       </view>
 
-      <tn-load-more :status="loadStatus"></tn-load-more>
+      <tn-load-more v-if="!initialLoading" :status="loadStatus"></tn-load-more>
     </view>
   </view>
 </template>
 
 <script>
-  import { getAlbumFilters, getAlbumList } from '@/api/modules/album.js'
+  import { getAlbumList } from '@/api/modules/album.js'
   import store from '@/nxTemp/store/index.js'
   import { buildAlbumDetailUrl, resolveAlbumMediaUrl } from '@/libs/album/utils.js'
-
-  const DEFAULT_OPTION = {
-    time: { label: '全部日期', value: 'all' },
-    category: { label: '全部分类', value: 'all' },
-    location: { label: '全部地点', value: '' },
-    tag: { label: '全部标签', value: '' }
-  }
 
   export default {
     name: 'PagesA',
     data() {
       return {
         keyword: '',
-        timeOptions: [DEFAULT_OPTION.time],
-        filterOptions: {
-          categories: [DEFAULT_OPTION.category],
-          locations: [DEFAULT_OPTION.location],
-          tags: [DEFAULT_OPTION.tag]
-        },
-        selectedFilters: {
-          time: 'all',
-          category: 'all',
-          location: '',
-          tag: ''
-        },
         albumList: [],
         waterfall: {
           left: [],
@@ -176,108 +140,29 @@
           left: 0,
           right: 0
         },
+        skeletonLeft: [1, 2, 3],
+        skeletonRight: [1, 2, 3],
         page: 1,
         pageSize: 20,
         total: 0,
-        loadStatus: 'loadmore'
+        loadStatus: 'loadmore',
+        initialLoading: true
       }
     },
     computed: {
       mediaBaseUrl() {
         return store.getters.mediaBaseUrl
       },
-      categoryOptions() {
-        return this.filterOptions.categories
-      },
-      locationOptions() {
-        return this.filterOptions.locations
-      },
-      tagOptions() {
-        return this.filterOptions.tags
-      },
-      activeFilterCount() {
-        return [
-          this.selectedFilters.time !== 'all',
-          this.selectedFilters.category !== 'all',
-          !!this.selectedFilters.location,
-          !!this.selectedFilters.tag,
-          !!this.keyword
-        ].filter(Boolean).length
-      },
-      activeFilterSummary() {
-        if (!this.activeFilterCount) {
-          return '全部照片'
-        }
-        return `已启用 ${this.activeFilterCount} 项筛选`
-      },
       totalLabel() {
         return this.total ? `${this.total} 张照片` : '整理中的回忆'
       }
     },
     created() {
-      this.fetchFilterOptions()
       this.fetchAlbumList(true)
     },
     methods: {
       getImageUrl(item) {
         return resolveAlbumMediaUrl(this.mediaBaseUrl, item.thumbnailUrl || item.displayUrl || '')
-      },
-
-      getFilterLabel(type) {
-        const map = {
-          time: this.timeOptions,
-          category: this.categoryOptions,
-          location: this.locationOptions,
-          tag: this.tagOptions
-        }
-        const options = map[type] || []
-        const value = this.selectedFilters[type]
-        const current = options.find((item) => item.value === value)
-        return current ? current.label : ((options[0] && options[0].label) || '')
-      },
-
-      async fetchFilterOptions() {
-        try {
-          const res = await getAlbumFilters()
-          if (res.code !== 0 || !res.data) return
-
-          this.timeOptions = this.buildOptions(res.data.dates, DEFAULT_OPTION.time, false)
-          this.filterOptions.categories = this.buildOptions(res.data.categories, DEFAULT_OPTION.category)
-          this.filterOptions.locations = this.buildOptions(res.data.locations, DEFAULT_OPTION.location, false)
-          this.filterOptions.tags = this.buildOptions(res.data.tags, DEFAULT_OPTION.tag, false)
-        } catch (e) {
-          console.error('获取筛选项失败:', e)
-        }
-      },
-
-      buildOptions(source, fallbackOption, objectValue = true) {
-        const list = Array.isArray(source) ? source : []
-        const normalized = list
-          .map((item) => {
-            if (objectValue && item && typeof item === 'object') {
-              return {
-                label: item.label || item.value || fallbackOption.label,
-                value:
-                  item.value !== undefined && item.value !== null
-                    ? item.value
-                    : item.label !== undefined && item.label !== null
-                      ? item.label
-                      : fallbackOption.value
-              }
-            }
-
-            return {
-              label: item || fallbackOption.label,
-              value: item || fallbackOption.value
-            }
-          })
-          .filter((item) => item.label)
-
-        const deduped = normalized.filter(
-          (item, index) => normalized.findIndex((entry) => entry.value === item.value) === index
-        )
-        const hasFallback = deduped.some((item) => item.value === fallbackOption.value)
-        return hasFallback ? deduped : [fallbackOption, ...deduped]
       },
 
       buildQueryParams() {
@@ -288,25 +173,6 @@
 
         if (this.keyword) {
           params.keyword = this.keyword
-        }
-
-        if (this.selectedFilters.category && this.selectedFilters.category !== 'all') {
-          params.category = this.selectedFilters.category
-        }
-
-        if (this.selectedFilters.location) {
-          params.location = this.selectedFilters.location
-        }
-
-        if (this.selectedFilters.tag) {
-          params.tag = this.selectedFilters.tag
-        }
-
-        if (this.selectedFilters.time && this.selectedFilters.time !== 'all') {
-          const start = new Date(`${this.selectedFilters.time}T00:00:00`)
-          const end = new Date(`${this.selectedFilters.time}T23:59:59`)
-          params.startTime = start.toISOString()
-          params.endTime = end.toISOString()
         }
 
         return params
@@ -346,6 +212,8 @@
             this.page -= 1
           }
           this.loadStatus = 'loadmore'
+        } finally {
+          this.initialLoading = false
         }
       },
 
@@ -381,22 +249,6 @@
         return imageHeight + metaLines
       },
 
-      onFilterPickerChange(type, event) {
-        const index = Number(event && event.detail ? event.detail.value : 0)
-        const optionsMap = {
-          time: this.timeOptions,
-          category: this.categoryOptions,
-          location: this.locationOptions,
-          tag: this.tagOptions
-        }
-        const options = optionsMap[type] || []
-        const selected = options[index]
-        if (!selected) return
-
-        this.selectedFilters[type] = selected.value
-        this.fetchAlbumList(true)
-      },
-
       searchAlbums() {
         this.fetchAlbumList(true)
       },
@@ -404,17 +256,6 @@
       clearKeyword() {
         if (!this.keyword) return
         this.keyword = ''
-        this.fetchAlbumList(true)
-      },
-
-      resetFilters() {
-        this.keyword = ''
-        this.selectedFilters = {
-          time: 'all',
-          category: 'all',
-          location: '',
-          tag: ''
-        }
         this.fetchAlbumList(true)
       },
 
@@ -445,7 +286,7 @@
   .hero {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 0 30rpx 20rpx;
 
     &__copy {
@@ -464,24 +305,10 @@
       font-size: 24rpx;
       color: #7d8998;
     }
+  }
 
-    &__action {
-      min-width: 88rpx;
-      height: 72rpx;
-      padding: 0 18rpx;
-      border-radius: 20rpx;
-      background: rgba(255, 255, 255, 0.86);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 10rpx 24rpx rgba(76, 111, 255, 0.08);
-    }
-
-    &__action-text {
-      font-size: 24rpx;
-      font-weight: 600;
-      color: #4c6fff;
-    }
+  .hero--skeleton {
+    align-items: center;
   }
 
   .search-panel {
@@ -490,6 +317,34 @@
     background: rgba(255, 255, 255, 0.92);
     border-radius: 24rpx;
     box-shadow: 0 12rpx 36rpx rgba(31, 42, 55, 0.06);
+  }
+
+  .search-panel--skeleton {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .skeleton-block {
+    background: linear-gradient(120deg, #eef3f7 18%, #f8fbfd 38%, #eef3f7 58%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+    border-radius: 18rpx;
+  }
+
+  .hero__title-skeleton {
+    width: 220rpx;
+    height: 46rpx;
+  }
+
+  .hero__meta-skeleton {
+    width: 180rpx;
+    height: 24rpx;
+  }
+
+  .search-bar-skeleton {
+    width: 100%;
+    height: 72rpx;
+    border-radius: 18rpx;
   }
 
   .search-bar {
@@ -516,59 +371,6 @@
       color: #a1abba;
     }
   }
-
-  .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16rpx;
-    margin-top: 20rpx;
-  }
-
-  .filter-pill {
-    min-width: 196rpx;
-    max-width: 100%;
-    padding: 16rpx 18rpx;
-    border-radius: 18rpx;
-    background: #f6f8fc;
-    display: flex;
-    align-items: center;
-    gap: 10rpx;
-
-    &--active {
-      background: #eaf0ff;
-      color: #2f62ff;
-    }
-
-    &__icon {
-      font-size: 24rpx;
-    }
-
-    &__label {
-      flex: 1;
-      font-size: 24rpx;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-
-  .filters-meta {
-    margin-top: 18rpx;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    &__text {
-      font-size: 24rpx;
-      color: #8a94a6;
-    }
-
-    &__reset {
-      font-size: 24rpx;
-      color: #4c6fff;
-    }
-  }
-
   .album-container {
     padding: 8rpx 20rpx 0;
   }
@@ -577,6 +379,10 @@
     display: flex;
     align-items: flex-start;
     gap: 18rpx;
+  }
+
+  .waterfall--skeleton .wallpaper__item {
+    pointer-events: none;
   }
 
   .waterfall__column {
@@ -590,6 +396,10 @@
     border-radius: 18rpx;
     overflow: hidden;
     box-shadow: 0 8rpx 24rpx rgba(31, 42, 55, 0.05);
+  }
+
+  .wallpaper__item--skeleton {
+    background: #ffffff;
   }
 
   .item__image {
@@ -612,11 +422,27 @@
     white-space: nowrap;
   }
 
+  .item__title-skeleton {
+    width: 72%;
+    height: 28rpx;
+    border-radius: 999rpx;
+  }
+
   .item__meta {
     display: flex;
     flex-wrap: wrap;
     gap: 10rpx;
     margin-top: 10rpx;
+  }
+
+  .item__meta-skeleton {
+    width: 120rpx;
+    height: 22rpx;
+    border-radius: 999rpx;
+  }
+
+  .item__meta-skeleton--short {
+    width: 88rpx;
   }
 
   .item__meta-text {
@@ -654,6 +480,16 @@
       margin-top: 24rpx;
       font-size: 28rpx;
       color: #8a94a6;
+    }
+  }
+
+  @keyframes skeleton-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+
+    100% {
+      background-position: -200% 0;
     }
   }
 </style>
